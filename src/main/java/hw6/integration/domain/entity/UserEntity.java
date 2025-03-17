@@ -5,10 +5,14 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
 @NoArgsConstructor
 @Getter
@@ -27,11 +31,14 @@ public class UserEntity {
 
     private Boolean is_active;
 
-    private Timestamp createdAt;
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
     @Builder
-    public UserEntity(String email, String password, String nickname, String profilePath,
-                      Boolean is_active, Timestamp createdAt) {
+    public UserEntity(Long id, String email, String password, String nickname, String profilePath,
+                      Boolean is_active, LocalDateTime createdAt) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -49,17 +56,6 @@ public class UserEntity {
                 .profilePath(this.profilePath)
                 .is_active(this.is_active)
                 .createdAt(this.createdAt)
-                .build();
-    }
-
-    public static UserEntity fromDomain(User user) {
-        return UserEntity.builder()
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .nickname(user.getNickname())
-                .profilePath(user.getProfilePath())
-                .is_active(user.getIs_active())
-                .createdAt(user.getCreatedAt())
                 .build();
     }
 

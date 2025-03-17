@@ -32,4 +32,16 @@ public class UserRepositoryImpl implements UserRepository {
 
         return userJpaRepository.findById(id).map(UserEntity::toDomain);
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userJpaRepository.existsByEmail(email);
+    }
+
+
+    @Override
+    public User save(User user) {
+        UserEntity userEntity = userJpaRepository.save(User.toEntity(user));
+        return userEntity.toDomain();
+    }
 }

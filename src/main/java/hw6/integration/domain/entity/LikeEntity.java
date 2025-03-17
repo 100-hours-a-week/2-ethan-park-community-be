@@ -5,8 +5,10 @@ import hw6.integration.domain.model.Post;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -29,10 +31,12 @@ public class LikeEntity {
 
     private boolean is_deleted;
 
-    private Timestamp created_at;
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime created_at;
 
     @Builder
-    public LikeEntity(PostEntity postEntity, UserEntity userEntity, boolean is_deleted, Timestamp created_at) {
+    public LikeEntity(PostEntity postEntity, UserEntity userEntity, boolean is_deleted, LocalDateTime created_at) {
         this.postEntity = postEntity;
         this.userEntity = userEntity;
         this.is_deleted = is_deleted;
@@ -47,16 +51,6 @@ public class LikeEntity {
                 .is_deleted(this.is_deleted)
                 .created_at(this.created_at)
                 .build();
-    }
-
-    public static LikeEntity fromDomain(Like like, PostEntity postEntity, UserEntity userEntity) {
-        return LikeEntity.builder()
-                .postEntity(postEntity)
-                .userEntity(userEntity)
-                .is_deleted(like.is_deleted())
-                .created_at(like.getCreated_at())
-                .build();
-
     }
 
 }

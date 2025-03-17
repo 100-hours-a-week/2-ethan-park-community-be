@@ -5,8 +5,11 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "posts")
@@ -33,13 +36,17 @@ public class PostEntity {
 
     private Integer view_count;
 
-    private Timestamp created_at;
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime created_at;
 
-    private Timestamp updated_at;
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updated_at;
 
     @Builder
     public PostEntity(UserEntity userEntity, String title, String content, Integer comment_count, Integer like_count,
-                      Integer view_count, Timestamp created_at, Timestamp updated_at) {
+                      Integer view_count, LocalDateTime created_at, LocalDateTime updated_at) {
         this.userEntity = userEntity;
         this.title = title;
         this.content = content;
@@ -61,19 +68,6 @@ public class PostEntity {
                 .view_count(this.view_count)
                 .created_at(this.created_at)
                 .updated_at(this.updated_at)
-                .build();
-    }
-
-    public static PostEntity fromDomain(Post post, UserEntity userEntity) {
-        return PostEntity.builder()
-                .userEntity(userEntity)
-                .title(post.getTitle())
-                .content(post.getContent())
-                .comment_count(post.getComment_count())
-                .like_count(post.getLike_count())
-                .view_count(post.getView_count())
-                .created_at(post.getCreated_at())
-                .updated_at(post.getUpdated_at())
                 .build();
     }
 }

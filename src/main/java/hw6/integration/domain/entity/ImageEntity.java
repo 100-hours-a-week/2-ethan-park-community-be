@@ -34,11 +34,6 @@ public class ImageEntity {
                 .build();
     }
 
-    public static ImageEntity fromDomain(Image image, PostEntity postEntity) {
-        return ImageEntity.builder()
-                .postEntity(postEntity)
-                .imagePath(image.getImagePath())
-                .build();
-    }
+
 
 }

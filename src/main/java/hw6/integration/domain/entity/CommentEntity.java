@@ -4,8 +4,11 @@ import hw6.integration.domain.model.Comment;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
@@ -28,11 +31,17 @@ public class CommentEntity {
 
     private boolean is_deleted;
 
-    private Timestamp created_at;
-    private Timestamp updated_at;
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime created_at;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updated_at;
 
     @Builder
-    public CommentEntity(PostEntity postEntity, UserEntity userEntity, String content, boolean is_deleted, Timestamp created_at, Timestamp updated_at) {
+    public CommentEntity(PostEntity postEntity, UserEntity userEntity, String content, boolean is_deleted,
+                         LocalDateTime created_at, LocalDateTime updated_at) {
         this.postEntity = postEntity;
         this.userEntity = userEntity;
         this.content = content;
@@ -53,14 +62,5 @@ public class CommentEntity {
                 .build();
     }
 
-    public static CommentEntity fromDomain(Comment comment, PostEntity postEntity, UserEntity userEntity) {
-        return CommentEntity.builder()
-                .postEntity(postEntity)
-                .userEntity(userEntity)
-                .content(comment.getContent())
-                .is_deleted(comment.is_deleted())
-                .created_at(comment.getCreated_at())
-                .updated_at(comment.getUpdated_at())
-                .build();
-    }
+
 }
