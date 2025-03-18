@@ -1,10 +1,12 @@
-package hw6.integration.post.controller;
+package hw6.integration.post.dto;
 
+import hw6.integration.image.domain.Image;
 import hw6.integration.post.domain.Post;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -15,6 +17,8 @@ public class PostResponseDto {
 
     private String title;
     private String content;
+    private List<Image> images; // ✅ 있어야 함
+
 
     private Integer comment_count;
     private Integer like_count;
@@ -34,6 +38,7 @@ public class PostResponseDto {
                 .view_count(post.getView_count())
                 .created_at(post.getCreated_at())
                 .updated_at(post.getUpdated_at())
+                .images(post.getImages()) // ✅ 이 라인 확인
                 .build();
     }
 

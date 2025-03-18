@@ -5,7 +5,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class ImageRepositoryImpl implements ImageRepository {
+public class ImageRepositoryImpl implements ImageRepository{
 
-    private ImageJpaRepository imageJpaRepository;
+    private final ImageJpaRepository imageJpaRepository;
+
 }

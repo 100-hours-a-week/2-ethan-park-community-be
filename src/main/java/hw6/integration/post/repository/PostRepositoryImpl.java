@@ -2,6 +2,8 @@ package hw6.integration.post.repository;
 
 import hw6.integration.post.entity.PostEntity;
 import hw6.integration.post.domain.Post;
+import hw6.integration.user.entity.UserEntity;
+import hw6.integration.user.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +16,6 @@ public class PostRepositoryImpl implements PostRepository {
 
     private final PostJpaRepository postJpaRepository;
 
-
     @Override
     public Optional<List<Post>> findByAll() {
         return Optional.of(
@@ -26,6 +27,22 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public Optional<Post> findById(Long id) {
+
         return postJpaRepository.findById(id).map(PostEntity::toDomain);
     }
+
+    @Override
+    public Post save(Post post, UserEntity userEntity) {
+
+        PostEntity postEntity = Post.toEntity(post, userEntity);
+        PostEntity saved = postJpaRepository.save(postEntity);
+
+        return saved.toDomain();
+    }
+
+    @Override
+    public Optional<PostEntity> findEntityById(Long id) {
+        return postJpaRepository.findById(id);
+    }
+
 }

@@ -11,6 +11,8 @@ public enum ErrorCode {
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "INVALID_PASSWORD", "비밀번호가 일치하지 않습니다."),
 
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_NOT_FOUND", "해당 게시물을 찾을 수 없습니다."),
+    IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "IMAGE_NOT_FOUND", "사진이 없습니다."),
+    IMAGE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "IMAGE_LIMIT_EXCEEDED", "사진 제한 길이를 넘었습니다."),
 
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "서버 오류입니다.");
 

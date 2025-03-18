@@ -4,11 +4,13 @@ import hw6.integration.image.domain.Image;
 import hw6.integration.post.entity.PostEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "images")
 @NoArgsConstructor
+@Getter
 public class ImageEntity {
 
     @Id

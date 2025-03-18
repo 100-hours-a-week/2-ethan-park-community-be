@@ -14,12 +14,4 @@ public class UserSignupRequestDto {
 
     private String profilePath;
 
-    public User toDomain() {
-        return User.builder()
-                .email(this.email)
-                .password(this.password)
-                .nickname(this.nickname)
-                .profilePath(this.profilePath)
-                .build();
-    }
 }

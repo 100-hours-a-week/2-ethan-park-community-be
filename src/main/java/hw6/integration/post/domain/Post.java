@@ -1,14 +1,20 @@
 package hw6.integration.post.domain;
 
+import hw6.integration.image.domain.Image;
+import hw6.integration.image.entity.ImageEntity;
 import hw6.integration.post.entity.PostEntity;
 import hw6.integration.user.entity.UserEntity;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.With;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Builder
+@With
 public class Post {
 
     private Long id;
@@ -16,6 +22,7 @@ public class Post {
 
     private String title;
     private String content;
+    private List<Image> images = new ArrayList<>();
 
     private Integer comment_count;
     private Integer like_count;
@@ -24,21 +31,23 @@ public class Post {
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 
-    public Post(Long id, Long userId, String title, String content, Integer comment_count, Integer like_count,
-                Integer view_count, LocalDateTime created_at, LocalDateTime updated_at) {
-        this.id = id;
-        this.userId = userId;
-        this.title = title;
-        this.content = content;
-        this.comment_count = comment_count;
-        this.like_count = like_count;
-        this.view_count = view_count;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
+    public static Post createPost(Long userId, String title, String content) {
+        return Post.builder()
+                .userId(userId)
+                .title(title)
+                .content(content)
+                .comment_count(0)
+                .like_count(0)
+                .view_count(0)
+                .created_at(LocalDateTime.now())
+                .updated_at(LocalDateTime.now())
+                .build();
+
     }
 
     public static PostEntity toEntity(Post post, UserEntity userEntity) {
-        return PostEntity.builder()
+        PostEntity postEntity = PostEntity.builder()
+                .id(post.getId())
                 .userEntity(userEntity)
                 .title(post.getTitle())
                 .content(post.getContent())
@@ -48,5 +57,35 @@ public class Post {
                 .created_at(post.getCreated_at())
                 .updated_at(post.getUpdated_at())
                 .build();
+
+        // 이미지 리스트가 존재하면 PostEntity에 추가
+        if (post.getImages() != null && !post.getImages().isEmpty()) {
+            List<ImageEntity> imageEntities = post.getImages().stream()
+                    .map(image -> Image.toEntity(image, postEntity)) // postEntity로 연관관계 맺기
+                    .toList();
+            postEntity.getImages().addAll(imageEntities);
+        }
+
+        return postEntity;
+    }
+
+    public void addImages(List<Image> images) {
+        if(images.size() > 10) {
+            throw new IllegalArgumentException("이미지는 최대 10장까지 등록 가능합니다.");
+        }
+        this.images = images;
+    }
+
+    public Post updateTitle(String title) {
+
+        return this.withTitle(title);
+    }
+
+    public Post updateContent(String content) {
+        return this.withContent(content);
+    }
+
+    public Post updateImages(List<Image> images) {
+        return this.withImages(images);
     }
 }

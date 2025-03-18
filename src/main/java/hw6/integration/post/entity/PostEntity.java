@@ -1,20 +1,22 @@
 package hw6.integration.post.entity;
 
+import hw6.integration.image.entity.ImageEntity;
 import hw6.integration.post.domain.Post;
 import hw6.integration.user.entity.UserEntity;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "posts")
-@NoArgsConstructor
 @Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostEntity {
 
     @Id
@@ -26,6 +28,8 @@ public class PostEntity {
     @JoinColumn(name = "user_id") // FK 컬럼명
     private UserEntity userEntity;
 
+    @OneToMany(mappedBy = "postEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ImageEntity> images = new ArrayList<>(); // ✅ 초기화 필수!
     private String title;
 
     private String content;
@@ -44,12 +48,15 @@ public class PostEntity {
     @Column(name = "updated_at")
     private LocalDateTime updated_at;
 
-    @Builder
-    public PostEntity(UserEntity userEntity, String title, String content, Integer comment_count, Integer like_count,
-                      Integer view_count, LocalDateTime created_at, LocalDateTime updated_at) {
+    @Builder(toBuilder = true)
+    public PostEntity(Long id, UserEntity userEntity, String title, String content, List<ImageEntity> images,
+                      Integer comment_count, Integer like_count, Integer view_count,
+                      LocalDateTime created_at, LocalDateTime updated_at) {
+        this.id = id;
         this.userEntity = userEntity;
         this.title = title;
         this.content = content;
+        this.images = (images != null) ? images : new ArrayList<>(); // 직접 null 방어 처리
         this.comment_count = comment_count;
         this.like_count = like_count;
         this.view_count = view_count;
@@ -68,6 +75,9 @@ public class PostEntity {
                 .view_count(this.view_count)
                 .created_at(this.created_at)
                 .updated_at(this.updated_at)
+                .images(this.images != null
+                        ? this.images.stream().map(ImageEntity::toDomain).toList()
+                        : List.of())
                 .build();
     }
 }
