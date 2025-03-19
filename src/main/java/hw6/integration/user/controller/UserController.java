@@ -5,7 +5,6 @@ import hw6.integration.user.domain.User;
 import hw6.integration.user.dto.*;
 import hw6.integration.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,7 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -72,8 +70,6 @@ public class UserController {
 
         UserResponseDto userResponseDto = UserResponseDto.toDomain(user);
 
-
-
         return ResponseEntity.ok(userResponseDto);
 
     }
@@ -89,7 +85,8 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/me")
+    @DeleteMapping("/users")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> deleteUser(
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
 

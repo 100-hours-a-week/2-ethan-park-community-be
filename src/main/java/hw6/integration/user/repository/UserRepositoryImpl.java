@@ -1,5 +1,6 @@
 package hw6.integration.user.repository;
 
+import hw6.integration.post.domain.Post;
 import hw6.integration.user.entity.UserEntity;
 import hw6.integration.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return userJpaRepository.findByEmail(email);
+        return userJpaRepository.findByEmail(email)
+                .map(UserEntity::toDomain);
     }
 
 
@@ -44,8 +46,7 @@ public class UserRepositoryImpl implements UserRepository {
         return userEntity.toDomain();
     }
 
-    @Override
-    public void delete(User user) {
-        userJpaRepository.delete(User.toEntity(user));
-    }
+
+
+
 }

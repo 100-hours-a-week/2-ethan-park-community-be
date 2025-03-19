@@ -22,6 +22,7 @@ public class Post {
 
     private String title;
     private String content;
+    private String authorName;
     private List<Image> images = new ArrayList<>();
 
     private Integer comment_count;
@@ -31,11 +32,12 @@ public class Post {
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 
-    public static Post createPost(Long userId, String title, String content) {
+    public static Post createPost(Long userId, String title, String content, String authorName) {
         return Post.builder()
                 .userId(userId)
                 .title(title)
                 .content(content)
+                .authorName(authorName)
                 .comment_count(0)
                 .like_count(0)
                 .view_count(0)
@@ -51,6 +53,7 @@ public class Post {
                 .userEntity(userEntity)
                 .title(post.getTitle())
                 .content(post.getContent())
+                .authorName(post.getAuthorName())
                 .comment_count(post.getComment_count())
                 .like_count(post.getLike_count())
                 .view_count(post.getView_count())
@@ -87,5 +90,9 @@ public class Post {
 
     public Post updateImages(List<Image> images) {
         return this.withImages(images);
+    }
+
+    public void maskAuthorName() {
+        this.authorName = "알 수 없음";
     }
 }

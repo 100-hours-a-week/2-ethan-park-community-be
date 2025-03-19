@@ -17,4 +17,7 @@ public interface PostRepository {
 
     Optional<PostEntity> findEntityById(Long id);
 
+    List<Post> findByUserId(Long userId);
+
+    List<Post> saveAll(List<Post> posts, UserEntity userEntity);
 }

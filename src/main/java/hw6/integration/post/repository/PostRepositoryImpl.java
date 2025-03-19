@@ -6,6 +6,7 @@ import hw6.integration.user.entity.UserEntity;
 import hw6.integration.user.repository.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,8 +42,30 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
+    public List<Post> saveAll(List<Post> posts, UserEntity userEntity) {
+
+        List<PostEntity> entities = posts.stream()
+                .map(post -> Post.toEntity(post, userEntity))
+                .toList();
+
+        List<PostEntity> saved = postJpaRepository.saveAll(entities);
+
+        return saved.stream()
+                .map(PostEntity::toDomain)
+                .toList();
+    }
+
+    @Override
     public Optional<PostEntity> findEntityById(Long id) {
         return postJpaRepository.findById(id);
+    }
+
+    @Override
+    public List<Post> findByUserId(Long userId) {
+        return postJpaRepository.findByUserEntity_Id(userId)
+                .stream()
+                .map(PostEntity::toDomain)
+                .toList();
     }
 
 }

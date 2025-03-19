@@ -17,6 +17,7 @@ public class PostResponseDto {
 
     private String title;
     private String content;
+    private String authorName;
     private List<Image> images; // ✅ 있어야 함
 
 
@@ -33,6 +34,7 @@ public class PostResponseDto {
                 .userId(post.getUserId())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .authorName(post.getAuthorName())
                 .comment_count(post.getComment_count())
                 .like_count(post.getLike_count())
                 .view_count(post.getView_count())

@@ -1,6 +1,9 @@
 package hw6.integration.user.service;
 
 import hw6.integration.config.JwtProvider;
+import hw6.integration.post.domain.Post;
+import hw6.integration.post.entity.PostEntity;
+import hw6.integration.post.repository.PostRepository;
 import hw6.integration.user.dto.UserLoginRequestDto;
 import hw6.integration.user.dto.UserSignupRequestDto;
 import hw6.integration.user.dto.UserUpdateNicknameRequestDto;
@@ -8,10 +11,12 @@ import hw6.integration.user.dto.UserUpdatePasswordRequestDto;
 import hw6.integration.user.domain.User;
 import hw6.integration.exception.BusinessException;
 import hw6.integration.exception.ErrorCode;
+import hw6.integration.user.entity.UserEntity;
 import hw6.integration.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +25,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
@@ -67,16 +73,26 @@ public class UserServiceImpl implements UserService{
         return jwtProvider.generateToken(user);
     }
 
-
+    @Transactional
     @Override
     public User updateNickname(Long id,  UserUpdateNicknameRequestDto userUpdateNicknameRequestDto) {
 
         User userExisting = userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        User updated = userExisting.updateNickname(userUpdateNicknameRequestDto.getNickname());
+        if (userExisting.isActiveUser()){
+            User updatedUser = userExisting.withNickname(userUpdateNicknameRequestDto.getNickname());
 
-        return userRepository.save(updated);
+            List<Post> posts = postRepository.findByUserId(id);
+            List<Post> updatedPosts = posts.stream()
+                    .map(post -> post.withAuthorName(userUpdateNicknameRequestDto.getNickname()))
+                    .toList();
+            postRepository.saveAll(updatedPosts, User.toEntity(updatedUser));
+
+            return userRepository.save(updatedUser);
+        }
+
+        throw new BusinessException(ErrorCode.USER_NOT_FOUND);
     }
 
     @Override
@@ -90,16 +106,23 @@ public class UserServiceImpl implements UserService{
 //            throw new BusinessException(ErrorCode.INVALID_PASSWORD);
 //        }
 
-        User updated = userExisting.updatePassword(userUpdatePasswordRequestDto.getPassword());
+        User updated = userExisting.withPassword(userUpdatePasswordRequestDto.getPassword());
 
         userRepository.save(updated);
     }
 
+    @Transactional
     @Override
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        userRepository.delete(user);
+        User deletedUser = user.withIsActive(false);
+
+        List<Post> posts = postRepository.findByUserId(id);
+        posts.forEach(Post::maskAuthorName);
+        postRepository.saveAll(posts, User.toEntity(deletedUser));
+
+        userRepository.save(deletedUser);
     }
 }

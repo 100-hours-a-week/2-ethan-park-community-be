@@ -46,7 +46,7 @@ public class PostServiceImpl implements PostService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Post post = Post.createPost(userId, title, content);
+        Post post = Post.createPost(userId, title, content, user.getNickname());
 
         List<Image> uploadImages = new ArrayList<>();
         if (images != null && !images.isEmpty()) {
@@ -121,4 +121,5 @@ public class PostServiceImpl implements PostService {
         // 8. JPA는 영속 객체의 필드 변경만으로 업데이트 처리
         return postEntity.toDomain(); // 변경 감지로 자동 update 됨
     }
+
 }

@@ -1,5 +1,6 @@
 package hw6.integration.user.repository;
 
+import hw6.integration.post.domain.Post;
 import hw6.integration.user.domain.User;
 
 import java.util.List;
@@ -14,6 +15,4 @@ public interface UserRepository {
     Optional<User> findByEmail(String email);
 
     User save(User user);
-
-    void delete(User user);
 }

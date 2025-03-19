@@ -29,16 +29,15 @@ public class PostEntity {
     @JoinColumn(name = "user_id") // FK 컬럼명
     private UserEntity userEntity;
 
-    @OneToMany(mappedBy = "postEntity", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ImageEntity> images = new ArrayList<>(); // ✅ 초기화 필수!
     private String title;
-
     private String content;
+    private String authorName;
+
+    @OneToMany(mappedBy = "postEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ImageEntity> images = new ArrayList<>();
 
     private Integer comment_count;
-
     private Integer like_count;
-
     private Integer view_count;
 
     @CreatedDate
@@ -50,13 +49,14 @@ public class PostEntity {
     private LocalDateTime updated_at;
 
     @Builder(toBuilder = true)
-    public PostEntity(Long id, UserEntity userEntity, String title, String content, List<ImageEntity> images,
+    public PostEntity(Long id, UserEntity userEntity, String title, String content, String authorName, List<ImageEntity> images,
                       Integer comment_count, Integer like_count, Integer view_count,
                       LocalDateTime created_at, LocalDateTime updated_at) {
         this.id = id;
         this.userEntity = userEntity;
         this.title = title;
         this.content = content;
+        this.authorName = authorName;
         this.images = (images != null) ? images : new ArrayList<>(); // 직접 null 방어 처리
         this.comment_count = comment_count;
         this.like_count = like_count;
@@ -71,6 +71,7 @@ public class PostEntity {
                 .userId(this.userEntity.getId())
                 .title(this.title)
                 .content(this.content)
+                .authorName(this.authorName)
                 .comment_count(this.comment_count)
                 .like_count(this.like_count)
                 .view_count(this.view_count)
@@ -89,4 +90,5 @@ public class PostEntity {
     public void setContent(String title) {
         this.content = content;
     }
+
 }

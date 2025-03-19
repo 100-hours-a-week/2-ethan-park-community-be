@@ -1,5 +1,7 @@
 package hw6.integration.user.entity;
 
+import hw6.integration.image.entity.ImageEntity;
+import hw6.integration.post.entity.PostEntity;
 import hw6.integration.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -9,6 +11,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -34,6 +38,9 @@ public class UserEntity {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "userEntity")
+    private List<PostEntity> posts = new ArrayList<>();
+
     @Builder
     public UserEntity(Long id, String email, String password, String nickname, String profilePath,
                       Boolean isActive, LocalDateTime createdAt) {
@@ -57,5 +64,7 @@ public class UserEntity {
                 .createdAt(this.createdAt)
                 .build();
     }
+
+
 
 }

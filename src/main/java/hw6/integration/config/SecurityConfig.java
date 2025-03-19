@@ -1,6 +1,8 @@
 package hw6.integration.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -29,21 +31,28 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        // ✅ 인증 없이 접근 가능한 경로 (회원가입, 로그인)
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/users").authenticated()
-                        .requestMatchers("/api/me/**").authenticated()
-
-
-                        // ✅ 그 외에는 인증 필요
-                        .anyRequest().authenticated()
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            System.out.println("🔥 [AUTH ENTRY POINT] 인증 실패!");
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "UNAUTHORIZED: 로그인 필요");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            System.out.println("⛔ [ACCESS DENIED] 권한 없음!");
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "FORBIDDEN: 권한 없음");
+                        })
                 )
-                // ✅ JWT 필터 등록 (Spring Security 인증 필터 전에 실행되도록)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users", "/api/users/").permitAll()  // ✅ 회원가입
+                        .requestMatchers(HttpMethod.GET, "/api/users").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/users").authenticated()
+                        .requestMatchers("/api/me/**").authenticated()
+                        .anyRequest().authenticated()  // ✅ 항상 마지막
+                )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
 
     // PasswordEncoder 빈 등록
     @Bean
@@ -55,5 +64,14 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public FilterRegistrationBean<RequestLoggerFilter> logFilter() {
+        FilterRegistrationBean<RequestLoggerFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new RequestLoggerFilter());
+        registrationBean.addUrlPatterns("/*"); // 모든 요청 경로에 필터 적용
+        registrationBean.setOrder(1); // 가장 먼저 실행
+        return registrationBean;
     }
 }

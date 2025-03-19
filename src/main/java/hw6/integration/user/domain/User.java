@@ -1,11 +1,14 @@
 package hw6.integration.user.domain;
 
+import hw6.integration.post.domain.Post;
 import hw6.integration.user.entity.UserEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.With;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Builder
@@ -25,6 +28,8 @@ public class User {
     private Boolean isActive;
 
     private LocalDateTime createdAt;
+
+    private List<Post> posts = new ArrayList<>();
 
     public static UserEntity toEntity(User user) {
         return UserEntity.builder()
@@ -49,12 +54,8 @@ public class User {
                 .build();
     }
 
-    public User updateNickname(String nickname) {
-        return this.withNickname(nickname);
-    }
-
-    public User updatePassword(String password) {
-        return this.withPassword(password);
+    public boolean isActiveUser() {
+        return Boolean.TRUE.equals(this.isActive);
     }
 
 }
