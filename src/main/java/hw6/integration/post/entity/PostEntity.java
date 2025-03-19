@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "posts")
 @Getter
-@Setter
+@EntityListeners(AuditingEntityListener.class) // ✅ 추가 필요
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostEntity {
 
@@ -79,5 +80,13 @@ public class PostEntity {
                         ? this.images.stream().map(ImageEntity::toDomain).toList()
                         : List.of())
                 .build();
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setContent(String title) {
+        this.content = content;
     }
 }
