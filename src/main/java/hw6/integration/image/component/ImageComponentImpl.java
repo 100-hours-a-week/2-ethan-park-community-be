@@ -12,7 +12,6 @@ public class ImageComponentImpl implements ImageComponent {
 
     private static final String BASE_UPLOAD_DIR = "/Users/park-youchan/Desktop/uploads";
 
-
     @Override
     public String uploadProfileImage(MultipartFile file) {
         return uploadImage(file, "profiles");
@@ -59,11 +58,12 @@ public class ImageComponentImpl implements ImageComponent {
     @Override
     public void deleteImage(String imagePath) {
         try {
-            String fileName = Paths.get(imagePath).getFileName().toString(); // ✅ uuid_filename.jpg
-            String subFolder = imagePath.contains("profiles") ? "profiles" : "posts"; // ✅ 폴더 추정
-            Path fullPath = Paths.get(BASE_UPLOAD_DIR, subFolder, fileName); // ✅ 실제 저장 경로
+            String fileName = Paths.get(imagePath).getFileName().toString();
+            String subFolder = imagePath.contains("profiles") ? "profiles" : "posts";
+            Path fullPath = Paths.get(BASE_UPLOAD_DIR, subFolder, fileName);
 
             Files.deleteIfExists(fullPath);
+            System.out.println("✅ 삭제 성공: " + fullPath.toString());
 
         } catch (IOException e) {
             throw new RuntimeException("파일 삭제 실패", e);

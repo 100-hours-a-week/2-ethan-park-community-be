@@ -20,4 +20,6 @@ public interface PostRepository {
     List<Post> findByUserId(Long userId);
 
     List<Post> saveAll(List<Post> posts, UserEntity userEntity);
+
+    void delete(Long postId);
 }

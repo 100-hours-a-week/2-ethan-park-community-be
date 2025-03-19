@@ -16,4 +16,6 @@ public interface PostService {
     Post createPost(String title, String content, List<MultipartFile> images, Long id);
 
     Post updatePost(Long postId, PostUpdateDto postUpdateDto, Long userId);
+
+    void deletePost(Long userId, Long postId);
 }

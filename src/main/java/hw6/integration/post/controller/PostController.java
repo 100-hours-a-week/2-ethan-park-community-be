@@ -77,4 +77,17 @@ public class PostController {
         return ResponseEntity.ok(postResponseDto);
     }
 
+    @DeleteMapping("/{postId}")
+    @PreAuthorize("isAuthenticated")
+    public ResponseEntity<PostResponseDto> deletePost(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long postId) {
+
+        Long userId = userPrincipal.getId();
+
+        postService.deletePost(userId, postId);
+
+        return ResponseEntity.noContent().build();
+    }
+
 }

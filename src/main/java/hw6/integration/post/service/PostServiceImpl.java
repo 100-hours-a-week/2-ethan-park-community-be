@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -119,6 +120,26 @@ public class PostServiceImpl implements PostService {
 
         // 8. JPA는 영속 객체의 필드 변경만으로 업데이트 처리
         return postEntity.toDomain(); // 변경 감지로 자동 update 됨
+    }
+
+    @Override
+    public void deletePost(Long userId, Long postId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+        if(userId.equals(post.getUserId())) {
+            postRepository.delete(postId);
+        } else {
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+        }
+
+        // 🔥 이미지 경로 순회하며 파일 삭제
+        if (post.getImages() != null) {
+            post.getImages().forEach(image -> {
+                imageComponent.deleteImage(image.getImagePath());
+            });
+        }
+
     }
 
 }

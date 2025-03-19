@@ -131,5 +131,6 @@ public class UserServiceImpl implements UserService{
         postRepository.saveAll(posts, User.toEntity(deletedUser));
 
         userRepository.save(deletedUser);
+
     }
 }
