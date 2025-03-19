@@ -2,15 +2,14 @@ package hw6.integration.post.service;
 
 import hw6.integration.exception.BusinessException;
 import hw6.integration.exception.ErrorCode;
+import hw6.integration.image.component.ImageComponent;
 import hw6.integration.image.domain.Image;
 import hw6.integration.image.entity.ImageEntity;
-import hw6.integration.image.service.ImageService;
 import hw6.integration.post.domain.Post;
 import hw6.integration.post.dto.PostUpdateDto;
 import hw6.integration.post.entity.PostEntity;
 import hw6.integration.post.repository.PostRepository;
 import hw6.integration.user.domain.User;
-import hw6.integration.user.entity.UserEntity;
 import hw6.integration.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,7 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final ImageService imageService;
+    private final ImageComponent imageComponent;
 
     @Override
     public List<Post> getPostByAll() {
@@ -55,7 +54,7 @@ public class PostServiceImpl implements PostService {
             }
 
             for (MultipartFile file : images) {
-                String url = imageService.uploadImage(file);
+                String url = imageComponent.uploadPostImage(file);
                 uploadImages.add(Image.builder().imagePath(url).build());
             }
         }
@@ -95,7 +94,7 @@ public class PostServiceImpl implements PostService {
             currentImages.removeIf(image -> {
                 boolean shouldDelete = toDelete.contains(image.getId());
                 if (shouldDelete) {
-                    imageService.deleteImage(image.getImagePath()); // 실제 파일 삭제
+                    imageComponent.deleteImage(image.getImagePath()); // 실제 파일 삭제
                 }
                 return shouldDelete;
             });
@@ -104,7 +103,7 @@ public class PostServiceImpl implements PostService {
         // 6. 새 이미지 추가
         if (dto.getNewImages() != null && !dto.getNewImages().isEmpty()) {
             for (MultipartFile file : dto.getNewImages()) {
-                String path = imageService.uploadImage(file);
+                String path = imageComponent.uploadPostImage(file);
                 ImageEntity newImage = ImageEntity.builder()
                         .postEntity(postEntity)
                         .imagePath(path)

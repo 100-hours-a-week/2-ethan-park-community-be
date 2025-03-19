@@ -5,6 +5,7 @@ import hw6.integration.user.dto.UserSignupRequestDto;
 import hw6.integration.user.dto.UserUpdateNicknameRequestDto;
 import hw6.integration.user.dto.UserUpdatePasswordRequestDto;
 import hw6.integration.user.domain.User;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

@@ -1,8 +1,8 @@
 package hw6.integration.user.service;
 
 import hw6.integration.config.JwtProvider;
+import hw6.integration.image.component.ImageComponent;
 import hw6.integration.post.domain.Post;
-import hw6.integration.post.entity.PostEntity;
 import hw6.integration.post.repository.PostRepository;
 import hw6.integration.user.dto.UserLoginRequestDto;
 import hw6.integration.user.dto.UserSignupRequestDto;
@@ -11,12 +11,12 @@ import hw6.integration.user.dto.UserUpdatePasswordRequestDto;
 import hw6.integration.user.domain.User;
 import hw6.integration.exception.BusinessException;
 import hw6.integration.exception.ErrorCode;
-import hw6.integration.user.entity.UserEntity;
 import hw6.integration.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,6 +26,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final ImageComponent imageComponent;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
@@ -51,11 +52,17 @@ public class UserServiceImpl implements UserService{
             throw new BusinessException(ErrorCode.EMAIL_DUPLICATE);
         }
 
+        String profilePath = null;
+        if (userSignupRequestDto.getProfileImage() != null && !userSignupRequestDto.getProfileImage().isEmpty()) {
+            profilePath = imageComponent.uploadProfileImage(userSignupRequestDto.getProfileImage());
+        }
+
+
         User user = User.createUser(
                 userSignupRequestDto.getEmail(),
                 passwordEncoder.encode(userSignupRequestDto.getPassword()),
                 userSignupRequestDto.getNickname(),
-                userSignupRequestDto.getProfilePath()
+                profilePath
         );
 
         return userRepository.save(user);

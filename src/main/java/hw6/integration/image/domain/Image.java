@@ -14,6 +14,8 @@ public class Image {
 
     private String imagePath;
 
+
+    // 나중에 유효성 검사 때 필요
     public Image(Long id, Long postId, String imagePath) {
         this.id = id;
         this.postId = postId;

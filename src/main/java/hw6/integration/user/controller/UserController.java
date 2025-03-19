@@ -6,10 +6,12 @@ import hw6.integration.user.dto.*;
 import hw6.integration.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 @RestController
@@ -44,8 +46,9 @@ public class UserController {
         return ResponseEntity.ok(userResponseDto);
     }
 
-    @PostMapping("/users")
-    public ResponseEntity<UserResponseDto> registerUser(@RequestBody UserSignupRequestDto userSignupRequestDto) {
+    @PostMapping(value = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponseDto> registerUser(
+            @ModelAttribute UserSignupRequestDto userSignupRequestDto) {
 
         User user = userService.registerUser(userSignupRequestDto);
 

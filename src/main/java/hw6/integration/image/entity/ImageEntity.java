@@ -23,6 +23,7 @@ public class ImageEntity {
 
     private String imagePath;
 
+    // 나중에 유효성 검사 때 필요
     @Builder
     public ImageEntity(PostEntity postEntity, String imagePath) {
         this.postEntity = postEntity;
