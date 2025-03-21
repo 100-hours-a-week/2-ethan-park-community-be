@@ -1,8 +1,8 @@
 package hw6.integration.post.controller;
 
-import hw6.integration.post.domain.Post;
+import hw6.integration.post.dto.PostCreateRequestDto;
 import hw6.integration.post.dto.PostResponseDto;
-import hw6.integration.post.dto.PostUpdateDto;
+import hw6.integration.post.dto.PostUpdateRequestDto;
 import hw6.integration.post.service.PostService;
 import hw6.integration.user.auth.UserPrincipal;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,13 +24,9 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<List<PostResponseDto>> getAllPosts() {
-        List<Post> posts = postService.getPostByAll();
 
-        if(posts.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
-        List<PostResponseDto> postResponseDtos = posts.stream()
+        List<PostResponseDto> postResponseDtos = postService.getPostByAll()
+                .stream()
                 .map(PostResponseDto::fromPost)
                 .toList();
 
@@ -40,28 +35,20 @@ public class PostController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PostResponseDto> getPost(@PathVariable Long id) {
-        Post post = postService.getPostById(id);
 
-        PostResponseDto postResponseDto = PostResponseDto.fromPost(post);
 
-        return ResponseEntity.ok(postResponseDto);
+        return ResponseEntity.ok(PostResponseDto.fromPost(postService.getPostById(id)));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PostResponseDto> createPost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestPart("title") String title,
-            @RequestPart("content") String content,
-            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+            @ModelAttribute PostCreateRequestDto postCreateRequestDto) {
 
         Long userId = userPrincipal.getId();
 
-        Post post = postService.createPost(title, content, images, userId);
-
-        PostResponseDto postResponseDto = PostResponseDto.fromPost(post);
-
-        return ResponseEntity.ok(postResponseDto);
+        return ResponseEntity.ok(PostResponseDto.fromPost(postService.createPost(postCreateRequestDto, userId)));
     }
 
     @PatchMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -69,12 +56,9 @@ public class PostController {
     public ResponseEntity<PostResponseDto> updatePost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long postId,
-            @ModelAttribute PostUpdateDto postUpdateDto) {
-        Post updatedPost = postService.updatePost(postId, postUpdateDto, userPrincipal.getId());
+            @ModelAttribute PostUpdateRequestDto postUpdateRequestDto) {
 
-        PostResponseDto postResponseDto = PostResponseDto.fromPost(updatedPost);
-
-        return ResponseEntity.ok(postResponseDto);
+        return ResponseEntity.ok(PostResponseDto.fromPost(postService.updatePost(postId, postUpdateRequestDto, userPrincipal.getId())));
     }
 
     @DeleteMapping("/{postId}")

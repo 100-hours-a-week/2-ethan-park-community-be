@@ -14,6 +14,8 @@ public enum ErrorCode {
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "POST_NOT_FOUND", "해당 게시물을 찾을 수 없습니다."),
     IMAGE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "IMAGE_LIMIT_EXCEEDED", "사진 제한 길이를 넘었습니다."),
 
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT_NOT_FOUND", "해당 댓글을 찾을 수 없습니다."),
+
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", "서버 오류입니다.");
 
     private final HttpStatus status;

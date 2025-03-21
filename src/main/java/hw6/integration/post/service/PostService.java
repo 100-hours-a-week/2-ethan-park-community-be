@@ -1,9 +1,8 @@
 package hw6.integration.post.service;
 
 import hw6.integration.post.domain.Post;
-import hw6.integration.post.dto.PostCreateDto;
-import hw6.integration.post.dto.PostUpdateDto;
-import org.springframework.web.multipart.MultipartFile;
+import hw6.integration.post.dto.PostCreateRequestDto;
+import hw6.integration.post.dto.PostUpdateRequestDto;
 
 import java.util.List;
 
@@ -13,9 +12,9 @@ public interface PostService {
 
     Post getPostById(Long id);
 
-    Post createPost(String title, String content, List<MultipartFile> images, Long id);
+    Post createPost(PostCreateRequestDto postCreateRequestDto, Long id);
 
-    Post updatePost(Long postId, PostUpdateDto postUpdateDto, Long userId);
+    Post updatePost(Long postId, PostUpdateRequestDto postUpdateRequestDto, Long userId);
 
     void deletePost(Long userId, Long postId);
 }

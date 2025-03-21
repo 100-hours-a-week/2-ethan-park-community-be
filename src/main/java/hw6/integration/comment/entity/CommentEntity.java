@@ -5,13 +5,17 @@ import hw6.integration.post.entity.PostEntity;
 import hw6.integration.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "comments")
 @NoArgsConstructor
 public class CommentEntity {
@@ -28,9 +32,10 @@ public class CommentEntity {
     @JoinColumn(name = "user_id") // FK 컬럼명
     private UserEntity userEntity;
 
+    private String authorName;
     private String content;
 
-    private boolean is_deleted;
+    private boolean isDeleted;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
@@ -41,12 +46,13 @@ public class CommentEntity {
     private LocalDateTime updated_at;
 
     @Builder
-    public CommentEntity(PostEntity postEntity, UserEntity userEntity, String content, boolean is_deleted,
+    public CommentEntity(PostEntity postEntity, UserEntity userEntity, String authorName, String content, boolean isDeleted,
                          LocalDateTime created_at, LocalDateTime updated_at) {
         this.postEntity = postEntity;
         this.userEntity = userEntity;
+        this.authorName = authorName;
         this.content = content;
-        this.is_deleted = is_deleted;
+        this.isDeleted = isDeleted;
         this.created_at = created_at;
         this.updated_at = updated_at;
     }
@@ -56,8 +62,9 @@ public class CommentEntity {
                 .id(this.id)
                 .postId(this.postEntity.getId())
                 .userId(this.userEntity.getId())
+                .authorName(this.authorName)
                 .content(this.content)
-                .is_deleted(this.is_deleted)
+                .isDeleted(this.isDeleted)
                 .created_at(this.created_at)
                 .updated_at(this.updated_at)
                 .build();

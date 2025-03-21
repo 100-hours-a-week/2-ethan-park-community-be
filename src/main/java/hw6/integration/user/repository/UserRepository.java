@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface UserRepository {
 
-    Optional<List<User>> findByAll();
+    List<User> findByAll();
 
     Optional<User> findById(Long id);
 

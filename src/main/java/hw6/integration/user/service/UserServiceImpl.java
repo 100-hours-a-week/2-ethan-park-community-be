@@ -1,5 +1,7 @@
 package hw6.integration.user.service;
 
+import hw6.integration.comment.domain.Comment;
+import hw6.integration.comment.repository.CommentRepository;
 import hw6.integration.config.JwtProvider;
 import hw6.integration.image.component.ImageComponent;
 import hw6.integration.post.domain.Post;
@@ -16,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
     private final ImageComponent imageComponent;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
@@ -33,8 +35,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<User> getUserByAll() {
 
-        return userRepository.findByAll()
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        return userRepository.findByAll();
     }
 
     @Override
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserService{
 
     }
 
+    @Transactional
     @Override
     public User registerUser(UserSignupRequestDto userSignupRequestDto) {
 
@@ -68,6 +70,7 @@ public class UserServiceImpl implements UserService{
         return userRepository.save(user);
     }
 
+    @Transactional
     @Override
     public String login(UserLoginRequestDto userLoginRequestDto) {
         User user = userRepository.findByEmail(userLoginRequestDto.getEmail())
@@ -82,26 +85,25 @@ public class UserServiceImpl implements UserService{
 
     @Transactional
     @Override
-    public User updateNickname(Long id,  UserUpdateNicknameRequestDto userUpdateNicknameRequestDto) {
+    public User updateNickname(Long id, UserUpdateNicknameRequestDto userUpdateNicknameRequestDto) {
 
+        // 1. 기존 사용자 조회
         User userExisting = userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        if (userExisting.isActiveUser()){
-            User updatedUser = userExisting.withNickname(userUpdateNicknameRequestDto.getNickname());
+        // 2. 변경된 닉네임 반영
+        User updatedUser = userExisting.withNickname(userUpdateNicknameRequestDto.getNickname());
 
-            List<Post> posts = postRepository.findByUserId(id);
-            List<Post> updatedPosts = posts.stream()
-                    .map(post -> post.withAuthorName(userUpdateNicknameRequestDto.getNickname()))
-                    .toList();
-            postRepository.saveAll(updatedPosts, User.toEntity(updatedUser));
+        // 3. 게시글/댓글 작성자명 업데이트
+        postRepository.updateAuthorName(id, userUpdateNicknameRequestDto.getNickname());
+        commentRepository.updateAuthorName(id, userUpdateNicknameRequestDto.getNickname());
 
-            return userRepository.save(updatedUser);
-        }
+        // 4. 변경된 사용자 정보 저장
+        return userRepository.save(updatedUser);
 
-        throw new BusinessException(ErrorCode.USER_NOT_FOUND);
     }
 
+    @Transactional
     @Override
     public void updatePassword(Long id, UserUpdatePasswordRequestDto userUpdatePasswordRequestDto) {
 
@@ -125,12 +127,11 @@ public class UserServiceImpl implements UserService{
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         User deletedUser = user.withIsActive(false);
-
-        List<Post> posts = postRepository.findByUserId(id);
-        posts.forEach(Post::maskAuthorName);
-        postRepository.saveAll(posts, User.toEntity(deletedUser));
-
         userRepository.save(deletedUser);
+
+        // 작성자명을 '알 수 없음'으로 일괄 업데이트 (JPQL)
+        postRepository.deletePostByUserId(id, true, "알 수 없음");
+        commentRepository.deleteCommentByUserId(id, true, "알 수 없음");
 
     }
 }

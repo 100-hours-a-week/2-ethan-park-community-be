@@ -29,6 +29,8 @@ public class Post {
     private Integer like_count;
     private Integer view_count;
 
+    private boolean isDeleted;
+
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 
@@ -41,6 +43,7 @@ public class Post {
                 .comment_count(0)
                 .like_count(0)
                 .view_count(0)
+                .isDeleted(false)
                 .created_at(LocalDateTime.now())
                 .updated_at(LocalDateTime.now())
                 .build();
@@ -57,6 +60,7 @@ public class Post {
                 .comment_count(post.getComment_count())
                 .like_count(post.getLike_count())
                 .view_count(post.getView_count())
+                .isDeleted(post.isDeleted())
                 .created_at(post.getCreated_at())
                 .updated_at(post.getUpdated_at())
                 .build();
@@ -77,19 +81,6 @@ public class Post {
             throw new IllegalArgumentException("이미지는 최대 10장까지 등록 가능합니다.");
         }
         this.images = images;
-    }
-
-    public Post updateTitle(String title) {
-
-        return this.withTitle(title);
-    }
-
-    public Post updateContent(String content) {
-        return this.withContent(content);
-    }
-
-    public Post updateImages(List<Image> images) {
-        return this.withImages(images);
     }
 
     public void maskAuthorName() {

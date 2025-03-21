@@ -18,15 +18,6 @@ public class PostRepositoryImpl implements PostRepository {
     private final PostJpaRepository postJpaRepository;
 
     @Override
-    public Optional<List<Post>> findByAll() {
-        return Optional.of(
-                postJpaRepository.findAll().stream()
-                        .map(PostEntity::toDomain)
-                        .toList()
-        );
-    }
-
-    @Override
     public Optional<Post> findById(Long id) {
 
         return postJpaRepository.findById(id).map(PostEntity::toDomain);
@@ -42,23 +33,20 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public List<Post> saveAll(List<Post> posts, UserEntity userEntity) {
-
-        List<PostEntity> entities = posts.stream()
-                .map(post -> Post.toEntity(post, userEntity))
-                .toList();
-
-        List<PostEntity> saved = postJpaRepository.saveAll(entities);
-
-        return saved.stream()
-                .map(PostEntity::toDomain)
-                .toList();
+    public void updateAuthorName(Long userId, String newNickname) {
+        List<PostEntity> posts = postJpaRepository.findByUserEntity_Id(userId);
+        for (PostEntity post : posts) {
+            post.setAuthorName(newNickname); // ✅ 변경 감지
+        }
     }
 
-    @Override
-    public void delete(Long postId) {
 
-        postJpaRepository.deleteById(postId);
+    @Override
+    public List<Post> findAllVisiblePosts() {
+        return postJpaRepository.findByIsDeletedFalse()
+                        .stream()
+                        .map(PostEntity::toDomain)
+                        .toList();
     }
 
     @Override
@@ -67,11 +55,23 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public List<Post> findByUserId(Long userId) {
-        return postJpaRepository.findByUserEntity_Id(userId)
-                .stream()
-                .map(PostEntity::toDomain)
-                .toList();
+    public void incrementViewCount(Long id) {
+        postJpaRepository.incrementViewCount(id);
     }
 
+    @Override
+    public void incrementContentCount(Long id) {
+        postJpaRepository.incrementContentCount(id);
+    }
+
+    @Override
+    public void decrementContentCount(Long id) {
+        postJpaRepository.decrementContentCount(id);
+    }
+
+    @Override
+    public void deletePostByUserId(Long userId, boolean delete, String deletedUser) {
+        postJpaRepository.deletePostByUserId(userId, delete);
+        postJpaRepository.updateAuthorNameByUserId(userId, deletedUser);
+    }
 }

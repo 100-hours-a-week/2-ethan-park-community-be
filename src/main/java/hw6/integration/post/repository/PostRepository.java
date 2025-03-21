@@ -9,17 +9,21 @@ import java.util.Optional;
 
 public interface PostRepository {
 
-    Optional<List<Post>> findByAll();
-
     Optional<Post> findById(Long id);
 
     Post save(Post post, UserEntity userEntity);
 
     Optional<PostEntity> findEntityById(Long id);
 
-    List<Post> findByUserId(Long userId);
+    public void updateAuthorName(Long userId, String newNickname);
 
-    List<Post> saveAll(List<Post> posts, UserEntity userEntity);
+    List<Post> findAllVisiblePosts();
 
-    void delete(Long postId);
+    void incrementViewCount(Long id);
+
+    void incrementContentCount(Long id);
+
+    void decrementContentCount(Long id);
+
+    void deletePostByUserId(Long userId, boolean authorName, String deletedUser);
 }

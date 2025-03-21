@@ -17,13 +17,11 @@ public class UserRepositoryImpl implements UserRepository {
     private final UserJpaRepository userJpaRepository;
 
     @Override
-    public Optional<List<User>> findByAll() {
+    public List<User> findByAll() {
 
-        return Optional.of(
-                userJpaRepository.findAll().stream()
+        return userJpaRepository.findAll().stream()
                         .map(UserEntity::toDomain)
-                        .toList()
-        );
+                        .toList();
 
     }
 

@@ -1,8 +1,6 @@
 package hw6.integration.post.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -10,10 +8,10 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PostUpdateDto {
+@AllArgsConstructor
+public class PostCreateRequestDto {
 
     private String title;
     private String content;
-    private List<Long> imagesToDelete;
-    private List<MultipartFile> newImages;
+    private List<MultipartFile> images;
 }

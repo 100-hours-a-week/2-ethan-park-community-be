@@ -16,6 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "posts")
 @Getter
+@Setter
 @EntityListeners(AuditingEntityListener.class) // ✅ 추가 필요
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostEntity {
@@ -40,6 +41,8 @@ public class PostEntity {
     private Integer like_count;
     private Integer view_count;
 
+    private boolean isDeleted;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime created_at;
@@ -50,7 +53,7 @@ public class PostEntity {
 
     @Builder(toBuilder = true)
     public PostEntity(Long id, UserEntity userEntity, String title, String content, String authorName, List<ImageEntity> images,
-                      Integer comment_count, Integer like_count, Integer view_count,
+                      Integer comment_count, Integer like_count, Integer view_count, boolean isDeleted,
                       LocalDateTime created_at, LocalDateTime updated_at) {
         this.id = id;
         this.userEntity = userEntity;
@@ -61,6 +64,7 @@ public class PostEntity {
         this.comment_count = comment_count;
         this.like_count = like_count;
         this.view_count = view_count;
+        this.isDeleted = isDeleted;
         this.created_at = created_at;
         this.updated_at = updated_at;
     }
@@ -75,6 +79,7 @@ public class PostEntity {
                 .comment_count(this.comment_count)
                 .like_count(this.like_count)
                 .view_count(this.view_count)
+                .isDeleted(this.isDeleted)
                 .created_at(this.created_at)
                 .updated_at(this.updated_at)
                 .images(this.images != null
@@ -83,12 +88,15 @@ public class PostEntity {
                 .build();
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
-    public void setContent(String title) {
-        this.content = content;
+    // JPA 영속성 컨텍스트를 이용한 상태 변경이라 entity에서 처리하는 게 맞다
+    public void update(String title, String content) {
+        if (title != null) {
+            this.title = title;
+        }
+        if (content != null) {
+            this.content = content;
+        }
     }
 
 }
