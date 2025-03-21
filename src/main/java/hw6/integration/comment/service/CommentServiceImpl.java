@@ -89,6 +89,7 @@ public class CommentServiceImpl implements CommentService{
 
         if(userId.equals(commentEntity.getUserEntity().getId()) && postId.equals(commentEntity.getPostEntity().getId())) {
             commentEntity.setDeleted(true);
+            postRepository.decrementContentCount(postId);
 
         } else {
             throw new BusinessException(ErrorCode.UNAUTHORIZED);

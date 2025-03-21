@@ -70,6 +70,16 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
+    public void incrementLikeCount(Long id) {
+        postJpaRepository.incrementLikeCount(id);
+    }
+
+    @Override
+    public void decrementLikeCount(Long id) {
+        postJpaRepository.decrementLikeCount(id);
+    }
+
+    @Override
     public void deletePostByUserId(Long userId, boolean delete, String deletedUser) {
         postJpaRepository.deletePostByUserId(userId, delete);
         postJpaRepository.updateAuthorNameByUserId(userId, deletedUser);

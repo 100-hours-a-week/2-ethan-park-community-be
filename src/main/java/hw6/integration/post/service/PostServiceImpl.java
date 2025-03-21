@@ -44,6 +44,8 @@ public class PostServiceImpl implements PostService {
 
         postRepository.incrementViewCount(id);
 
+        // 도메인 모델로 변경해서 가져오는 것으로 변경
+
         return postRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
     }

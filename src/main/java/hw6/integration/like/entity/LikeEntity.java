@@ -11,7 +11,9 @@ import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "likes")
+@Table(name = "likes",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "post_id"})
+)
 @NoArgsConstructor
 public class LikeEntity {
 
@@ -28,17 +30,20 @@ public class LikeEntity {
     @JoinColumn(name = "user_id") // FK 컬럼명
     private UserEntity userEntity;
 
-    private boolean is_deleted;
+    private boolean likeActive;
+
+    private boolean isDeleted;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime created_at;
 
     @Builder
-    public LikeEntity(PostEntity postEntity, UserEntity userEntity, boolean is_deleted, LocalDateTime created_at) {
+    public LikeEntity(PostEntity postEntity, UserEntity userEntity, boolean likeActive, boolean isDeleted, LocalDateTime created_at) {
         this.postEntity = postEntity;
         this.userEntity = userEntity;
-        this.is_deleted = is_deleted;
+        this.likeActive = likeActive;
+        this.isDeleted = isDeleted;
         this.created_at = created_at;
     }
 
@@ -47,7 +52,8 @@ public class LikeEntity {
                 .id(this.id)
                 .postId(this.postEntity.getId())
                 .userId(this.userEntity.getId())
-                .is_deleted(this.is_deleted)
+                .likeActvie(this.likeActive)
+                .isDeleted(this.isDeleted)
                 .created_at(this.created_at)
                 .build();
     }

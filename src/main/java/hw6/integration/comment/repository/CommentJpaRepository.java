@@ -5,6 +5,7 @@ import hw6.integration.post.entity.PostEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -35,5 +36,26 @@ public interface CommentJpaRepository extends JpaRepository<CommentEntity, Long>
     @Transactional
     @Query("UPDATE CommentEntity c SET c.isDeleted = :isDeleted WHERE c.postEntity.id = :postId")
     void deleteCommentByPostId(Long postId, boolean isDeleted);
+
+
+    //native query
+    //    @Transactional
+//    @Query(value = "UPDATE comments SET is_deleted = true WHERE post_id = :postId")
+//    void deleteCommentByPostId(@Param("postId") Long postId);
+
+    // 간단한 조회이므로 JPQL 사용(네트워크 비용 + 메모리 사용량 감소)
+//    @Query(value = "SELECT c FROM comments WHERE is_deleted = false")
+//    List<CommentEntity> findByIsDeletedFalse();
+//
+//    // 작성자명 업데이트
+//    @Modifying(clearAutomatically = true)
+//    @Transactional
+//    @Query(value = "UPDATE comments SET author_name = '알 수 없음' WHERE post_id = :userId")
+//    void updateAuthorNameByUserId(@Param("userId") Long userId);
+//
+//    @Modifying(clearAutomatically = true)
+//    @Transactional
+//    @Query(value = "UPDATE comments SET is_deleted = false WHERE user_id = :userId")
+//    void deleteCommentByUserId(@Param("userId") Long userId) boolean isDeleted);
 
 }

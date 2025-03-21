@@ -16,23 +16,27 @@ public class Like {
     private Long postId;
     private Long userId;
 
-    private boolean is_deleted;
+    private boolean likeActvie;
+
+    private boolean isDeleted;
 
     private LocalDateTime created_at;
 
-    public Like(Long id, Long postId, Long userId, boolean is_deleted, LocalDateTime created_at) {
-        this.id = id;
-        this.postId = postId;
-        this.userId = userId;
-        this.is_deleted = is_deleted;
-        this.created_at = created_at;
+    public Like activeLike(Long postId, Long userId) {
+        return Like.builder()
+                .postId(postId)
+                .userId(userId)
+                .likeActvie(true)
+                .isDeleted(false)
+                .created_at(LocalDateTime.now())
+                .build();
     }
-
     public static LikeEntity toEntity(Like like, PostEntity postEntity, UserEntity userEntity) {
         return LikeEntity.builder()
                 .postEntity(postEntity)
                 .userEntity(userEntity)
-                .is_deleted(like.is_deleted())
+                .likeActive(like.isLikeActvie())
+                .isDeleted(like.isDeleted())
                 .created_at(like.getCreated_at())
                 .build();
 
