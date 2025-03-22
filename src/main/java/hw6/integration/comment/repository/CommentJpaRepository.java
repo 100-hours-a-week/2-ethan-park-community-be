@@ -15,47 +15,45 @@ public interface CommentJpaRepository extends JpaRepository<CommentEntity, Long>
 
     List<CommentEntity> findByUserEntity_Id(Long userId);
 
-    List<CommentEntity> findByPostEntity_Id(Long postId);
+    //native query
+    @Modifying(clearAutomatically = true)
+    @Transactional
+    @Query(value = "UPDATE comments SET is_deleted = true WHERE post_id = :postId", nativeQuery = true)
+    void deleteCommentByPostId(@Param("postId") Long postId);
 
-    // 간단한 조회이므로 JPQL 사용(네트워크 비용 + 메모리 사용량 감소)
-    @Query("SELECT c FROM CommentEntity c WHERE c.isDeleted = false")
+    @Query(value = "SELECT * FROM comments WHERE is_deleted = false", nativeQuery = true)
     List<CommentEntity> findByIsDeletedFalse();
 
     // 작성자명 업데이트
     @Modifying(clearAutomatically = true)
     @Transactional
-    @Query("UPDATE CommentEntity c SET c.authorName = :authorName WHERE c.userEntity.id = :userId")
-    void updateAuthorNameByUserId(Long userId, String authorName);
+    @Query(value = "UPDATE comments SET author_name = '알 수 없음' WHERE user_id = :userId", nativeQuery = true)
+    void updateAuthorNameByUserId(@Param("userId") Long userId);
 
     @Modifying(clearAutomatically = true)
     @Transactional
-    @Query("UPDATE CommentEntity c SET c.isDeleted = :isDeleted WHERE c.userEntity.id = :userId")
-    void deleteCommentByUserId(Long userId, boolean isDeleted);
-
-    @Modifying(clearAutomatically = true)
-    @Transactional
-    @Query("UPDATE CommentEntity c SET c.isDeleted = :isDeleted WHERE c.postEntity.id = :postId")
-    void deleteCommentByPostId(Long postId, boolean isDeleted);
-
-
-    //native query
-    //    @Transactional
-//    @Query(value = "UPDATE comments SET is_deleted = true WHERE post_id = :postId")
-//    void deleteCommentByPostId(@Param("postId") Long postId);
+    @Query(value = "UPDATE comments SET is_deleted = false WHERE user_id = :userId", nativeQuery = true)
+    void deleteCommentByUserId(@Param("userId") Long userId);
 
     // 간단한 조회이므로 JPQL 사용(네트워크 비용 + 메모리 사용량 감소)
-//    @Query(value = "SELECT c FROM comments WHERE is_deleted = false")
+//    @Query("SELECT c FROM CommentEntity c WHERE c.isDeleted = false")
 //    List<CommentEntity> findByIsDeletedFalse();
 //
 //    // 작성자명 업데이트
 //    @Modifying(clearAutomatically = true)
 //    @Transactional
-//    @Query(value = "UPDATE comments SET author_name = '알 수 없음' WHERE post_id = :userId")
-//    void updateAuthorNameByUserId(@Param("userId") Long userId);
+//    @Query("UPDATE CommentEntity c SET c.authorName = :authorName WHERE c.userEntity.id = :userId")
+//    void updateAuthorNameByUserId(Long userId, String authorName);
 //
 //    @Modifying(clearAutomatically = true)
 //    @Transactional
-//    @Query(value = "UPDATE comments SET is_deleted = false WHERE user_id = :userId")
-//    void deleteCommentByUserId(@Param("userId") Long userId) boolean isDeleted);
+//    @Query("UPDATE CommentEntity c SET c.isDeleted = :isDeleted WHERE c.userEntity.id = :userId")
+//    void deleteCommentByUserId(Long userId, boolean isDeleted);
+//
+//    @Modifying(clearAutomatically = true)
+//    @Transactional
+//    @Query("UPDATE CommentEntity c SET c.isDeleted = :isDeleted WHERE c.postEntity.id = :postId")
+//    void deleteCommentByPostId(Long postId, boolean isDeleted);
+
 
 }

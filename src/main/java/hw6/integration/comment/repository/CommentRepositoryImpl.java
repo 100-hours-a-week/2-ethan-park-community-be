@@ -49,14 +49,14 @@ public class CommentRepositoryImpl implements CommentRepository{
     }
 
     @Override
-    public void deleteCommentByPostId(Long postId, boolean delete) {
-        commentJpaRepository.deleteCommentByPostId(postId, delete);
+    public void deleteCommentByPostId(Long postId) {
+        commentJpaRepository.deleteCommentByPostId(postId);
     }
 
     @Override
-    public void deleteCommentByUserId(Long userId, boolean delete, String deletedUser) {
-        commentJpaRepository.deleteCommentByUserId(userId, delete);
-        commentJpaRepository.updateAuthorNameByUserId(userId, deletedUser);
+    public void deleteCommentByUserId(Long userId) {
+        commentJpaRepository.deleteCommentByUserId(userId);
+        commentJpaRepository.updateAuthorNameByUserId(userId);
     }
 
 

@@ -1,7 +1,6 @@
 package hw6.integration.comment.repository;
 
 import hw6.integration.comment.domain.Comment;
-import hw6.integration.comment.dto.CommentUpdateRequestDto;
 import hw6.integration.comment.entity.CommentEntity;
 import hw6.integration.post.entity.PostEntity;
 import hw6.integration.user.entity.UserEntity;
@@ -21,7 +20,7 @@ public interface CommentRepository {
 
     void updateAuthorName(Long userId, String newNickname);
 
-    void deleteCommentByPostId(Long postId, boolean delete);
+    void deleteCommentByPostId(Long postId);
 
-    void deleteCommentByUserId(Long userId, boolean delete, String deletedUser);
+    void deleteCommentByUserId(Long userId);
 }

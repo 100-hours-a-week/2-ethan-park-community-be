@@ -29,5 +29,5 @@ public interface PostRepository {
 
     void decrementLikeCount(Long id);
 
-    void deletePostByUserId(Long userId, boolean authorName, String deletedUser);
+    void deletePostByUserId(Long userId);
 }

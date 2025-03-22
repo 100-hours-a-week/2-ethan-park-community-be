@@ -130,8 +130,8 @@ public class UserServiceImpl implements UserService{
         userRepository.save(deletedUser);
 
         // 작성자명을 '알 수 없음'으로 일괄 업데이트 (JPQL)
-        postRepository.deletePostByUserId(id, true, "알 수 없음");
-        commentRepository.deleteCommentByUserId(id, true, "알 수 없음");
+        postRepository.deletePostByUserId(id);
+        commentRepository.deleteCommentByUserId(id);
 
     }
 }

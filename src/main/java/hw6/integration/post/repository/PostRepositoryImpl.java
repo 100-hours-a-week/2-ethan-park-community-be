@@ -80,8 +80,8 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public void deletePostByUserId(Long userId, boolean delete, String deletedUser) {
-        postJpaRepository.deletePostByUserId(userId, delete);
-        postJpaRepository.updateAuthorNameByUserId(userId, deletedUser);
+    public void deletePostByUserId(Long userId) {
+        postJpaRepository.deletePostByUserId(userId);
+        postJpaRepository.updateAuthorNameByUserId(userId);
     }
 }

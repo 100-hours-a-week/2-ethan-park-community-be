@@ -40,22 +40,32 @@ public class CommentServiceImpl implements CommentService{
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-        UserEntity userEntity = User.toEntity(user);
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
-        PostEntity postEntity = Post.toEntity(post, userEntity);
+        if(user.getIsActive()) {
+            UserEntity userEntity = User.toEntity(user);
 
-        Comment comment = Comment.createComment(
-                userId,
-                postId,
-                user.getNickname(),
-                commentCreateRequestDto.getContent()
-        );
+            Post post = postRepository.findById(postId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        postRepository.incrementContentCount(postId);
+            if(post.isDeleted()) {
+                PostEntity postEntity = Post.toEntity(post, userEntity);
 
-        return commentRepository.save(comment, userEntity, postEntity);
+                Comment comment = Comment.createComment(
+                        userId,
+                        postId,
+                        user.getNickname(),
+                        commentCreateRequestDto.getContent()
+                );
+
+                postRepository.incrementContentCount(postId);
+
+                return commentRepository.save(comment, userEntity, postEntity);
+            }
+
+            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
+        }
+
+        throw new BusinessException(ErrorCode.USER_NOT_FOUND);
 
     }
 
@@ -63,15 +73,24 @@ public class CommentServiceImpl implements CommentService{
     @Override
     public void updateComment(CommentUpdateRequestDto commentUpdateRequestDto, Long commentId, Long userId, Long postId) {
 
-        userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        postRepository.findEntityById(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+        if(user.getIsActive()) {
 
+            Post post = postRepository.findById(postId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        CommentEntity commentEntity = commentRepository.findByCommentEntityId(commentId).orElseThrow();
-        commentEntity.setContent(commentUpdateRequestDto.getContent());
+            if(post.isDeleted()) {
+
+                CommentEntity commentEntity = commentRepository.findByCommentEntityId(commentId).orElseThrow();
+                commentEntity.setContent(commentUpdateRequestDto.getContent());
+            }
+
+            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
+        }
+
+        throw new BusinessException(ErrorCode.USER_NOT_FOUND);
     }
 
     @Transactional
@@ -81,19 +100,33 @@ public class CommentServiceImpl implements CommentService{
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+        if(user.getIsActive()) {
 
-        CommentEntity commentEntity = commentRepository.findByCommentEntityId(commentId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+            Post post = postRepository.findById(postId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        if(userId.equals(commentEntity.getUserEntity().getId()) && postId.equals(commentEntity.getPostEntity().getId())) {
-            commentEntity.setDeleted(true);
-            postRepository.decrementContentCount(postId);
+            if(!post.isDeleted()) {
 
-        } else {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+                CommentEntity commentEntity = commentRepository.findByCommentEntityId(commentId)
+                        .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+
+                if(!commentEntity.isDeleted()) {
+
+                    if (userId.equals(commentEntity.getUserEntity().getId()) && postId.equals(commentEntity.getPostEntity().getId())) {
+                        commentEntity.setDeleted(true);
+                        postRepository.decrementContentCount(postId);
+
+                    } else {
+                        throw new BusinessException(ErrorCode.UNAUTHORIZED);
+                    }
+                }
+
+                throw new BusinessException(ErrorCode.COMMENT_NOT_FOUND);
+            }
+
+            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
         }
 
+        throw new BusinessException(ErrorCode.USER_NOT_FOUND);
     }
 }
