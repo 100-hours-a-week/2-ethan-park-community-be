@@ -39,20 +39,18 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public Post getPostById(Long id) {
-
-        Post post = postRepository.findById(id)
+        PostEntity post = postRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        if(!post.isDeleted()) {
-            postRepository.incrementViewCount(id);
-
-            // 도메인 모델로 변경해서 가져오는 것으로 변경
-
-            return post;
+        if(post.isDeleted()) {
+            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
         }
 
-        throw new BusinessException(ErrorCode.POST_NOT_FOUND);
+        post.incrementViewCount(); // 엔티티에서 직접 메서드를 통해 증가 (Dirty Checking 활용)
+
+        return post.toDomain();
     }
+
 
     @Transactional
     @Override

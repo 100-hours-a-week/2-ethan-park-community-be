@@ -1,0 +1,85 @@
+
+
+.post-intro {
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    width: 60%;
+    margin: 20px auto;
+    justify-content: flex-end; /* 버튼을 오른쪽 끝에 정렬 */
+
+}
+
+.post-container {
+    width: 60%;
+    margin: 20px auto;
+    text-align: center;
+}
+
+/* 게시물 작성 버튼 */
+#writePostBtn {
+    background-color: #ACA0EB;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    
+}
+
+#writePostBtn:hover {
+    background-color: #7E6AEE;
+}
+
+/* 게시물 스타일 */
+.post {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+/* 제목 (왼쪽 정렬) */
+.post-title {
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+    transition: color 0.3s;
+    display: block;  /* 블록 요소로 변경 */
+    text-align: left; /* 왼쪽 정렬 */
+}
+
+
+.post-title:hover {
+    color: #7F6AFE;
+}
+
+/* 작성자 */
+.post-author {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+    display: flex;
+}
+
+/* 좋아요, 댓글, 조회수 & 작성일자 */
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: gray;
+    margin-top: 5px;
+}
+
+.meta-left {
+    display: flex;
+    gap: 10px;
+}
+
+.meta-right {
+    text-align: right;
+    flex-shrink: 0; /* 날짜가 너무 길어질 경우 줄바꿈 방지 */
+}

@@ -33,11 +33,10 @@ public class PostController {
         return ResponseEntity.ok(postResponseDtos);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<PostResponseDto> getPost(@PathVariable Long id) {
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostResponseDto> getPost(@PathVariable("postId") Long postId) {
 
-
-        return ResponseEntity.ok(PostResponseDto.fromPost(postService.getPostById(id)));
+        return ResponseEntity.ok(PostResponseDto.fromPost(postService.getPostById(postId)));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -1,0 +1,45 @@
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+}
+.title{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+}
+.login-form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+}
+
+.login-form label,
+.login-form input {
+    margin-bottom: 10px;
+}
+
+.login-form input {
+    padding: 8px;
+}
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    display: none; /* 처음에는 에러 메시지를 숨김 */
+}
+button {
+    background-color: #ACA0EB;
+    margin-bottom: 20px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+.button-container {
+    margin-top: 20px;
+    text-align: center;
+}

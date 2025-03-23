@@ -42,15 +42,21 @@ public class SecurityConfig {
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/login", "/signup", "/favicon.ico",
+                                "/css/**", "/js/**", "/images/**",
+                                "/navbar/**", "/validator/**"
+                        ).permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/users", "/api/users/").permitAll()  // ✅ 회원가입
-                        .requestMatchers(HttpMethod.GET, "/api/users").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/users").authenticated()
-                        .requestMatchers("/api/me/**").authenticated()
-                        .anyRequest().authenticated()  // ✅ 항상 마지막
+                        .requestMatchers("/api/users").permitAll()
+                        .requestMatchers("/posts", "/posts/**").permitAll() // HTML만 띄움
+                        .requestMatchers("/api/**").authenticated() // API는 모두 인증 필요
+                        .anyRequest().authenticated()
+
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+
     }
 
 

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api/posts/{postId}/comments")
 @RequiredArgsConstructor
 public class CommentController {
@@ -24,9 +24,10 @@ public class CommentController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated")
-    public ResponseEntity<List<CommentResponseDto>> getAllComments() {
+    public ResponseEntity<List<CommentResponseDto>> getAllComments(
+            @PathVariable("postId") Long postId) {
 
-        List<CommentResponseDto> commentResponseDtos = commentService.getCommentByAll()
+        List<CommentResponseDto> commentResponseDtos = commentService.getCommentByPostId(postId)
                 .stream()
                 .map(CommentResponseDto::fromComment)
                 .toList();;
@@ -39,7 +40,10 @@ public class CommentController {
     public ResponseEntity<CommentResponseDto> createComment(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody CommentCreateRequestDto commentCreateDto,
-            @PathVariable Long postId) {
+            @PathVariable("postId") Long postId) {
+
+        System.out.println("✅ 서버 받은 댓글 데이터: " + commentCreateDto.getContent()); // 🔥 로그 추가
+        System.out.println("✅ 서버 받은 postId: " + postId); // 🔥 로그 추가
 
         Long userId = userPrincipal.getId();
 
@@ -53,7 +57,7 @@ public class CommentController {
     public ResponseEntity<CommentResponseDto> updateComment(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody CommentUpdateRequestDto commentUpdateRequestDto,
-            @PathVariable Long postId,
+            @PathVariable("postId") Long postId,
             @PathVariable Long commentId) {
 
         Long userId = userPrincipal.getId();
@@ -67,7 +71,7 @@ public class CommentController {
     @PreAuthorize("isAuthenticated")
     public ResponseEntity<CommentResponseDto> deleteComment(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable Long postId,
+            @PathVariable("postId") Long postId,
             @PathVariable Long commentId) {
 
         Long userId = userPrincipal.getId();

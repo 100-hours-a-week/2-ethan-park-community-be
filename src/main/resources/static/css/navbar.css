@@ -1,0 +1,70 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;  /* 요소들 양쪽 정렬 */
+    align-items: center;
+    margin-bottom: 30px;
+    width: 100%;
+    padding: 10px 20px;
+    color: #000;
+    border-bottom: 1px solid black;
+    box-sizing: border-box;
+}
+
+/* 로고 스타일 */
+.navbar-logo img {
+    width: 30px;
+    height: auto;
+}
+
+/* 제목 스타일 */
+.navbar-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* 프로필 영역 */
+.profile-container {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* 드롭다운 스타일 */
+.dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 50px;
+    background: white;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    width: 150px;
+    border-radius: 5px;
+    z-index: 10;
+}
+
+.dropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.dropdown li:hover {
+    background: #eee;
+}
+
+/* 드롭다운이 보이는 상태 */
+.show {
+    display: block;
+}

@@ -18,9 +18,9 @@ public class PostRepositoryImpl implements PostRepository {
     private final PostJpaRepository postJpaRepository;
 
     @Override
-    public Optional<Post> findById(Long id) {
+    public Optional<PostEntity> findById(Long id) {
 
-        return postJpaRepository.findById(id).map(PostEntity::toDomain);
+        return postJpaRepository.findById(id);
     }
 
     @Override
@@ -52,16 +52,6 @@ public class PostRepositoryImpl implements PostRepository {
     @Override
     public Optional<PostEntity> findEntityById(Long id) {
         return postJpaRepository.findById(id);
-    }
-
-    @Override
-    public void incrementViewCount(Long id) {
-        postJpaRepository.incrementViewCount(id);
-    }
-
-    @Override
-    public void incrementContentCount(Long id) {
-        postJpaRepository.incrementContentCount(id);
     }
 
     @Override

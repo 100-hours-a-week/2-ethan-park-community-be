@@ -45,6 +45,14 @@ public class UserController {
         return ResponseEntity.ok(userResponseDto);
     }
 
+    // ✅ 현재 로그인한 사용자 정보 조회
+    @GetMapping("/users/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserResponseDto> getCurrentUser(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        User user = userService.getUserById(userPrincipal.getId());
+        return ResponseEntity.ok(UserResponseDto.toDomain(user));
+    }
+
     @PostMapping(value = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserResponseDto> registerUser(
             @ModelAttribute UserSignupRequestDto userSignupRequestDto) {
@@ -57,7 +65,7 @@ public class UserController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<TokenResponseDto> login(@RequestBody UserLoginRequestDto userLoginRequestDto) {
+    public ResponseEntity<TokenResponseDto> login(@ModelAttribute UserLoginRequestDto userLoginRequestDto) {
         String token = userService.login(userLoginRequestDto);
         return ResponseEntity.ok(new TokenResponseDto(token));
     }

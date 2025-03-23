@@ -2,6 +2,7 @@ package hw6.integration.user.repository;
 
 import hw6.integration.post.domain.Post;
 import hw6.integration.user.domain.User;
+import hw6.integration.user.entity.UserEntity;
 
 import java.util.List;
 import java.util.Optional;

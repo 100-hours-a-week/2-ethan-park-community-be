@@ -6,11 +6,13 @@ import hw6.integration.user.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Setter
 @Table(name = "likes",
         uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "post_id"})
 )

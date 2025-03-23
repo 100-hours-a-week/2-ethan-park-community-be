@@ -15,18 +15,13 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
 
     //native query
 
-    @Query(value = "SELECT * FROM posts WHERE p.isDeleted = false", nativeQuery = true)
+    @Query(value = "SELECT * FROM posts WHERE is_deleted = false", nativeQuery = true)
     List<PostEntity> findByIsDeletedFalse();
 
     @Modifying(clearAutomatically = true)
     @Transactional
     @Query(value = "UPDATE posts SET author_name = '알 수 없음' WHERE user_id = :userId", nativeQuery = true)
     void updateAuthorNameByUserId(@Param("userId") Long userId);
-
-    @Modifying(clearAutomatically = true)
-    @Transactional
-    @Query(value = "UPDATE posts SET view_count = view_count + 1 WHERE id = :postId", nativeQuery = true)
-    void incrementViewCount(@Param("postId") Long postId);
 
     @Modifying(clearAutomatically = true)
     @Transactional

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 작성</title>
+    <link rel="stylesheet" th:href="@{/css/make-post.css}">
+
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <h1>게시글 작성</h1>
+    <div class="container">
+        <form class="postForm" id="postForm" enctype="multipart/form-data">
+            
+            <!-- 제목 입력 -->
+            <div class="form-title">
+            <label for="title">제목</label>
+            <input type="text" id="title" maxlength="26" placeholder="제목을 입력하세요">
+            </div>
+
+            <!-- 본문 입력 -->
+            <div class="form-content">
+            <label for="content">내용</label>
+            <textarea id="content" rows="10" placeholder="내용을 입력하세요"></textarea>
+            </div>
+            <hr>
+            <div class="helper-text">*helper-text</div>
+            <!-- 이미지 업로드 -->
+            <div class="form-img">
+            <label for="image">이미지</label>
+            <input type="file" id="image" accept="image/*">
+            <img id="imagePreview" alt="이미지 미리보기">
+            </div>
+            
+            <!-- 오류 메시지 -->
+            <p class="error" id="postInput-error"></p>
+
+            <!-- 작성 버튼 -->
+            <button type="submit" class="btn-submit" id="submitButton" disabled>작성</button>
+
+        </form>
+    </div>
+    <script type="module" th:src="@{/js/make-post.js}"></script>
+    <script th:src="@{/js/navbar.js}"></script>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원정보수정</title>
+  <link rel="stylesheet" th:href="@{/css/edit-profile.css}">
+</head>
+<body>
+  <!-- 네비게이션 바 로드 영역 -->
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+  <h1>회원정보수정</h1>
+
+  <div class="container">
+    <img th:src="@{/images/토글.png}" alt="프로필 사진" class="profile-img">
+
+    <!-- 이메일 표시 영역 (user.json에서 불러온 이메일이 표시됨) -->
+    <div id="emailDisplay" class="email-display"></div>
+    
+    <div class="input-group">
+      <label for="nickname">닉네임</label>
+      <input type="text" id="nickname" placeholder="닉네임 입력">
+      <p class="error" id="errorText"></p>
+    </div>
+
+    <button class="btn btn-primary" onclick="updateProfile()">수정하기</button>
+    <button class="btn btn-secondary" onclick="showModal()">회원 탈퇴</button>
+  </div>
+
+  <div class="toast" id="toast">수정 완료</div>
+
+  <!-- 모달 -->
+  <div class="overlay" id="overlay"></div>
+  <div class="modal" id="modal">
+    <p>정말 탈퇴하시겠습니까?</p>
+    <button class="btn btn-primary" onclick="confirmDelete()">확인</button>
+    <button class="btn btn-secondary" onclick="hideModal()">취소</button>
+  </div>
+
+  <script th:src="@{/js/edit-profile.js}"></script>
+  <script th:src="@{/js/navbar.js}"></script>
+</body>
+</html>

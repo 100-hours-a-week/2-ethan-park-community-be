@@ -21,8 +21,8 @@ public interface CommentJpaRepository extends JpaRepository<CommentEntity, Long>
     @Query(value = "UPDATE comments SET is_deleted = true WHERE post_id = :postId", nativeQuery = true)
     void deleteCommentByPostId(@Param("postId") Long postId);
 
-    @Query(value = "SELECT * FROM comments WHERE is_deleted = false", nativeQuery = true)
-    List<CommentEntity> findByIsDeletedFalse();
+    @Query(value = "SELECT * FROM comments WHERE post_id = :postId and is_deleted = false", nativeQuery = true)
+    List<CommentEntity> findByIsDeletedFalse(@Param("postId") Long postId);
 
     // 작성자명 업데이트
     @Modifying(clearAutomatically = true)

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface PostRepository {
 
-    Optional<Post> findById(Long id);
+    Optional<PostEntity> findById(Long id);
 
     Post save(Post post, UserEntity userEntity);
 
@@ -18,10 +18,6 @@ public interface PostRepository {
     public void updateAuthorName(Long userId, String newNickname);
 
     List<Post> findAllVisiblePosts();
-
-    void incrementViewCount(Long id);
-
-    void incrementContentCount(Long id);
 
     void decrementContentCount(Long id);
 

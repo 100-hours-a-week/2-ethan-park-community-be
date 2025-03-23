@@ -1,0 +1,72 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+}
+
+.signup-form label,
+.signup-form input {
+    margin-bottom: 10px;
+}
+
+.signup-form input {
+    padding: 8px;
+}
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    display: none; /* 처음에는 에러 메시지를 숨김 */
+}
+button {
+    background-color: #ACA0EB;
+    margin-bottom: 20px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+.button-container {
+    margin-top: 20px;
+    text-align: center;
+}
+.back-image {
+    width: 50px;
+    height: 50px;
+}
+.profile-title {
+    display: flex;
+    flex-direction: column;
+    
+}
+.helper-text {
+    color: #f80000;
+}
+.signup-profile-img {
+    display: flex;
+    justify-content: center; /* 가로 중앙 정렬 */
+}
+#signup-profile-img-input{
+    display: none;
+}
+.custom-file-label {
+    display: inline-block;
+    width: 200px;  /* 버튼 크기 조정 */
+    height: 200px; /* 버튼 크기 조정 */
+    line-height: 200px; /* 텍스트 중앙 정렬 */
+    font-size: 100px; /* "+" 크기 키우기 */
+    font-weight: bold;
+    text-align: center;
+    color: white;
+    background-color: #49494d; /* 버튼 색상 */
+    border-radius: 50%; /* 원형 버튼 */
+    cursor: pointer;
+    user-select: none; /* 텍스트 선택 방지 */
+}

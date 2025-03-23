@@ -17,8 +17,8 @@ public class CommentRepositoryImpl implements CommentRepository{
     private final CommentJpaRepository commentJpaRepository;
 
     @Override
-    public List<Comment> findAllVisibleComments() {
-        return commentJpaRepository.findByIsDeletedFalse()
+    public List<Comment> findAllVisibleCommentsByPostId(Long postId) {
+        return commentJpaRepository.findByIsDeletedFalse(postId)
                 .stream()
                 .map(CommentEntity::toDomain)
                 .toList();
@@ -31,8 +31,8 @@ public class CommentRepositoryImpl implements CommentRepository{
     }
 
     @Override
-    public Comment save(Comment comment, UserEntity userEntity, PostEntity postEntity) {
-        return commentJpaRepository.save(Comment.toEntity(comment, postEntity, userEntity)).toDomain();
+    public Comment save(CommentEntity commentEntity) {
+        return commentJpaRepository.save(commentEntity).toDomain();
     }
 
     @Override

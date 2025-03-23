@@ -10,11 +10,11 @@ import java.util.Optional;
 
 public interface CommentRepository {
 
-    List<Comment> findAllVisibleComments();
+    List<Comment> findAllVisibleCommentsByPostId(Long postId);
 
     Optional<Comment> findById(Long commentId);
 
-    Comment save(Comment comment, UserEntity userEntity, PostEntity postEntity);
+    Comment save(CommentEntity commentEntity);
 
     Optional<CommentEntity> findByCommentEntityId(Long commentId);
 

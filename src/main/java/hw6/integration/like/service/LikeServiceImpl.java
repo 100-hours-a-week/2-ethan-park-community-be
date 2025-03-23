@@ -22,24 +22,46 @@ public class LikeServiceImpl implements LikeService {
     @Transactional
     @Override
     public void toggleLike(Long userId, Long postId) {
-        int exists = likeRepository.existsActiveLike(userId, postId);
-        Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
-        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        User user = findActiveUserById(userId);
+        Post post = findActivePostById(postId);
 
-        if(user.getIsActive()) {
-            if (!post.isDeleted()) {
-                if (exists > 0) {
-                    likeRepository.deactivateLike(userId, postId);  // 좋아요 취소
-                    postRepository.decrementLikeCount(postId);
-                } else {
-                    likeRepository.insertLike(userId, postId);      // 좋아요 등록
-                    postRepository.incrementLikeCount(postId);
-                }
-            }
+        if (isLiked(userId, postId)) {
+            cancelLike(userId, postId);
+        } else {
+            applyLike(userId, postId);
+        }
+    }
 
+    private User findActiveUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        if (!user.getIsActive()) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
+        return user;
+    }
+
+    private Post findActivePostById(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND)).toDomain();
+        if (post.isDeleted()) {
             throw new BusinessException(ErrorCode.POST_NOT_FOUND);
         }
-
-        throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        return post;
     }
+
+    private boolean isLiked(Long userId, Long postId) {
+        return likeRepository.existsActiveLike(userId, postId) > 0;
+    }
+
+    private void cancelLike(Long userId, Long postId) {
+        likeRepository.deactivateLike(userId, postId);
+        postRepository.decrementLikeCount(postId);
+    }
+
+    private void applyLike(Long userId, Long postId) {
+        likeRepository.insertLike(userId, postId);
+        postRepository.incrementLikeCount(postId);
+    }
+
 }

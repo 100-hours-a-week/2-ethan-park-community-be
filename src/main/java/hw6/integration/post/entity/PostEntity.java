@@ -99,4 +99,17 @@ public class PostEntity {
         }
     }
 
+    public void incrementCommentCount() {
+        this.comment_count++;
+    }
+
+    public void decrementCommentCount() {
+        this.comment_count--;
+    }
+
+    public void incrementViewCount() {
+        this.view_count++;
+    }
+
+
 }
