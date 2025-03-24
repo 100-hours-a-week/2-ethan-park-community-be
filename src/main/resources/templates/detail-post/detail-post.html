@@ -14,7 +14,7 @@
       <h2 id="post-title"></h2>
       <div class="actions">
         <button class="btn" id="edit-btn" th:data-post-id="${postId}">수정</button>
-        <button class="btn" id="delete-btn">삭제</button>
+        <button class="btn" id="delete-btn" th:data-post-id="${postId}">삭제</button>
         <div id="delete-modal" class="modal">
           <div class="modal-content">
             <p class="modal-title">게시글을 삭제하시겠습니까?</p>

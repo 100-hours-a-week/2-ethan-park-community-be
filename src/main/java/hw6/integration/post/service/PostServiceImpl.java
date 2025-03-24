@@ -176,11 +176,11 @@ public class PostServiceImpl implements PostService {
                 //            });
                 //        }
             }
+            else {
+                throw new BusinessException(ErrorCode.POST_NOT_FOUND);
+            }
 
-            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
         }
-
-        throw new BusinessException(ErrorCode.USER_NOT_FOUND);
 
     }
 

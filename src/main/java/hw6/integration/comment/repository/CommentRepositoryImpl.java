@@ -3,6 +3,7 @@ package hw6.integration.comment.repository;
 import hw6.integration.comment.domain.Comment;
 import hw6.integration.comment.entity.CommentEntity;
 import hw6.integration.post.entity.PostEntity;
+import hw6.integration.user.domain.User;
 import hw6.integration.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -31,7 +32,10 @@ public class CommentRepositoryImpl implements CommentRepository{
     }
 
     @Override
-    public Comment save(CommentEntity commentEntity) {
+    public Comment save(Comment comment, User user, PostEntity postEntity) {
+
+        CommentEntity commentEntity = Comment.toEntity(comment,  postEntity, User.toEntity(user));
+
         return commentJpaRepository.save(commentEntity).toDomain();
     }
 

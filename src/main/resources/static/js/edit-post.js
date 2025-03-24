@@ -1,80 +1,61 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
+    const postId = document.body.dataset.postId;
+    const form = document.getElementById("editForm");
     const titleInput = document.getElementById("title");
     const contentInput = document.getElementById("content");
-    const form = document.getElementById("editForm");
     const imageInput = document.getElementById("imageInput");
-    const previewContainer = document.getElementById("previewContainer");
+    const previewImg = document.getElementById("preview");
+    const existingImageName = document.getElementById("existingImageName");
 
-    // 초기값 설정
-    titleInput.value = localStorage.getItem("postTitle") || "";
-    contentInput.value = localStorage.getItem("postContent") || "";
+    console.log("postId:", postId)
 
-    titleInput.addEventListener("input", function () {
-        if (this.value.length > 26) {
-            alert("제목은 최대 26자까지 입력 가능합니다.");
-            this.value = this.value.slice(0, 26);
+    // 📌 기존 게시글 데이터 불러오기
+    fetch(`/api/posts/${postId}`, {
+        headers: { Authorization: "Bearer " + localStorage.getItem("jwt") }
+    })
+    .then(res => res.json())
+    .then(post => {
+        titleInput.value = post.title;
+        contentInput.value = post.content;
+        if (post.images && post.images.length > 0) {
+            previewImg.src = post.images[0].image_path;
+            previewImg.style.display = "block";
+            existingImageName.textContent = post.images[0].image_name || "기존 이미지";
         }
     });
 
-    // 이미지 미리보기
-    imageInput.addEventListener("change", function () {
-        const files = Array.from(this.files);
-        previewContainer.innerHTML = "";
-
-        if (files.length < 1 || files.length > 10) {
-            alert("이미지는 최소 1개, 최대 10개까지 업로드 가능합니다.");
-            imageInput.value = "";
-            return;
-        }
-
-        files.forEach(file => {
+    // 📌 이미지 미리보기 기능
+    imageInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (file) {
             const reader = new FileReader();
-            reader.onload = function (e) {
-                const img = document.createElement("img");
-                img.src = e.target.result;
-                img.style.width = "100px";
-                img.style.height = "100px";
-                img.style.objectFit = "cover";
-                previewContainer.appendChild(img);
+            reader.onload = (event) => {
+                previewImg.src = event.target.result;
+                previewImg.style.display = "block";
             };
             reader.readAsDataURL(file);
-        });
+        }
     });
 
-    // 폼 제출 처리
-    form.addEventListener("submit", async function (event) {
-        event.preventDefault();
-
-        const files = Array.from(imageInput.files);
-        if (files.length < 1 || files.length > 10) {
-            alert("이미지는 최소 1개, 최대 10개까지 업로드해야 합니다.");
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("title", titleInput.value);
-        formData.append("content", contentInput.value);
-        files.forEach(file => {
-            formData.append("newImages", file);
-        });
+    // 📌 게시글 수정 제출 처리
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
 
         try {
-            const postId = localStorage.getItem("postId");
             const response = await fetch(`/api/posts/${postId}`, {
                 method: "PATCH",
-                headers: {
-                    Authorization: "Bearer " + localStorage.getItem("jwt")
-                },
-                body: formData,
+                headers: { Authorization: "Bearer " + localStorage.getItem("jwt") },
+                body: formData
             });
 
-            if (!response.ok) throw new Error("수정 실패");
+            if (!response.ok) throw new Error(await response.text());
 
-            alert("수정이 완료되었습니다.");
-            window.location.href = "/posts";
+            alert("게시글이 수정되었습니다!");
+            window.location.href = `/posts/${postId}`;
         } catch (error) {
-            console.error("수정 오류:", error);
-            alert("수정 중 문제가 발생했습니다.");
+            console.error("❌ 수정 오류:", error);
+            alert("수정 중 오류 발생: " + error.message);
         }
     });
 });

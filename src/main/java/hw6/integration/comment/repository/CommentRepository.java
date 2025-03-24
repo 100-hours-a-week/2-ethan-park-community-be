@@ -3,6 +3,7 @@ package hw6.integration.comment.repository;
 import hw6.integration.comment.domain.Comment;
 import hw6.integration.comment.entity.CommentEntity;
 import hw6.integration.post.entity.PostEntity;
+import hw6.integration.user.domain.User;
 import hw6.integration.user.entity.UserEntity;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface CommentRepository {
 
     Optional<Comment> findById(Long commentId);
 
-    Comment save(CommentEntity commentEntity);
+    Comment save(Comment comment, User user, PostEntity postEntity);
 
     Optional<CommentEntity> findByCommentEntityId(Long commentId);
 

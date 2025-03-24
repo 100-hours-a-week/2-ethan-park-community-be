@@ -45,25 +45,20 @@ public class CommentServiceImpl implements CommentService{
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
 
-        PostEntity post = postRepository.findById(postId)
+        PostEntity postEntity = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        if (post.isDeleted()) {
+        if (postEntity.isDeleted()) {
             throw new BusinessException(ErrorCode.POST_NOT_FOUND);
         }
 
-        CommentEntity comment = CommentEntity.builder()
-                .userEntity(User.toEntity(user))
-                .postEntity(post)
-                .authorName(user.getNickname())
-                .content(dto.getContent())
-                .build();
+        Comment comment = Comment.createComment(postId, userId, user.getNickname(), dto.getContent());
 
-        commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment, user, postEntity);
 
-        post.incrementCommentCount();  // Dirty Checking으로 처리
+        postEntity.incrementCommentCount();  // Dirty Checking으로 처리
 
-        return comment.toDomain(); // domain 모델로 변환하여 반환
+        return savedComment; // domain 모델로 변환하여 반환
     }
 
 

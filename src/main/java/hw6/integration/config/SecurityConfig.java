@@ -47,6 +47,8 @@ public class SecurityConfig {
                                 "/css/**", "/js/**", "/images/**",
                                 "/navbar/**", "/validator/**"
                         ).permitAll()
+                        .requestMatchers("/fragments/**").permitAll()
+
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users").permitAll()
                         .requestMatchers("/posts", "/posts/**").permitAll() // HTML만 띄움
