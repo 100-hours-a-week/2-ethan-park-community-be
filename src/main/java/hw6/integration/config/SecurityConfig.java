@@ -45,18 +45,23 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/login", "/signup", "/favicon.ico",
                                 "/css/**", "/js/**", "/images/**",
-                                "/navbar/**", "/validator/**"
+                                "/navbar/**", "/validator/**", "/image_storage/**"
                         ).permitAll()
                         .requestMatchers("/fragments/**").permitAll()
 
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/users").permitAll()
                         .requestMatchers("/posts", "/posts/**").permitAll() // HTML만 띄움
+                        .requestMatchers("/edit-profile").permitAll() // HTML만 띄움
+                        .requestMatchers("/edit-password").permitAll() // HTML만 띄움
                         .requestMatchers("/api/**").authenticated() // API는 모두 인증 필요
                         .anyRequest().authenticated()
 
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
                 .build();
 
     }

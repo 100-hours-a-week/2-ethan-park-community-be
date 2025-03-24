@@ -1,41 +1,51 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>게시글 수정</title>
-    <link rel="stylesheet" th:href="@{/css/edit-post.css}">
-</head>
-<body th:data-post-id="${postId}">
-<div class="container">
-    <h2 class="title">게시글 수정</h2>
-    <form id="editForm" enctype="multipart/form-data">
-        <!-- 제목 입력 -->
-        <div class="form-group">
-            <label for="title">제목*</label>
-            <input type="text" id="title" name="title" class="form-control" maxlength="26" required>
-            <small class="text-muted">최대 26자 입력 가능</small>
-        </div>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{util/util :: html(
+                    css=~{::css},
+                    content=~{::content},
+                    js=~{::js}
+                  )}">
 
-        <!-- 본문 입력 -->
-        <div class="form-group">
-            <label for="content">내용*</label>
-            <textarea id="content" name="content" class="form-control" rows="8" required></textarea>
-        </div>
+<th:block th:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/edit-post.css}" />
+</th:block>
 
-        <!-- 이미지 업로드 -->
-        <div class="form-group">
-            <label for="imageInput">이미지</label>
-            <input type="file" id="imageInput" name="images" class="form-control" accept="image/*" multiple>
-            <p id="currentImage">기존 이미지: <span id="existingImageName"></span></p>
-            <img id="preview" src="" alt="미리보기" class="preview-img" style="display:none;">
-        </div>
+<th:block th:fragment="content">
 
-        <!-- 수정 버튼 -->
-        <button type="submit" class="submit-btn">수정하기</button>
-    </form>
-</div>
+    <div class="container">
+        <h2 class="title">게시글 수정</h2>
+        <form id="editForm" enctype="multipart/form-data">
+            <!-- 제목 입력 -->
+            <div class="form-group">
+                <label for="title">제목*</label>
+                <input type="text" id="title" name="title" class="form-control" maxlength="26" required>
+                <small class="text-muted">최대 26자 입력 가능</small>
+            </div>
 
-<script th:src="@{/js/edit-post.js}"></script>
-</body>
+            <!-- 본문 입력 -->
+            <div class="form-group">
+                <label for="content">내용*</label>
+                <textarea id="content" name="content" class="form-control" rows="8" required></textarea>
+            </div>
+
+            <!-- 이미지 업로드 -->
+            <div class="form-group">
+                <label for="imageInput">이미지</label>
+                <input type="file" id="imageInput" name="images" accept="image/*" multiple>
+                <p id="currentImage">기존 이미지: <span id="existingImageName"></span></p>
+                <img id="preview" src="" alt="미리보기" class="preview-img" style="display:none;">
+            </div>
+
+            <!-- 수정 버튼 -->
+            <button type="submit" class="submit-btn">수정하기</button>
+        </form>
+    </div>
+</th:block>
+
+<th:block th:fragment="js">
+    <script th:src="@{/js/edit-post.js}"></script>
+</th:block>
+
+<div th:replace="~{util/util :: layout(~{::content})}"></div>
+
 </html>

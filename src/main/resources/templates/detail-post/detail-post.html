@@ -1,13 +1,19 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>게시글 상세 조회</title>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{util/util :: html(
+                    css=~{::css},
+                    content=~{::content},
+                    js=~{::js},
+                    postId=${postId}
+                  )}">
+
+<th:block th:fragment="css">
   <link rel="stylesheet" th:href="@{/css/detail-post.css}">
-</head>
-<body th:data-post-id="${postId}">
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+</th:block>
+
+<th:block th:fragment="content">
+  <p>현재 postId: [[${postId}]]</p>
+  <p>현재 postId: [[${postId}]]</p>
 
   <div class="container">
     <div class="header">
@@ -27,7 +33,8 @@
         </div>
       </div>
     </div>
-    <div class="post-img">
+    <div id="post-image-container" class="post-img">
+
       <img id="post-image" alt="게시글 이미지" style="display:none;" />
     </div>
 
@@ -50,7 +57,14 @@
     </div>
 
   </div>
+
+</th:block>
+
+<th:block th:fragment="js">
+  <script>
+    console.log("🔥🔥🔥 JS 로딩 확인됨");
+  </script>
   <script th:src="@{/js/detail-post.js}"></script>
-  <script th:src="@{/js/navbar.js}"></script>
-</body>
+</th:block>
+
 </html>

@@ -114,8 +114,9 @@ public class UserServiceImpl implements UserService{
 //        if (!passwordEncoder.matches(userExisting.getPassword(), userUpdatePasswordRequestDto.getPassword())) {
 //            throw new BusinessException(ErrorCode.INVALID_PASSWORD);
 //        }
+        String updatedPassword = passwordEncoder.encode(userUpdatePasswordRequestDto.getPassword());
 
-        User updated = userExisting.withPassword(userUpdatePasswordRequestDto.getPassword());
+        User updated = userExisting.withPassword(updatedPassword);
 
         userRepository.save(updated);
     }

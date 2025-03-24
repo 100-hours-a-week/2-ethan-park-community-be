@@ -59,12 +59,19 @@ document.addEventListener("DOMContentLoaded", () => {
             body: formData, // Content-Type은 생략해야 브라우저가 자동 생성
           });
 
-          if (!response.ok) throw new Error("회원가입 실패");
+          console.log(response.status);
+            const resultText = await response.text();  // ✅ 내용도 확인
 
-          alert("회원가입에 성공했습니다.");
-          setTimeout(() => {
-            window.location.href = "/login"; // 타임리프 라우팅에 맞게 수정
-          }, 1000);
+
+          if (response.status === 201) {
+            alert("회원가입에 성공했습니다.");
+            location.href = "/login";
+          } else {
+              console.warn("서버 응답 본문:", resultText);
+
+            throw new Error("회원가입 실패");
+          }
+
         } catch (err) {
           alert("회원가입에 실패했습니다.");
           console.error(err);

@@ -1,26 +1,39 @@
+<!-- templates/util/util.html -->
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <title>공통 레이아웃</title>
+
     <link rel="stylesheet" th:href="@{/css/navbar.css}">
+    <th:block th:replace="~{::css}" />
+    <script th:src="@{/js/navbar.js}" defer></script>
 </head>
 <body>
-<div th:fragment="navbar">
-    <nav class="navbar">
-        <a href="#" class="navbar-logo" onclick="goBack(event)">
-            <img th:src="@{/images/backImage.png}" alt="Back">
-        </a>
-        <div class="navbar-title">아무 말 대잔치</div>
-        <div class="profile-container">
-            <img th:src="@{/images/토글.png}" alt="프로필 사진" class="profile-toggle" onclick="toggleDropdown()">
-            <div class="dropdown" id="dropdownMenu">
-                <ul>
-                    <li onclick="location.href='/edit-profile'">회원정보수정</li>
-                    <li onclick="location.href='/edit-password'">비밀번호수정</li>
-                    <li onclick="alert('로그아웃')">로그아웃</li>
-                </ul>
-            </div>
+
+<!-- ✅ 여기! 네비게이션바 직접 포함 -->
+<nav class="navbar">
+    <a href="#" class="navbar-logo" onclick="goBack(event)">
+        <img th:src="@{/images/backImage.png}" alt="Back">
+    </a>
+    <div class="navbar-title">아무 말 대잔치</div>
+    <div class="profile-container">
+        <img th:src="@{/images/토글.png}" alt="프로필 사진" class="profile-toggle" onclick="toggleDropdown()">
+        <div class="dropdown" id="dropdownMenu">
+            <ul>
+                <li onclick="location.href='/edit-profile'">회원정보수정</li>
+                <li onclick="location.href='/edit-password'">비밀번호수정</li>
+                <li onclick="alert('로그아웃')">로그아웃</li>
+            </ul>
         </div>
-    </nav>
-</div>
+    </div>
+</nav>
+
+<!-- ✅ 개별 페이지의 내용이 여기에 렌더링됨 -->
+<main th:fragment="layout(content)">
+    <th:block th:replace="~{::content}" />
+</main>
+
+<th:block th:replace="~{::js}" />
 </body>
 </html>

@@ -57,9 +57,12 @@ public class UserController {
     public ResponseEntity<UserResponseDto> registerUser(
             @ModelAttribute UserSignupRequestDto userSignupRequestDto) {
 
+        System.out.println(userSignupRequestDto.getProfileImage());
         User user = userService.registerUser(userSignupRequestDto);
 
-        UserResponseDto userResponseDto = UserResponseDto.toDomain(user);
+
+
+        //UserResponseDto userResponseDto = UserResponseDto.toDomain(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -69,6 +72,7 @@ public class UserController {
         String token = userService.login(userLoginRequestDto);
         return ResponseEntity.ok(new TokenResponseDto(token));
     }
+
 
 
     @PutMapping("/me/profile")

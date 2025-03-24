@@ -1,6 +1,7 @@
 package hw6.integration.post.dto;
 
 import hw6.integration.image.domain.Image;
+import hw6.integration.image.dto.ImageDto;
 import hw6.integration.post.domain.Post;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,7 @@ public class PostResponseDto {
     private String title;
     private String content;
     private String authorName;
-    private List<Image> images; // ✅ 있어야 함
+    private List<ImageDto> images; // ✅ 있어야 함
 
 
     private Integer comment_count;
@@ -42,7 +43,7 @@ public class PostResponseDto {
                 .view_count(post.getView_count())
                 .created_at(post.getCreated_at())
                 .updated_at(post.getUpdated_at())
-                .images(post.getImages()) // ✅ 이 라인 확인
+                .images(post.getImages().stream().map(ImageDto::from).toList()) // ✅ 이 라인 확인
                 .build();
     }
 

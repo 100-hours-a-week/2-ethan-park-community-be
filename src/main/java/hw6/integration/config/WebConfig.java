@@ -9,10 +9,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/image_storage/profiles/**")
-                .addResourceLocations("file:/Users/park-youchan/Desktop/uploads/profiles/");
-        registry.addResourceHandler("/image_storage/posts/**")
-                .addResourceLocations("file:/Users/park-youchan/Desktop/uploads/posts/");
-
+        registry.addResourceHandler("/image_storage/**")
+                .addResourceLocations("file:/Users/park-youchan/Desktop/uploads/");
     }
+
 }

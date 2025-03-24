@@ -19,6 +19,7 @@ public interface UserService {
 
     String login(UserLoginRequestDto userLoginRequestDto);
 
+
     User updateNickname(Long id, UserUpdateNicknameRequestDto userUpdateNicknameRequestDto);
 
     void updatePassword(Long id, UserUpdatePasswordRequestDto userUpdatePasswordRequestDto);

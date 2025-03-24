@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign In</title>
-  <link rel="stylesheet" th:href="@{/css/signup.css}"/>
-</head>
-<body>
-  <!-- 네비게이션 바 -->
-  <div th:replace="~{fragments/navbar :: navbar}"></div>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{util/util :: html(
+                    css=~{::css},
+                    content=~{::content},
+                    js=~{::js}
+                  )}">
 
+<th:block th:fragment="css">
+  <link rel="stylesheet" th:href="@{/css/signup.css}" />
+</th:block>
+
+<th:block th:fragment="content">
   <div class="container">
-    <form class="signup-form" id="signupForm" enctype="multipart/form-data">
+    <form class="signup-form" id="signupForm" method="post" enctype="multipart/form-data" th:action="@{/api/users}">
       <div class="profile-container">
         <div class="signup-title">
           <label for="signup-profile-img-input" class="profile-label">
@@ -21,7 +22,7 @@
         </div>
         <div class="signup-profile-img">
           <img id="profile-preview" alt="미리보기 이미지" style="width: 80px; height: 80px; border-radius: 50%;" />
-          <input type="file" id="signup-profile-img-input" accept="image/*" hidden />
+          <input type="file" id="signup-profile-img-input" name="profileImage" accept="image/*" hidden />
           <label for="signup-profile-img-input" class="custom-file-label">+</label>
         </div>
       </div>
@@ -33,13 +34,13 @@
 
       <label for="password1">비밀번호*</label>
       <div class="helper-text">*helper-text</div>
-      <input type="password" id="password1" name="password1" placeholder="비밀번호" autocomplete="new-password" />
+      <input type="password" id="password1" name="password" placeholder="비밀번호" autocomplete="new-password" />
       <p class="error-message" id="password1Input-error"></p>
       <p class="error-message" id="passwordSize-error"></p>
 
       <label for="password2">비밀번호 확인*</label>
       <div class="helper-text">*helper-text</div>
-      <input type="password" id="password2" name="password2" placeholder="비밀번호 확인" autocomplete="new-password" />
+      <input type="password" id="password2" name="password" placeholder="비밀번호 확인" autocomplete="new-password" />
       <p class="error-message" id="password2Input-error"></p>
       <p class="error-message" id="passwordDiff-error"></p>
 
@@ -57,8 +58,12 @@
       <button id="loginGoBtn">로그인하러 가기</button>
     </div>
   </div>
+  </th:block>
 
-  <script type="module" th:src="@{/js/signup.js}"></script>
-  <script th:src="@{/js/navbar.js}"></script>
-</body>
+  <!-- ✅ JS -->
+  <th:block th:fragment="js">
+    <script type="module" th:src="@{/js/signup.js}"></script>
+  </th:block>
+
+  <div th:replace="~{util/util :: layout(~{::content})}"></div>
 </html>

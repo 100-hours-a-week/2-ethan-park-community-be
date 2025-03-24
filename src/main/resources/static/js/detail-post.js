@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const deleteModal = document.getElementById("delete-modal");
   const confirmDeleteBtn = document.getElementById("confirm-delete-btn");
   const cancelDeleteBtn = document.getElementById("cancel-btn");
+  const imageContainer = document.getElementById("post-image-container");
 
   let editingCommentId = null;
   let currentUserId = null;
@@ -38,34 +39,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function fetchPost() {
     const res = await fetch(`/api/posts/${postId}`, {
-      headers: { Authorization: "Bearer " + localStorage.getItem("jwt") },
+      headers: {Authorization: "Bearer " + localStorage.getItem("jwt") },
     });
     const post = await res.json();
-    const postAuthorId = post.userId; // ✅ 작성자 ID 가져오기
+    const postAuthorId = post.userId;
 
-
-    // 👇 여기서 비교!
-      if (currentUserId === postAuthorId) {
-        document.getElementById("edit-btn").style.display = "inline-block";
-        document.getElementById("delete-btn").style.display = "inline-block";
-      } else {
-        // 작성자가 아니라면 숨김 처리
-        document.getElementById("edit-btn").style.display = "none";
-        document.getElementById("delete-btn").style.display = "none";
-      }
+    if (currentUserId === postAuthorId) {
+      editBtn.style.display = "inline-block";
+      deleteBtn.style.display = "inline-block";
+    } else {
+      editBtn.style.display = "none";
+      deleteBtn.style.display = "none";
+    }
 
     postTitleElem.innerText = post.title;
     postContentElem.innerText = post.content;
     likeCountElem.innerText = formatCount(post.like_count);
     viewCountElem.innerText = formatCount(post.view_count);
 
-    const imageElem = document.getElementById("post-image");
-    if (post.images && post.images.length > 0) {
-      imageElem.src = post.images[0].image_path;
-      imageElem.style.display = "block";
-    } else {
-      imageElem.style.display = "none";
-    }
+    // ✅ 이미지 렌더링
+      imageContainer.innerHTML = ""; // 기존 이미지 제거
+
+      if (post.images && post.images.length > 0) {
+        post.images.forEach((image) => {
+          const img = document.createElement("img");
+          img.src = image.imagePath; // ✅ 서버에서 받은 imagePath 사용
+          img.alt = "게시글 이미지";
+          img.classList.add("post-image");
+          imageContainer.appendChild(img);
+        });
+      } else {
+        imageContainer.innerHTML = "<p>이미지가 없습니다</p>";
+      }
   }
 
   async function fetchComments() {
@@ -88,8 +93,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const timeText = isEdited ? `${updatedAt} 수정됨` : `${createdAt} 작성`;
 
       li.innerHTML = `
-        <div><strong>${comment.authorName}</strong>: ${comment.content}</div>
-        <div class="comment-time">${timeText}</div>
+        <div class="comment-header">
+          <span class="author">${comment.authorName}</span>
+          <span class="comment-time">${timeText}</span>
+        </div>
+        <div class="comment-content">${comment.content}</div>
       `;
 
       if (currentUserId === comment.userId) {
@@ -105,6 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       commentList.appendChild(li);
     });
+
     commentCountElem.innerText = comments.length;
   }
 
@@ -164,8 +173,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   commentSubmitBtn.onclick = submitComment;
 
-  fetchCurrentUserId().then(() => {
-    fetchPost();
-    fetchComments();
-  });
+  fetchCurrentUserId()
+    .then(() => {
+      fetchPost();
+      fetchComments();
+    })
+    .catch((error) => {
+      console.error("API 호출 실패:", error);
+    });
 });

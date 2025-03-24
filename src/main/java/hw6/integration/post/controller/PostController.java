@@ -1,5 +1,6 @@
 package hw6.integration.post.controller;
 
+import hw6.integration.post.domain.Post;
 import hw6.integration.post.dto.PostCreateRequestDto;
 import hw6.integration.post.dto.PostResponseDto;
 import hw6.integration.post.dto.PostUpdateRequestDto;
@@ -35,6 +36,9 @@ public class PostController {
 
     @GetMapping("/{postId}")
     public ResponseEntity<PostResponseDto> getPost(@PathVariable("postId") Long postId) {
+
+        Post post = postService.getPostById(postId);
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + post.getImages());
 
         return ResponseEntity.ok(PostResponseDto.fromPost(postService.getPostById(postId)));
     }
