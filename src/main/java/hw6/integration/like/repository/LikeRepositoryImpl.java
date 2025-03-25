@@ -1,7 +1,11 @@
 package hw6.integration.like.repository;
 
+import hw6.integration.like.domain.Like;
+import hw6.integration.post.domain.Post;
+import hw6.integration.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RequiredArgsConstructor
@@ -14,9 +18,12 @@ public class LikeRepositoryImpl implements LikeRepository {
         return likeJpaRepository.existsActiveLike(userId, postId);
     }
 
+    @Transactional
     @Override
-    public void insertLike(Long userId, Long postId) {
-        likeJpaRepository.insertLike(userId, postId);
+    public Like save(Like like, User user, Post post) {
+
+        return likeJpaRepository.save(Like.toEntity(like, Post.toEntity(post, User.toEntity(user)), User.toEntity(user))).toDomain();
+
     }
 
     @Override

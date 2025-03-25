@@ -7,26 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
-
-    List<PostEntity> findByUserEntity_Id(Long userId);
-
-    //native query
-
-    @Query(value = "SELECT * FROM posts WHERE is_deleted = false", nativeQuery = true)
-    List<PostEntity> findByIsDeletedFalse();
+public interface PostWriteJpaRepository extends JpaRepository<PostEntity, Long> {
 
     @Modifying(clearAutomatically = true)
     @Transactional
     @Query(value = "UPDATE posts SET author_name = '알 수 없음' WHERE user_id = :userId", nativeQuery = true)
     void updateAuthorNameByUserId(@Param("userId") Long userId);
-
-    @Modifying(clearAutomatically = true)
-    @Transactional
-    @Query(value = "UPDATE posts SET comment_count = comment_count - 1 WHERE id = :postId", nativeQuery = true)
-    void decrementContentCount(@Param("postId") Long postId);
 
     @Modifying(clearAutomatically = true)
     @Transactional
@@ -44,10 +30,6 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
     void deletePostByUserId(@Param("userId") Long userId);
 
 
-    // JPQL
-    //    @Query("SELECT p FROM PostEntity p WHERE p.isDeleted = false")
-//    List<PostEntity> findByIsDeletedFalse();
-//
 //    @Modifying(clearAutomatically = true)
 //    @Transactional
 //    @Query("UPDATE PostEntity p SET p.authorName = :authorName WHERE p.userEntity.id = :userId")

@@ -3,7 +3,9 @@ package hw6.integration.user.controller;
 import hw6.integration.user.auth.UserPrincipal;
 import hw6.integration.user.domain.User;
 import hw6.integration.user.dto.*;
-import hw6.integration.user.service.UserService;
+import hw6.integration.user.service.UserAuthService;
+import hw6.integration.user.service.UserReadService;
+import hw6.integration.user.service.UserWriterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,33 +14,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class UserController {
 
-    private final UserService userService;
-
-    @GetMapping("/users")
-    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
-        List<User> users = userService.getUserByAll();
-
-        if (users.isEmpty()) {
-            return ResponseEntity.noContent().build(); // 상태 코드 204
-        }
-
-        List<UserResponseDto> userResponseDtos = users.stream()
-                .map(UserResponseDto::toDomain)
-                .toList();
-
-        return ResponseEntity.ok(userResponseDtos); // 상태 코드 200
-    }
+    private final UserWriterService userWriterService;
+    private final UserAuthService userAuthService;
+    private final UserReadService userReadService;
 
     @GetMapping("/users/{id}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable Long id) {
 
-        User user = userService.getUserById(id);
+        User user = userReadService.getUserById(id);
 
         UserResponseDto userResponseDto = UserResponseDto.toDomain(user);
 
@@ -49,27 +37,23 @@ public class UserController {
     @GetMapping("/users/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResponseDto> getCurrentUser(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-        User user = userService.getUserById(userPrincipal.getId());
+        User user = userReadService.getUserById(userPrincipal.getId());
         return ResponseEntity.ok(UserResponseDto.toDomain(user));
     }
 
     @PostMapping(value = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UserResponseDto> registerUser(
+    public ResponseEntity<Void> registerUser(
             @ModelAttribute UserSignupRequestDto userSignupRequestDto) {
 
         System.out.println(userSignupRequestDto.getProfileImage());
-        User user = userService.registerUser(userSignupRequestDto);
-
-
-
-        //UserResponseDto userResponseDto = UserResponseDto.toDomain(user);
+        userWriterService.registerUser(userSignupRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/auth/login")
     public ResponseEntity<TokenResponseDto> login(@ModelAttribute UserLoginRequestDto userLoginRequestDto) {
-        String token = userService.login(userLoginRequestDto);
+        String token = userAuthService.login(userLoginRequestDto);
         return ResponseEntity.ok(new TokenResponseDto(token));
     }
 
@@ -77,25 +61,24 @@ public class UserController {
 
     @PutMapping("/me/profile")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UserResponseDto> updateProfile(
+    public ResponseEntity<Void> updateProfile(
             @AuthenticationPrincipal UserPrincipal userPrincipal, // 인증된 사용자 정보
             @RequestBody UserUpdateNicknameRequestDto userUpdateNicknameRequestDto) {
-        User user = userService.updateNickname(userPrincipal.getId(), userUpdateNicknameRequestDto);
 
-        UserResponseDto userResponseDto = UserResponseDto.toDomain(user);
+        userWriterService.updateNickname(userPrincipal.getId(), userUpdateNicknameRequestDto);
 
-        return ResponseEntity.ok(userResponseDto);
+        return ResponseEntity.noContent().build();
 
     }
 
 
     @PutMapping("/me/password")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UserResponseDto> updatePassword(
+    public ResponseEntity<Void> updatePassword(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody UserUpdatePasswordRequestDto userUpdatePasswordRequestDto) {
 
-        userService.updatePassword(userPrincipal.getId(), userUpdatePasswordRequestDto);
+        userWriterService.updatePassword(userPrincipal.getId(), userUpdatePasswordRequestDto);
         return ResponseEntity.noContent().build();
     }
 
@@ -104,9 +87,8 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-        userService.deleteUser(userPrincipal.getId());
+        userWriterService.deleteUser(userPrincipal.getId());
         return ResponseEntity.noContent().build();
-
 
     }
 

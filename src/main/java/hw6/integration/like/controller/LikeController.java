@@ -2,7 +2,7 @@ package hw6.integration.like.controller;
 
 import hw6.integration.like.dto.LikeStatusResponseDto;
 import hw6.integration.like.service.LikeService;
-import hw6.integration.post.service.PostService;
+import hw6.integration.post.service.PostReadService;
 import hw6.integration.user.auth.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class LikeController {
 
     private final LikeService likeService;
-    private final PostService postService;
+    private final PostReadService postReadService;
 
     @PostMapping
     @PreAuthorize("isAuthenticated")
     public ResponseEntity<Void> likePost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable Long postId) {
+            @PathVariable("postId") Long postId) {
 
         Long userId = userPrincipal.getId();
 
@@ -39,10 +39,10 @@ public class LikeController {
     @PreAuthorize("isAuthenticated")
     public ResponseEntity<LikeStatusResponseDto> getLikeStatus(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable Long postId) {
+            @PathVariable("postId") Long postId) {
 
         boolean isLiked = likeService.isLiked(userPrincipal.getId(), postId);
-        int likeCount = postService.getPostById(postId).getLike_count();
+        int likeCount = postReadService.findById(postId).getLike_count();
 
         return ResponseEntity.ok(new LikeStatusResponseDto(isLiked, likeCount));
     }

@@ -4,13 +4,7 @@ import hw6.integration.post.domain.Post;
 import hw6.integration.post.dto.PostCreateRequestDto;
 import hw6.integration.post.dto.PostUpdateRequestDto;
 
-import java.util.List;
-
-public interface PostService {
-
-    List<Post> getPostByAll();
-
-    Post getPostById(Long id);
+public interface PostWriterService {
 
     Post createPost(PostCreateRequestDto postCreateRequestDto, Long id);
 

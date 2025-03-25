@@ -1,6 +1,6 @@
 package hw6.integration.post.service;
 
-import hw6.integration.comment.repository.CommentRepository;
+import hw6.integration.comment.repository.CommentWriteRepository;
 import hw6.integration.exception.BusinessException;
 import hw6.integration.exception.ErrorCode;
 import hw6.integration.image.component.ImageComponent;
@@ -10,9 +10,10 @@ import hw6.integration.post.domain.Post;
 import hw6.integration.post.dto.PostCreateRequestDto;
 import hw6.integration.post.dto.PostUpdateRequestDto;
 import hw6.integration.post.entity.PostEntity;
-import hw6.integration.post.repository.PostRepository;
+import hw6.integration.post.repository.PostReadRepository;
+import hw6.integration.post.repository.PostWriteRepository;
 import hw6.integration.user.domain.User;
-import hw6.integration.user.repository.UserRepository;
+import hw6.integration.user.repository.UserReadRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,40 +24,19 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class PostServiceImpl implements PostService {
+public class PostWriterServiceImpl implements PostWriterService {
 
-    private final PostRepository postRepository;
-    private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
+    private final UserReadRepository userReadRepository;
+    private final PostWriteRepository postWriteRepository;
+    private final PostReadRepository postReadRepository;
+    private final CommentWriteRepository commentWriteRepository;
     private final ImageComponent imageComponent;
-
-    @Override
-    public List<Post> getPostByAll() {
-
-        return postRepository.findAllVisiblePosts();
-    }
-
-    @Transactional
-    @Override
-    public Post getPostById(Long id) {
-        PostEntity post = postRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
-
-        if(post.isDeleted()) {
-            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
-        }
-
-        post.incrementViewCount(); // 엔티티에서 직접 메서드를 통해 증가 (Dirty Checking 활용)
-
-        return post.toDomain();
-    }
-
 
     @Transactional
     @Override
     public Post createPost(PostCreateRequestDto postCreateRequestDto, Long userId) {
 
-        User user = userRepository.findById(userId)
+        User user = userReadRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         if(user.getIsActive()) {
@@ -76,7 +56,7 @@ public class PostServiceImpl implements PostService {
             }
 
             post.addImages(uploadImages);
-            return postRepository.save(post, User.toEntity(user));
+            return postWriteRepository.save(post, User.toEntity(user));
         }
 
         throw new BusinessException(ErrorCode.USER_NOT_FOUND);
@@ -87,13 +67,13 @@ public class PostServiceImpl implements PostService {
     public Post updatePost(Long postId, PostUpdateRequestDto dto, Long userId) {
 
         // 1. 사용자 유효성 검사
-        User user = userRepository.findById(userId)
+        User user = userReadRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         if(user.getIsActive()) {
 
             // 2. 기존 게시글 엔티티 가져오기
-            PostEntity postEntity = postRepository.findEntityById(postId)
+            PostEntity postEntity = postReadRepository.findEntityById(postId)
                     .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
             if (!postEntity.isDeleted()) {
@@ -135,7 +115,7 @@ public class PostServiceImpl implements PostService {
                 }
 
                 // 8. JPA는 영속 객체의 필드 변경만으로 업데이트 처리
-                return postEntity.toDomain(); // 변경 감지로 자동 update 됨
+                return postEntity.toDomain();
             }
             throw new BusinessException(ErrorCode.POST_NOT_FOUND);
         }
@@ -147,19 +127,19 @@ public class PostServiceImpl implements PostService {
     @Override
     public void deletePost(Long userId, Long postId) {
 
-        User user = userRepository.findById(userId)
+        User user = userReadRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         if(user.getIsActive()) {
 
-            PostEntity postEntity = postRepository.findEntityById(postId)
+            PostEntity postEntity = postReadRepository.findEntityById(postId)
                     .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
             if (!postEntity.isDeleted()) {
 
                 if (postEntity.getComment_count() > 0) {
 
-                    commentRepository.deleteCommentByPostId(postId);
+                    commentWriteRepository.deleteCommentByPostId(postId);
                 }
 
                 if (userId.equals(postEntity.getUserEntity().getId())) {
@@ -183,5 +163,4 @@ public class PostServiceImpl implements PostService {
         }
 
     }
-
 }

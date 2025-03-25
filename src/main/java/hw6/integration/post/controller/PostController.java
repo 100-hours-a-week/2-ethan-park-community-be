@@ -1,13 +1,14 @@
 package hw6.integration.post.controller;
 
-import hw6.integration.like.service.LikeService;
-import hw6.integration.post.domain.Post;
 import hw6.integration.post.dto.PostCreateRequestDto;
 import hw6.integration.post.dto.PostDetailResponseDto;
 import hw6.integration.post.dto.PostListResponseDto;
 import hw6.integration.post.dto.PostUpdateRequestDto;
-import hw6.integration.post.service.PostService;
+import hw6.integration.post.service.PostReadService;
+import hw6.integration.post.service.PostWriterService;
 import hw6.integration.user.auth.UserPrincipal;
+import hw6.integration.user.domain.User;
+import hw6.integration.user.dto.UserResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +24,13 @@ import java.util.List;
 @RequestMapping("/api/posts")
 public class PostController {
 
-    private final PostService postService;
+    private final PostReadService postReadService;
+    private final PostWriterService postWriterService;
 
     @GetMapping
     public ResponseEntity<List<PostListResponseDto>> getAllPosts() {
 
-        List<PostListResponseDto> postListResponseDtos = postService.getPostByAll()
+        List<PostListResponseDto> postListResponseDtos = postReadService.getPostByAll()
                 .stream()
                 .map(PostListResponseDto::fromPost)
                 .toList();
@@ -38,10 +40,9 @@ public class PostController {
 
     @GetMapping("/{postId}")
     public ResponseEntity<PostDetailResponseDto> getPost(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable("postId") Long postId) {
 
-        return ResponseEntity.ok(PostDetailResponseDto.fromPost(postService.getPostById(postId)));
+        return ResponseEntity.ok(PostDetailResponseDto.fromPost(postReadService.getPostById(postId)));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -52,7 +53,7 @@ public class PostController {
 
         Long userId = userPrincipal.getId();
 
-        return ResponseEntity.ok(PostListResponseDto.fromPost(postService.createPost(postCreateRequestDto, userId)));
+        return ResponseEntity.ok(PostListResponseDto.fromPost(postWriterService.createPost(postCreateRequestDto, userId)));
     }
 
     @PatchMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -62,7 +63,7 @@ public class PostController {
             @PathVariable Long postId,
             @ModelAttribute PostUpdateRequestDto postUpdateRequestDto) {
 
-        return ResponseEntity.ok(PostListResponseDto.fromPost(postService.updatePost(postId, postUpdateRequestDto, userPrincipal.getId())));
+        return ResponseEntity.ok(PostListResponseDto.fromPost(postWriterService.updatePost(postId, postUpdateRequestDto, userPrincipal.getId())));
     }
 
     @DeleteMapping("/{postId}")
@@ -73,7 +74,7 @@ public class PostController {
 
         Long userId = userPrincipal.getId();
 
-        postService.deletePost(userId, postId);
+        postWriterService.deletePost(userId, postId);
 
         return ResponseEntity.noContent().build();
     }

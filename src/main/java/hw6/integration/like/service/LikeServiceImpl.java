@@ -2,11 +2,13 @@ package hw6.integration.like.service;
 
 import hw6.integration.exception.BusinessException;
 import hw6.integration.exception.ErrorCode;
+import hw6.integration.like.domain.Like;
 import hw6.integration.like.repository.LikeRepository;
 import hw6.integration.post.domain.Post;
-import hw6.integration.post.repository.PostRepository;
+import hw6.integration.post.repository.PostReadRepository;
+import hw6.integration.post.repository.PostWriteRepository;
 import hw6.integration.user.domain.User;
-import hw6.integration.user.repository.UserRepository;
+import hw6.integration.user.repository.UserReadRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class LikeServiceImpl implements LikeService {
 
     private final LikeRepository likeRepository;
-    private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final PostWriteRepository postWriteRepository;
+    private final PostReadRepository postReadRepository;
+    private final UserReadRepository userReadRepository;
 
     @Transactional
     @Override
@@ -28,12 +31,12 @@ public class LikeServiceImpl implements LikeService {
         if (isLiked(userId, postId)) {
             cancelLike(userId, postId);
         } else {
-            applyLike(userId, postId);
+            applyLike(user, post);
         }
     }
 
     private User findActiveUserById(Long userId) {
-        User user = userRepository.findById(userId)
+        User user = userReadRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         if (!user.getIsActive()) {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
@@ -42,8 +45,8 @@ public class LikeServiceImpl implements LikeService {
     }
 
     private Post findActivePostById(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND)).toDomain();
+        Post post = postReadRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
         if (post.isDeleted()) {
             throw new BusinessException(ErrorCode.POST_NOT_FOUND);
         }
@@ -57,12 +60,15 @@ public class LikeServiceImpl implements LikeService {
 
     private void cancelLike(Long userId, Long postId) {
         likeRepository.deactivateLike(userId, postId);
-        postRepository.decrementLikeCount(postId);
+        postWriteRepository.decrementLikeCount(postId);
     }
 
-    private void applyLike(Long userId, Long postId) {
-        likeRepository.insertLike(userId, postId);
-        postRepository.incrementLikeCount(postId);
+    private void applyLike(User user, Post post) {
+
+        Like like = Like.createLike(user.getId(), post.getId());
+
+        likeRepository.save(like, user, post);
+        postWriteRepository.incrementLikeCount(post.getId());
     }
 
 }

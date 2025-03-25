@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @Table(name = "comments")
 @NoArgsConstructor
 public class CommentEntity {
@@ -68,6 +67,18 @@ public class CommentEntity {
                 .created_at(this.created_at)
                 .updated_at(this.updated_at)
                 .build();
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 
 

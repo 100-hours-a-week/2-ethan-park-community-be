@@ -22,7 +22,7 @@ public class Like {
 
     private LocalDateTime created_at;
 
-    public Like activeLike(Long postId, Long userId) {
+    public static Like createLike(Long postId, Long userId) {
         return Like.builder()
                 .postId(postId)
                 .userId(userId)

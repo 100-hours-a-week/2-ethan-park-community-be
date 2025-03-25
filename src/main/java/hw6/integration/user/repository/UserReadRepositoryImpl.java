@@ -1,6 +1,5 @@
 package hw6.integration.user.repository;
 
-import hw6.integration.post.domain.Post;
 import hw6.integration.user.entity.UserEntity;
 import hw6.integration.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class UserRepositoryImpl implements UserRepository {
+public class UserReadRepositoryImpl implements UserReadRepository {
 
     private final UserJpaRepository userJpaRepository;
 
@@ -38,11 +37,6 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
 
-    @Override
-    public User save(User user) {
-        UserEntity userEntity = userJpaRepository.save(User.toEntity(user));
-        return userEntity.toDomain();
-    }
 
 
 

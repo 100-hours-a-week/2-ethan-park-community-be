@@ -13,9 +13,9 @@ public interface LikeJpaRepository extends JpaRepository<LikeEntity, Long> {
     int existsActiveLike(@Param("userId") Long userId, @Param("postId") Long postId);
 
     // 좋아요 추가 (새로 insert)
-    @Modifying
-    @Query(value = "INSERT INTO likes (user_id, post_id, like_active, is_deleted, created_at) VALUES (:userId, :postId, true, false, NOW())", nativeQuery = true)
-    void insertLike(@Param("userId") Long userId, @Param("postId") Long postId);
+//    @Modifying
+//    @Query(value = "INSERT INTO likes (user_id, post_id, like_active, is_deleted, created_at) VALUES (:userId, :postId, true, false, NOW())", nativeQuery = true)
+//    void insertLike(@Param("userId") Long userId, @Param("postId") Long postId);
 
     // 기존 좋아요 비활성화 (소프트 딜리트 대체)
     @Modifying

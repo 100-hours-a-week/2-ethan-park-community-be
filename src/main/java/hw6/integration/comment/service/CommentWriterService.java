@@ -4,11 +4,8 @@ import hw6.integration.comment.domain.Comment;
 import hw6.integration.comment.dto.CommentCreateRequestDto;
 import hw6.integration.comment.dto.CommentUpdateRequestDto;
 
-import java.util.List;
+public interface CommentWriterService {
 
-public interface CommentService {
-
-    List<Comment> getCommentByPostId(Long postId);
 
     Comment createComment(CommentCreateRequestDto commentCreateDto, Long userId, Long postId);
 

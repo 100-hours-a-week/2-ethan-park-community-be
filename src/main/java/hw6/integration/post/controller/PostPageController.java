@@ -1,7 +1,7 @@
 package hw6.integration.post.controller;
 
 import hw6.integration.post.dto.PostListResponseDto;
-import hw6.integration.post.service.PostService;
+import hw6.integration.post.service.PostReadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequiredArgsConstructor
 public class PostPageController {
 
-    private final PostService postService;
+    private final PostReadService postReadService;
 
     // 전체 게시글 페이지
     @GetMapping("/posts")
     public String postListPage(Model model) {
-        model.addAttribute("posts", postService.getPostByAll()
+        model.addAttribute("posts", postReadService.getPostByAll()
                 .stream()
                 .map(PostListResponseDto::fromPost)
                 .toList());

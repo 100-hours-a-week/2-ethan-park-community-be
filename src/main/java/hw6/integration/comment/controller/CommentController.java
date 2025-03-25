@@ -4,13 +4,13 @@ import hw6.integration.comment.domain.Comment;
 import hw6.integration.comment.dto.CommentCreateRequestDto;
 import hw6.integration.comment.dto.CommentResponseDto;
 import hw6.integration.comment.dto.CommentUpdateRequestDto;
-import hw6.integration.comment.service.CommentService;
+import hw6.integration.comment.service.CommentReadService;
+import hw6.integration.comment.service.CommentWriterService;
 import hw6.integration.user.auth.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,14 +20,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentController {
 
-    private final CommentService commentService;
+    private final CommentWriterService commentWriterService;
+    private final CommentReadService commentReadService;
 
     @GetMapping
     @PreAuthorize("isAuthenticated")
     public ResponseEntity<List<CommentResponseDto>> getAllComments(
             @PathVariable("postId") Long postId) {
 
-        List<CommentResponseDto> commentResponseDtos = commentService.getCommentByPostId(postId)
+        List<CommentResponseDto> commentResponseDtos = commentReadService.getCommentByPostId(postId)
                 .stream()
                 .map(CommentResponseDto::fromComment)
                 .toList();;
@@ -47,7 +48,7 @@ public class CommentController {
 
         Long userId = userPrincipal.getId();
 
-        Comment comment = commentService.createComment(commentCreateDto, userId, postId);
+        Comment comment = commentWriterService.createComment(commentCreateDto, userId, postId);
 
         return ResponseEntity.ok(CommentResponseDto.fromComment(comment));
     }
@@ -62,7 +63,7 @@ public class CommentController {
 
         Long userId = userPrincipal.getId();
 
-        commentService.updateComment(commentUpdateRequestDto, commentId, userId, postId);
+        commentWriterService.updateComment(commentUpdateRequestDto, commentId, userId, postId);
 
         return ResponseEntity.noContent().build();
     }
@@ -76,7 +77,7 @@ public class CommentController {
 
         Long userId = userPrincipal.getId();
 
-        commentService.deleteComment(commentId, userId, postId);
+        commentWriterService.deleteComment(commentId, userId, postId);
 
         return ResponseEntity.noContent().build();
     }
