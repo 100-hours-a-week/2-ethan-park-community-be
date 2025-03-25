@@ -1,8 +1,10 @@
 package hw6.integration.post.controller;
 
+import hw6.integration.like.service.LikeService;
 import hw6.integration.post.domain.Post;
 import hw6.integration.post.dto.PostCreateRequestDto;
-import hw6.integration.post.dto.PostResponseDto;
+import hw6.integration.post.dto.PostDetailResponseDto;
+import hw6.integration.post.dto.PostListResponseDto;
 import hw6.integration.post.dto.PostUpdateRequestDto;
 import hw6.integration.post.service.PostService;
 import hw6.integration.user.auth.UserPrincipal;
@@ -24,49 +26,48 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    public ResponseEntity<List<PostResponseDto>> getAllPosts() {
+    public ResponseEntity<List<PostListResponseDto>> getAllPosts() {
 
-        List<PostResponseDto> postResponseDtos = postService.getPostByAll()
+        List<PostListResponseDto> postListResponseDtos = postService.getPostByAll()
                 .stream()
-                .map(PostResponseDto::fromPost)
+                .map(PostListResponseDto::fromPost)
                 .toList();
 
-        return ResponseEntity.ok(postResponseDtos);
+        return ResponseEntity.ok(postListResponseDtos);
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<PostResponseDto> getPost(@PathVariable("postId") Long postId) {
+    public ResponseEntity<PostDetailResponseDto> getPost(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable("postId") Long postId) {
 
-        Post post = postService.getPostById(postId);
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + post.getImages());
-
-        return ResponseEntity.ok(PostResponseDto.fromPost(postService.getPostById(postId)));
+        return ResponseEntity.ok(PostDetailResponseDto.fromPost(postService.getPostById(postId)));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<PostResponseDto> createPost(
+    public ResponseEntity<PostListResponseDto> createPost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @ModelAttribute PostCreateRequestDto postCreateRequestDto) {
 
         Long userId = userPrincipal.getId();
 
-        return ResponseEntity.ok(PostResponseDto.fromPost(postService.createPost(postCreateRequestDto, userId)));
+        return ResponseEntity.ok(PostListResponseDto.fromPost(postService.createPost(postCreateRequestDto, userId)));
     }
 
     @PatchMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("isAuthenticated")
-    public ResponseEntity<PostResponseDto> updatePost(
+    public ResponseEntity<PostListResponseDto> updatePost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long postId,
             @ModelAttribute PostUpdateRequestDto postUpdateRequestDto) {
 
-        return ResponseEntity.ok(PostResponseDto.fromPost(postService.updatePost(postId, postUpdateRequestDto, userPrincipal.getId())));
+        return ResponseEntity.ok(PostListResponseDto.fromPost(postService.updatePost(postId, postUpdateRequestDto, userPrincipal.getId())));
     }
 
     @DeleteMapping("/{postId}")
     @PreAuthorize("isAuthenticated")
-    public ResponseEntity<PostResponseDto> deletePost(
+    public ResponseEntity<PostListResponseDto> deletePost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long postId) {
 

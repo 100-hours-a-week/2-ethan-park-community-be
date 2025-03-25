@@ -25,11 +25,6 @@ public interface PostJpaRepository extends JpaRepository<PostEntity, Long> {
 
     @Modifying(clearAutomatically = true)
     @Transactional
-    @Query(value = "UPDATE posts SET comment_count = comment_count + 1 WHERE id = :postId", nativeQuery = true)
-    void incrementContentCount(@Param("postId") Long postId);
-
-    @Modifying(clearAutomatically = true)
-    @Transactional
     @Query(value = "UPDATE posts SET comment_count = comment_count - 1 WHERE id = :postId", nativeQuery = true)
     void decrementContentCount(@Param("postId") Long postId);
 

@@ -1,19 +1,16 @@
 package hw6.integration.post.dto;
 
-import hw6.integration.image.domain.Image;
 import hw6.integration.image.dto.ImageDto;
 import hw6.integration.post.domain.Post;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Builder
-public class PostResponseDto {
+public class PostListResponseDto {
 
     private Long id;
     private Long userId;
@@ -21,8 +18,6 @@ public class PostResponseDto {
     private String title;
     private String content;
     private String authorName;
-    private List<ImageDto> images; // ✅ 있어야 함
-
 
     private Integer comment_count;
     private Integer like_count;
@@ -31,8 +26,8 @@ public class PostResponseDto {
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 
-    public static PostResponseDto fromPost(Post post){
-        return PostResponseDto.builder()
+    public static PostListResponseDto fromPost(Post post){
+        return PostListResponseDto.builder()
                 .id(post.getId())
                 .userId(post.getUserId())
                 .title(post.getTitle())
@@ -43,7 +38,6 @@ public class PostResponseDto {
                 .view_count(post.getView_count())
                 .created_at(post.getCreated_at())
                 .updated_at(post.getUpdated_at())
-                .images(post.getImages().stream().map(ImageDto::from).toList()) // ✅ 이 라인 확인
                 .build();
     }
 

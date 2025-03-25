@@ -19,8 +19,6 @@ public interface PostRepository {
 
     List<Post> findAllVisiblePosts();
 
-    void decrementContentCount(Long id);
-
     void incrementLikeCount(Long id);
 
     void decrementLikeCount(Long id);

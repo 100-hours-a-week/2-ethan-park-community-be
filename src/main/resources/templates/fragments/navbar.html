@@ -21,9 +21,10 @@
         <img th:src="@{/images/토글.png}" alt="프로필 사진" class="profile-toggle" onclick="toggleDropdown()">
         <div class="dropdown" id="dropdownMenu">
             <ul>
-                <li onclick="location.href='/edit-profile'">회원정보수정</li>
-                <li onclick="location.href='/edit-password'">비밀번호수정</li>
-                <li onclick="alert('로그아웃')">로그아웃</li>
+                <li id="edit-profile" onclick="location.href='/edit-profile'">회원정보수정</li>
+                <li id="edit-password" onclick="location.href='/edit-password'">비밀번호수정</li>
+                <li id="logout" onclick="logout()">로그아웃</li>
+                <li id="login" onclick="location.href='/login'">로그인</li>
             </ul>
         </div>
     </div>

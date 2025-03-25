@@ -3,6 +3,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const profileToggle = document.querySelector(".profile-toggle");
   const dropdown = document.getElementById("dropdownMenu");
 
+  const editProfile = document.getElementById("edit-profile");
+  const editPassword = document.getElementById("edit-password");
+  const logoutBtn = document.getElementById("logout");
+  const loginBtn = document.getElementById("login");
+
+  const token = localStorage.getItem("jwt");
+
   if (profileToggle && dropdown) {
     profileToggle.addEventListener("click", function (event) {
       event.stopPropagation();
@@ -16,6 +23,21 @@ document.addEventListener("DOMContentLoaded", () => {
       dropdown.classList.remove("show");
     }
   });
+
+  if(token) {
+    // 로그인 상태
+      if (editProfile) editProfile.style.display = "block";
+      if (editPassword) editPassword.style.display = "block";
+      if (logoutBtn) logoutBtn.style.display = "block";
+      if (loginBtn) loginBtn.style.display = "none";
+    } else {
+    // 비로그인 상태
+      if(editProfile) editProfile.style.display = "none";
+      if(editPassword) editPassword.style.display = "none";
+      if(logoutBtn) logoutBtn.style.display = "none";
+      if(loginBtn) loginBtn.style.display = "block";
+    }
+
 
   // 👉 로그아웃 함수 전역 등록
   window.logout = function () {

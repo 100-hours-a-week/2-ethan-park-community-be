@@ -55,11 +55,6 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public void decrementContentCount(Long id) {
-        postJpaRepository.decrementContentCount(id);
-    }
-
-    @Override
     public void incrementLikeCount(Long id) {
         postJpaRepository.incrementLikeCount(id);
     }

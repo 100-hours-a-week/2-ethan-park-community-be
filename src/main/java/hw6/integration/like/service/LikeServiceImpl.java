@@ -50,7 +50,8 @@ public class LikeServiceImpl implements LikeService {
         return post;
     }
 
-    private boolean isLiked(Long userId, Long postId) {
+    @Override
+    public boolean isLiked(Long userId, Long postId) {
         return likeRepository.existsActiveLike(userId, postId) > 0;
     }
 

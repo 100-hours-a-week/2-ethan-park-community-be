@@ -1,22 +1,33 @@
 document.addEventListener("DOMContentLoaded", function () {
   const postId = document.body.dataset.postId;
+
   const postTitleElem = document.getElementById("post-title");
   const postContentElem = document.getElementById("post-content");
+
   const viewCountElem = document.getElementById("view-count");
   const likeCountElem = document.getElementById("like-count");
   const commentCountElem = document.getElementById("comment-count");
+
+
   const commentList = document.getElementById("comments");
   const commentInput = document.getElementById("comment-input");
   const commentSubmitBtn = document.getElementById("submit-comment");
+
   const editBtn = document.getElementById("edit-btn");
   const deleteBtn = document.getElementById("delete-btn");
+
   const deleteModal = document.getElementById("delete-modal");
   const confirmDeleteBtn = document.getElementById("confirm-delete-btn");
   const cancelDeleteBtn = document.getElementById("cancel-btn");
+
   const imageContainer = document.getElementById("post-image-container");
+
+  const likeBtn = document.getElementById("like-button");
 
   let editingCommentId = null;
   let currentUserId = null;
+  let isLiked;
+
 
   async function fetchCurrentUserId() {
     try {
@@ -71,6 +82,43 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         imageContainer.innerHTML = "<p>이미지가 없습니다</p>";
       }
+  }
+
+  likeBtn.onclick = async () => {
+    try {
+      await fetch(`/api/posts/${postId}/likes`, {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+      });
+
+      updateLikeStatus(); // 👉 상태 다시 받아와서 UI 갱신
+    } catch (e) {
+      alert("로그인이 필요합니다.");
+      console.error(e);
+    }
+  };
+
+  async function updateLikeStatus() {
+    try {
+      const res = await fetch(`/api/posts/${postId}/likes/status`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("jwt"),
+        },
+      });
+
+      if (!res.ok) throw new Error("상태 조회 실패");
+
+      const data = await res.json();
+
+      likeCountElem.innerText = data.likeCount;
+      isLiked = data.isLiked;
+
+      likeBtn.classList.toggle("liked", isLiked);
+    } catch (e) {
+      console.error("좋아요 상태 업데이트 실패", e);
+    }
   }
 
   async function fetchComments() {
@@ -175,8 +223,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   fetchCurrentUserId()
     .then(() => {
+      updateLikeStatus(); // ← 이거 꼭 필요!
       fetchPost();
       fetchComments();
+
+
     })
     .catch((error) => {
       console.error("API 호출 실패:", error);

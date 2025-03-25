@@ -1,6 +1,6 @@
 package hw6.integration.post.controller;
 
-import hw6.integration.post.dto.PostResponseDto;
+import hw6.integration.post.dto.PostListResponseDto;
 import hw6.integration.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -19,7 +19,7 @@ public class PostPageController {
     public String postListPage(Model model) {
         model.addAttribute("posts", postService.getPostByAll()
                 .stream()
-                .map(PostResponseDto::fromPost)
+                .map(PostListResponseDto::fromPost)
                 .toList());
         return "posts/posts"; // templates/posts/posts.html
     }
