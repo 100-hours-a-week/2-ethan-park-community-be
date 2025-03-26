@@ -43,24 +43,23 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/login", "/signup", "/favicon.ico",
+                                "/favicon.ico",
                                 "/css/**", "/js/**", "/images/**",
                                 "/navbar/**", "/validator/**", "/image_storage/**"
                         ).permitAll()
-                        .requestMatchers("/fragments/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/api/**").permitAll()
-                        .requestMatchers("/posts", "/posts/**").permitAll() // HTML만 띄움
-                        .requestMatchers("/edit-profile").permitAll() // HTML만 띄움
-                        .requestMatchers("/edit-password").permitAll() // HTML만 띄움
-                        .requestMatchers("/api/**").authenticated() // API는 모두 인증 필요
+                        .requestMatchers("/login", "/signup").permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/users").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/api/posts").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/posts").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/posts/create", "/posts/edit").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/posts", "/posts/*").permitAll()
                         .anyRequest().authenticated()
 
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-
                 .build();
 
     }

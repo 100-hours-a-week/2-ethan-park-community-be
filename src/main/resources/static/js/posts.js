@@ -1,13 +1,24 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const writePostButton = document.getElementById("writePostBtn");
+  const token = localStorage.getItem("jwt");
+
+  // 로그인 상태인 경우 버튼을 보이게, 아니라면 숨김 처리
+  if (writePostButton) {
+    if (token) {
+      writePostButton.style.display = "block"; // 또는 inline-block 등 원하는 값
+    } else {
+      writePostButton.style.display = "none";
+    }
+  }
+
+  // 나머지 로직 (예: 게시글 목록 로드 등)
   const postList = document.getElementById("post-list");
   postList.innerHTML = "";
 
-  const token = localStorage.getItem("jwt");
-
   fetch("/api/posts", {
     headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('jwt')
-      }
+      'Authorization': 'Bearer ' + token
+    }
   })
     .then((response) => {
       if (!response.ok) {
@@ -47,8 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("게시글을 가져오는 중 오류가 발생했습니다.");
     });
 
-  document.getElementById("writePostBtn").addEventListener("click", () => {
-    const token = localStorage.getItem("jwt");
+  // 게시글 작성 버튼 클릭 이벤트
+  writePostButton.addEventListener("click", () => {
     if (!token) {
       alert("로그인이 필요합니다.");
       window.location.href = "/login";
@@ -63,8 +74,6 @@ function truncateTitle(title) {
 }
 
 function formatNumber(value) {
-  if (value >= 100000) return Math.floor(value / 1000) + "k";
-  if (value >= 10000) return Math.floor(value / 1000) + "k";
   if (value >= 1000) return Math.floor(value / 1000) + "k";
   return value;
 }
