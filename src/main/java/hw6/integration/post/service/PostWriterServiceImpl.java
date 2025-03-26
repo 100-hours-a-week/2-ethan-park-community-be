@@ -10,7 +10,6 @@ import hw6.integration.post.domain.Post;
 import hw6.integration.post.dto.PostCreateRequestDto;
 import hw6.integration.post.dto.PostUpdateRequestDto;
 import hw6.integration.post.entity.PostEntity;
-import hw6.integration.post.repository.PostReadRepository;
 import hw6.integration.post.repository.PostWriteRepository;
 import hw6.integration.post.util.PostValidator;
 import hw6.integration.user.domain.User;
@@ -28,7 +27,6 @@ import java.util.List;
 public class PostWriterServiceImpl implements PostWriterService {
 
     private final PostWriteRepository postWriteRepository;
-    private final PostReadRepository postReadRepository;
     private final CommentWriteRepository commentWriteRepository;
     private final ImageComponent imageComponent;
     private final UserValidator userValidator;
@@ -40,7 +38,7 @@ public class PostWriterServiceImpl implements PostWriterService {
 
         User user = userValidator.validateUserExists(userId);
 
-        userValidator.validateUserActive(userId);
+        userValidator.validateUserActive(user);
 
         Post post = Post.createPost(userId, postCreateRequestDto.getTitle(), postCreateRequestDto.getContent(), user.getNickname());
 
@@ -65,57 +63,55 @@ public class PostWriterServiceImpl implements PostWriterService {
     public Post updatePost(Long postId, PostUpdateRequestDto dto, Long userId) {
 
         // 1. 사용자 유효성 검사
-        userValidator.validateUserExists(userId);
+        User user = userValidator.validateUserExists(userId);
 
         // 사용자 active 상태인지 검사
-        userValidator.validateUserActive(userId);
+        userValidator.validateUserActive(user);
 
         // 2. 기존 게시글 엔티티 가져오기
         PostEntity postEntity = postValidator.validatePostEntityExists(postId);
 
-        if (!postEntity.isDeleted()) {
+        postValidator.validatePostEntityDeleted(postEntity);
 
-            // 1. 제목/내용 업데이트 (메서드로 캡슐화)
-            postEntity.update(dto.getTitle(), dto.getContent());
+        // 1. 제목/내용 업데이트 (메서드로 캡슐화)
+        postEntity.update(dto.getTitle(), dto.getContent());
 
-            // 4. 기존 이미지 가져오기
-            List<ImageEntity> currentImages = postEntity.getImages();
+        // 4. 기존 이미지 가져오기
+        List<ImageEntity> currentImages = postEntity.getImages();
 
-            // 5. 삭제 요청 이미지 제거
-            if (dto.getImagesToDelete() != null && !dto.getImagesToDelete().isEmpty()) {
-                List<Long> toDelete = dto.getImagesToDelete();
+        // 5. 삭제 요청 이미지 제거
+        if (dto.getImagesToDelete() != null && !dto.getImagesToDelete().isEmpty()) {
+            List<Long> toDelete = dto.getImagesToDelete();
 
-                currentImages.removeIf(image -> {
-                    boolean shouldDelete = toDelete.contains(image.getId());
-                    if (shouldDelete) {
-                        imageComponent.deleteImage(image.getImagePath()); // 실제 파일 삭제
-                    }
-                    return shouldDelete;
-                });
-            }
-
-            // 6. 새 이미지 추가
-            if (dto.getNewImages() != null && !dto.getNewImages().isEmpty()) {
-                for (MultipartFile file : dto.getNewImages()) {
-                    String path = imageComponent.uploadPostImage(file);
-                    ImageEntity newImage = ImageEntity.builder()
-                            .postEntity(postEntity)
-                            .imagePath(path)
-                            .build();
-                    currentImages.add(newImage);
+            currentImages.removeIf(image -> {
+                boolean shouldDelete = toDelete.contains(image.getId());
+                if (shouldDelete) {
+                    imageComponent.deleteImage(image.getImagePath()); // 실제 파일 삭제
                 }
-            }
-
-            // 7. 이미지 개수 제한 검사
-            if (currentImages.size() > 10) {
-                throw new BusinessException(ErrorCode.IMAGE_LIMIT_EXCEEDED);
-            }
-
-            // 8. JPA는 영속 객체의 필드 변경만으로 업데이트 처리
-            return postEntity.toDomain();
-
+                return shouldDelete;
+            });
         }
-        throw new BusinessException(ErrorCode.POST_NOT_FOUND);
+
+        // 6. 새 이미지 추가
+        if (dto.getNewImages() != null && !dto.getNewImages().isEmpty()) {
+            for (MultipartFile file : dto.getNewImages()) {
+                String path = imageComponent.uploadPostImage(file);
+                ImageEntity newImage = ImageEntity.builder()
+                        .postEntity(postEntity)
+                        .imagePath(path)
+                        .build();
+                currentImages.add(newImage);
+            }
+        }
+
+        // 7. 이미지 개수 제한 검사
+        if (currentImages.size() > 10) {
+            throw new BusinessException(ErrorCode.IMAGE_LIMIT_EXCEEDED);
+        }
+
+        // 8. JPA는 영속 객체의 필드 변경만으로 업데이트 처리
+        return postEntity.toDomain();
+
     }
 
     @Transactional
@@ -124,34 +120,27 @@ public class PostWriterServiceImpl implements PostWriterService {
 
         User user = userValidator.validateUserExists(userId);
 
-        userValidator.validateUserActive(userId);
+        userValidator.validateUserActive(user);
 
-        PostEntity postEntity = postReadRepository.findEntityById(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+        PostEntity postEntity = postValidator.validatePostEntityExists(postId);
 
-        if (!postEntity.isDeleted()) {
+        postValidator.validatePostEntityDeleted(postEntity);
 
-            if (postEntity.getComment_count() > 0) {
+        if (postEntity.getComment_count() > 0) {
 
-                commentWriteRepository.deleteCommentByPostId(postId);
-            }
-
-            if (userId.equals(postEntity.getUserEntity().getId())) {
-                postEntity.setDeleted(true);
-
-            } else {
-                throw new BusinessException(ErrorCode.UNAUTHORIZED);
-            }
-
-            // 🔥 이미지 경로 순회하며 파일 삭제
-            //        if (post.getImages() != null) {
-            //            post.getImages().forEach(image -> {
-            //                imageComponent.deleteImage(image.getImagePath());
-            //            });
-            //        }
-        } else {
-            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
+            commentWriteRepository.deleteCommentByPostId(postId);
         }
+
+        userValidator.validateUserAndPostEquals(userId, postEntity.getUserEntity().getId());
+
+        postEntity.setDeleted(true);
+
+        // 🔥 이미지 경로 순회하며 파일 삭제
+        //        if (post.getImages() != null) {
+        //            post.getImages().forEach(image -> {
+        //                imageComponent.deleteImage(image.getImagePath());
+        //            });
+        //        }
 
 
     }

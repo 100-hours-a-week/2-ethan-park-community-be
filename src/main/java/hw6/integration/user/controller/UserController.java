@@ -83,7 +83,7 @@ public class UserController {
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
 
         userWriterService.deleteUser(userPrincipal.getId());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
 
     }
 

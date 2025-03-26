@@ -21,8 +21,8 @@ public class UserValidator {
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
-    public void validateUserActive(Long userId) {
-        if (!validateUserExists(userId).getIsActive())
+    public void validateUserActive(User user) {
+        if (!user.getIsActive())
             throw new BusinessException(ErrorCode.UNAUTHORIZED);
     }
 
@@ -46,8 +46,21 @@ public class UserValidator {
     }
 
     public void validateUserPasswordSame(String newPassword, String beforePassword) {
+        System.out.println(newPassword + " !!! " + beforePassword);
         if (!passwordEncoder.matches(newPassword, beforePassword))
             throw new BusinessException(ErrorCode.INVALID_PASSWORD);
+    }
+
+    public void validateUserAndPostEquals(Long userId, Long post_userId) {
+
+        if (!userId.equals(post_userId))
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
+    }
+
+    public void validateUserAndCommentEntityEquals(Long userId, Long comment_userId) {
+
+        if (!userId.equals(comment_userId))
+            throw new BusinessException(ErrorCode.UNAUTHORIZED);
     }
 
 

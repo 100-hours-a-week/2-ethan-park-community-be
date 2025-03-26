@@ -11,8 +11,10 @@ import hw6.integration.exception.ErrorCode;
 import hw6.integration.post.domain.Post;
 import hw6.integration.post.entity.PostEntity;
 import hw6.integration.post.repository.PostReadRepository;
+import hw6.integration.post.util.PostValidator;
 import hw6.integration.user.domain.User;
 import hw6.integration.user.repository.UserReadRepository;
+import hw6.integration.user.util.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,24 +27,20 @@ public class CommentWriterServiceImpl implements CommentWriterService {
     private final CommentReadRepository commentReadRepository;
     private final UserReadRepository userReadRepository;
     private final PostReadRepository postReadRepository;
+    private final UserValidator userValidator;
+    private final PostValidator postValidator;
 
     @Transactional
     @Override
     public Comment createComment(CommentCreateRequestDto dto, Long userId, Long postId) {
 
-        User user = userReadRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
+        User user = userValidator.validateUserExists(userId);
 
-        if (!user.getIsActive()) {
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
-        }
+        userValidator.validateUserActive(user);
 
-        PostEntity postEntity = postReadRepository.findEntityById(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+        PostEntity postEntity = postValidator.validatePostEntityExists(postId);
 
-        if (postEntity.isDeleted()) {
-            throw new BusinessException(ErrorCode.POST_DELETED);
-        }
+        postValidator.validatePostEntityDeleted(postEntity);
 
         Comment comment = Comment.createComment(postId, userId, user.getNickname(), dto.getContent());
 
@@ -58,26 +56,18 @@ public class CommentWriterServiceImpl implements CommentWriterService {
     @Override
     public void updateComment(CommentUpdateRequestDto commentUpdateRequestDto, Long commentId, Long userId, Long postId) {
 
-        User user = userReadRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
+        User user = userValidator.validateUserExists(userId);
 
-        if (!user.getIsActive()) {
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
-        }
+        userValidator.validateUserActive(user);
 
-        Post post = postReadRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+        Post post = postValidator.validatePostExists(postId);
 
-        if (post.isDeleted()) {
-            throw new BusinessException(ErrorCode.POST_DELETED);
-        }
+        postValidator.validatePostDeleted(post);
 
         CommentEntity commentEntity = commentReadRepository.findByCommentEntityId(commentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
 
-        if (!userId.equals(commentEntity.getUserEntity().getId())) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
+        userValidator.validateUserAndCommentEntityEquals(userId, commentEntity.getUserEntity().getId());
 
         commentEntity.setContent(commentUpdateRequestDto.getContent());
         // Dirty Checking으로 바로 적용
@@ -88,19 +78,13 @@ public class CommentWriterServiceImpl implements CommentWriterService {
     @Override
     public void deleteComment(Long commentId, Long userId, Long postId) {
 
-        User user = userReadRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
+        User user = userValidator.validateUserExists(userId);
 
-        if (!user.getIsActive()) {
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
-        }
+        userValidator.validateUserActive(user);
 
-        PostEntity postEntity = postReadRepository.findEntityById(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+        PostEntity postEntity = postValidator.validatePostEntityExists(postId);
 
-        if (postEntity.isDeleted()) {
-            throw new BusinessException(ErrorCode.POST_DELETED);
-        }
+        postValidator.validatePostEntityDeleted(postEntity);
 
         CommentEntity commentEntity = commentReadRepository.findByCommentEntityId(commentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
@@ -109,9 +93,7 @@ public class CommentWriterServiceImpl implements CommentWriterService {
             throw new BusinessException(ErrorCode.COMMENT_NOT_FOUND);
         }
 
-        if (!userId.equals(commentEntity.getUserEntity().getId())) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED);
-        }
+        userValidator.validateUserAndCommentEntityEquals(userId, commentEntity.getUserEntity().getId());
 
         commentEntity.setDeleted(true);
         postEntity.decrementCommentCount(); // Dirty Checking 사용

@@ -7,8 +7,6 @@ import hw6.integration.post.dto.PostUpdateRequestDto;
 import hw6.integration.post.service.PostReadService;
 import hw6.integration.post.service.PostWriterService;
 import hw6.integration.user.auth.UserPrincipal;
-import hw6.integration.user.domain.User;
-import hw6.integration.user.dto.UserResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,6 +60,9 @@ public class PostController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long postId,
             @ModelAttribute PostUpdateRequestDto postUpdateRequestDto) {
+
+        //수정 시 이미지 데이터는 안바뀜
+        //저장도 안됨
 
         return ResponseEntity.ok(PostListResponseDto.fromPost(postWriterService.updatePost(postId, postUpdateRequestDto, userPrincipal.getId())));
     }

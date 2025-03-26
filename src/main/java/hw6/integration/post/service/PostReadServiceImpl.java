@@ -1,10 +1,9 @@
 package hw6.integration.post.service;
 
-import hw6.integration.exception.BusinessException;
-import hw6.integration.exception.ErrorCode;
 import hw6.integration.post.domain.Post;
 import hw6.integration.post.entity.PostEntity;
 import hw6.integration.post.repository.PostReadRepository;
+import hw6.integration.post.util.PostValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +15,7 @@ import java.util.List;
 public class PostReadServiceImpl implements PostReadService {
 
     private final PostReadRepository postReadRepository;
+    private final PostValidator postValidator;
 
     @Override
     public List<Post> getPostByAll() {
@@ -27,22 +27,18 @@ public class PostReadServiceImpl implements PostReadService {
     @Transactional
     @Override
     public Post getPostById(Long id) {
-        PostEntity post = postReadRepository.findEntityById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+        PostEntity postEntity = postValidator.validatePostEntityExists(id);
 
-        if (post.isDeleted()) {
-            throw new BusinessException(ErrorCode.POST_DELETED);
-        }
+        postValidator.validatePostEntityDeleted(postEntity);
 
-        post.incrementViewCount(); // 엔티티에서 직접 메서드를 통해 증가 (Dirty Checking 활용)
+        postEntity.incrementViewCount(); // 엔티티에서 직접 메서드를 통해 증가 (Dirty Checking 활용)
 
-        return post.toDomain();
+        return postEntity.toDomain();
     }
 
     @Override
     public Post findById(Long id) {
-        return postReadRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+        return postValidator.validatePostExists(id);
     }
 
 

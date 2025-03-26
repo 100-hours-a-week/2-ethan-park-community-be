@@ -56,7 +56,7 @@ public class UserWriterServiceImpl implements UserWriterService {
         // 1. 기존 사용자 조회
         User userExisting = userValidator.validateUserExists(id);
 
-        userValidator.validateUserActive(id);
+        userValidator.validateUserActive(userExisting);
 
         userValidator.validateUserNicknameDuplicate(userUpdateNicknameRequestDto.getNickname());
 
@@ -78,7 +78,7 @@ public class UserWriterServiceImpl implements UserWriterService {
 
         User userExisting = userValidator.validateUserExists(id);
 
-        userValidator.validateUserActive(id);
+        userValidator.validateUserActive(userExisting);
 
         // 현재 비밀번호 검증 (비밀번호 변경 시 추가 인증하도록 설정 - 나중에 고도화 때 진행)
 //        if (!passwordEncoder.matches(userExisting.getPassword(), userUpdatePasswordRequestDto.getPassword())) {
@@ -96,7 +96,7 @@ public class UserWriterServiceImpl implements UserWriterService {
     public void deleteUser(Long id) {
         User user = userValidator.validateUserExists(id);
 
-        userValidator.validateUserActive(id);
+        userValidator.validateUserActive(user);
 
         User deletedUser = user.withIsActive(false);
         userWriterRepository.save(deletedUser);

@@ -1,14 +1,12 @@
 package hw6.integration.like.service;
 
-import hw6.integration.exception.BusinessException;
-import hw6.integration.exception.ErrorCode;
 import hw6.integration.like.domain.Like;
 import hw6.integration.like.repository.LikeRepository;
 import hw6.integration.post.domain.Post;
-import hw6.integration.post.repository.PostReadRepository;
 import hw6.integration.post.repository.PostWriteRepository;
+import hw6.integration.post.util.PostValidator;
 import hw6.integration.user.domain.User;
-import hw6.integration.user.repository.UserReadRepository;
+import hw6.integration.user.util.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +17,8 @@ public class LikeServiceImpl implements LikeService {
 
     private final LikeRepository likeRepository;
     private final PostWriteRepository postWriteRepository;
-    private final PostReadRepository postReadRepository;
-    private final UserReadRepository userReadRepository;
+    private final UserValidator userValidator;
+    private final PostValidator postValidator;
 
     @Transactional
     @Override
@@ -36,20 +34,18 @@ public class LikeServiceImpl implements LikeService {
     }
 
     private User findActiveUserById(Long userId) {
-        User user = userReadRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
-        if (!user.getIsActive()) {
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
-        }
+        User user = userValidator.validateUserExists(userId);
+
+        userValidator.validateUserActive(user);
+
         return user;
     }
 
     private Post findActivePostById(Long postId) {
-        Post post = postReadRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
-        if (post.isDeleted()) {
-            throw new BusinessException(ErrorCode.POST_DELETED);
-        }
+        Post post = postValidator.validatePostExists(postId);
+
+        postValidator.validatePostDeleted(post);
+
         return post;
     }
 

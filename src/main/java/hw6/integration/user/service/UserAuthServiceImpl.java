@@ -20,7 +20,7 @@ public class UserAuthServiceImpl implements UserAuthService {
     public String login(UserLoginRequestDto userLoginRequestDto) {
         User user = userValidator.validateUserEmailExists(userLoginRequestDto.getEmail());
 
-        userValidator.validateUserActive(user.getId());
+        userValidator.validateUserActive(user);
 
         userValidator.validateUserPasswordSame(userLoginRequestDto.getPassword(), user.getPassword());
 
