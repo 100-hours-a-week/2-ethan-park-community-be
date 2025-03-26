@@ -37,7 +37,7 @@ public class LikeServiceImpl implements LikeService {
 
     private User findActiveUserById(Long userId) {
         User user = userReadRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
         if (!user.getIsActive()) {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
@@ -48,7 +48,7 @@ public class LikeServiceImpl implements LikeService {
         Post post = postReadRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
         if (post.isDeleted()) {
-            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
+            throw new BusinessException(ErrorCode.POST_DELETED);
         }
         return post;
     }

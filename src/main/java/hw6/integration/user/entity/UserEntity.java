@@ -1,6 +1,5 @@
 package hw6.integration.user.entity;
 
-import hw6.integration.image.entity.ImageEntity;
 import hw6.integration.post.entity.PostEntity;
 import hw6.integration.user.domain.User;
 import jakarta.persistence.*;
@@ -65,6 +64,12 @@ public class UserEntity {
                 .build();
     }
 
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
 }

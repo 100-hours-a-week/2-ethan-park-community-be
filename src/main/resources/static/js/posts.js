@@ -1,15 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const writePostButton = document.getElementById("writePostBtn");
-  const token = localStorage.getItem("jwt");
+    const writePostButton = document.getElementById("writePostBtn");
+    const token = localStorage.getItem("jwt");
 
-  // 로그인 상태인 경우 버튼을 보이게, 아니라면 숨김 처리
-  if (writePostButton) {
-    if (token) {
-      writePostButton.style.display = "block"; // 또는 inline-block 등 원하는 값
-    } else {
-      writePostButton.style.display = "none";
+    if (writePostButton) {
+      writePostButton.style.display = token ? "block" : "none";
     }
-  }
 
   // 나머지 로직 (예: 게시글 목록 로드 등)
   const postList = document.getElementById("post-list");

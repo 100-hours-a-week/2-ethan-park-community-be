@@ -31,7 +31,7 @@ public class CommentWriterServiceImpl implements CommentWriterService {
     public Comment createComment(CommentCreateRequestDto dto, Long userId, Long postId) {
 
         User user = userReadRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
 
         if (!user.getIsActive()) {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
@@ -41,7 +41,7 @@ public class CommentWriterServiceImpl implements CommentWriterService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
         if (postEntity.isDeleted()) {
-            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
+            throw new BusinessException(ErrorCode.POST_DELETED);
         }
 
         Comment comment = Comment.createComment(postId, userId, user.getNickname(), dto.getContent());
@@ -59,7 +59,7 @@ public class CommentWriterServiceImpl implements CommentWriterService {
     public void updateComment(CommentUpdateRequestDto commentUpdateRequestDto, Long commentId, Long userId, Long postId) {
 
         User user = userReadRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
 
         if (!user.getIsActive()) {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
@@ -69,7 +69,7 @@ public class CommentWriterServiceImpl implements CommentWriterService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
         if (post.isDeleted()) {
-            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
+            throw new BusinessException(ErrorCode.POST_DELETED);
         }
 
         CommentEntity commentEntity = commentReadRepository.findByCommentEntityId(commentId)
@@ -89,7 +89,7 @@ public class CommentWriterServiceImpl implements CommentWriterService {
     public void deleteComment(Long commentId, Long userId, Long postId) {
 
         User user = userReadRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
 
         if (!user.getIsActive()) {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
@@ -99,7 +99,7 @@ public class CommentWriterServiceImpl implements CommentWriterService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
         if (postEntity.isDeleted()) {
-            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
+            throw new BusinessException(ErrorCode.POST_DELETED);
         }
 
         CommentEntity commentEntity = commentReadRepository.findByCommentEntityId(commentId)

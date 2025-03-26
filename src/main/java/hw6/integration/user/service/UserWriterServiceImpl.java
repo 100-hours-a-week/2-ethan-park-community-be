@@ -1,16 +1,14 @@
 package hw6.integration.user.service;
 
 import hw6.integration.comment.repository.CommentWriteRepository;
-import hw6.integration.exception.BusinessException;
-import hw6.integration.exception.ErrorCode;
 import hw6.integration.image.component.ImageComponent;
 import hw6.integration.post.repository.PostWriteRepository;
 import hw6.integration.user.domain.User;
 import hw6.integration.user.dto.UserSignupRequestDto;
 import hw6.integration.user.dto.UserUpdateNicknameRequestDto;
 import hw6.integration.user.dto.UserUpdatePasswordRequestDto;
-import hw6.integration.user.repository.UserReadRepository;
 import hw6.integration.user.repository.UserWriterRepository;
+import hw6.integration.user.util.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,26 +18,26 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserWriterServiceImpl implements UserWriterService {
 
-    private final UserReadRepository userReadRepository;
     private final UserWriterRepository userWriterRepository;
     private final ImageComponent imageComponent;
     private final PasswordEncoder passwordEncoder;
     private final PostWriteRepository postWriteRepository;
     private final CommentWriteRepository commentWriteRepository;
 
+    private final UserValidator userValidator;
+
     @Transactional
     @Override
     public User registerUser(UserSignupRequestDto userSignupRequestDto) {
 
-        if(userReadRepository.findByEmail(userSignupRequestDto.getEmail()).isPresent()){
-            throw new BusinessException(ErrorCode.EMAIL_DUPLICATE);
-        }
+        userValidator.validateUserEmailDuplicate(userSignupRequestDto.getEmail());
+
+        userValidator.validateUserNicknameDuplicate(userSignupRequestDto.getNickname());
 
         String profilePath = null;
         if (userSignupRequestDto.getProfileImage() != null && !userSignupRequestDto.getProfileImage().isEmpty()) {
             profilePath = imageComponent.uploadProfileImage(userSignupRequestDto.getProfileImage());
         }
-
 
         User user = User.createUser(
                 userSignupRequestDto.getEmail(),
@@ -56,8 +54,11 @@ public class UserWriterServiceImpl implements UserWriterService {
     public User updateNickname(Long id, UserUpdateNicknameRequestDto userUpdateNicknameRequestDto) {
 
         // 1. 기존 사용자 조회
-        User userExisting = userReadRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        User userExisting = userValidator.validateUserExists(id);
+
+        userValidator.validateUserActive(id);
+
+        userValidator.validateUserNicknameDuplicate(userUpdateNicknameRequestDto.getNickname());
 
         // 2. 변경된 닉네임 반영
         User updatedUser = userExisting.withNickname(userUpdateNicknameRequestDto.getNickname());
@@ -75,8 +76,9 @@ public class UserWriterServiceImpl implements UserWriterService {
     @Override
     public void updatePassword(Long id, UserUpdatePasswordRequestDto userUpdatePasswordRequestDto) {
 
-        User userExisting = userReadRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        User userExisting = userValidator.validateUserExists(id);
+
+        userValidator.validateUserActive(id);
 
         // 현재 비밀번호 검증 (비밀번호 변경 시 추가 인증하도록 설정 - 나중에 고도화 때 진행)
 //        if (!passwordEncoder.matches(userExisting.getPassword(), userUpdatePasswordRequestDto.getPassword())) {
@@ -92,8 +94,9 @@ public class UserWriterServiceImpl implements UserWriterService {
     @Transactional
     @Override
     public void deleteUser(Long id) {
-        User user = userReadRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        User user = userValidator.validateUserExists(id);
+
+        userValidator.validateUserActive(id);
 
         User deletedUser = user.withIsActive(false);
         userWriterRepository.save(deletedUser);

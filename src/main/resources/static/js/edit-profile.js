@@ -42,36 +42,34 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function updateProfile() {
-   const nickname = document.getElementById("nickname").value.trim();
+   const newNickname = document.getElementById("nickname").value.trim();
    const errorText = document.getElementById("errorText");
-   const imageFile = document.getElementById("profileImage").files[0];
 
    errorText.textContent = "";
 
-   if (!nickname) {
+   if (!newNickname) {
      errorText.textContent = "*닉네임을 입력해주세요.";
      return;
    }
-   if (nickname.length > 10) {
+   if (newNickname.length > 10) {
      errorText.textContent = "*닉네임은 최대 10자까지 가능합니다.";
      return;
-   }
-
-   const formData = new FormData();
-   formData.append("nickname", nickname);
-   if (imageFile) {
-     formData.append("profileImage", imageFile);
    }
 
    fetch("/api/me/profile", {
      method: "PUT",
      headers: {
+       "Content-Type": "application/json",
        Authorization: "Bearer " + localStorage.getItem("jwt"),
      },
-     body: formData,
+     body: JSON.stringify({ nickname: newNickname }),
    })
      .then((res) => {
-       if (!res.ok) throw new Error("수정 실패");
+       if (!res.ok) {
+         return res.text().then((text) => {
+           throw new Error(`수정 실패: ${res.status} - ${text}`);
+         });
+       }
        return res.json();
      })
      .then(() => {
@@ -80,8 +78,9 @@ function updateProfile() {
        setTimeout(() => (toast.style.display = "none"), 2000);
      })
      .catch((err) => {
+       console.log("!!!!!!!!!!!!", err);  // 콘솔에서 더 자세한 오류 확인
        console.error("닉네임 수정 오류:", err);
-       errorText.textContent = "*닉네임 수정 실패";
+       errorText.textContent = `*닉네임 수정 실패: ${err.message}`;  // 더 상세한 오류 메시지 표시
      });
  }
 

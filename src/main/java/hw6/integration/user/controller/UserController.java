@@ -28,7 +28,7 @@ public class UserController {
 
         User user = userReadService.getUserById(id);
 
-        UserResponseDto userResponseDto = UserResponseDto.toDomain(user);
+        UserResponseDto userResponseDto = UserResponseDto.fromDomain(user);
 
         return ResponseEntity.ok(userResponseDto);
     }
@@ -38,7 +38,7 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserResponseDto> getCurrentUser(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         User user = userReadService.getUserById(userPrincipal.getId());
-        return ResponseEntity.ok(UserResponseDto.toDomain(user));
+        return ResponseEntity.ok(UserResponseDto.fromDomain(user));
     }
 
     @PostMapping(value = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -57,18 +57,13 @@ public class UserController {
         return ResponseEntity.ok(new TokenResponseDto(token));
     }
 
-
-
     @PutMapping("/me/profile")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Void> updateProfile(
+    public ResponseEntity<UserNicknameUpdateResponseDto> updateProfile(
             @AuthenticationPrincipal UserPrincipal userPrincipal, // 인증된 사용자 정보
             @RequestBody UserUpdateNicknameRequestDto userUpdateNicknameRequestDto) {
 
-        userWriterService.updateNickname(userPrincipal.getId(), userUpdateNicknameRequestDto);
-
-        return ResponseEntity.noContent().build();
-
+        return ResponseEntity.ok(UserNicknameUpdateResponseDto.fromDomain(userWriterService.updateNickname(userPrincipal.getId(), userUpdateNicknameRequestDto)));
     }
 
 

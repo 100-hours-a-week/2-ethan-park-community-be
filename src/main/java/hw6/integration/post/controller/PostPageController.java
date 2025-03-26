@@ -26,7 +26,7 @@ public class PostPageController {
 
     // 게시글 상세 페이지
     @GetMapping("/posts/{postId}")
-    public String postDetailPage(@PathVariable Long postId, Model model) {
+    public String postDetailPage(@PathVariable("postId") Long postId, Model model) {
         model.addAttribute("postId", postId); // JavaScript에서 사용 가능
         return "detail-post/detail-post"; // templates/detail-post/detail-post.html
     }
@@ -41,6 +41,7 @@ public class PostPageController {
     // 게시글 작성 페이지
     @GetMapping("/posts/create")
     public String postCreatePage() {
+
         return "make-post/make-post";
     }
 }

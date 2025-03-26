@@ -30,8 +30,8 @@ public class PostReadServiceImpl implements PostReadService {
         PostEntity post = postReadRepository.findEntityById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        if(post.isDeleted()) {
-            throw new BusinessException(ErrorCode.POST_NOT_FOUND);
+        if (post.isDeleted()) {
+            throw new BusinessException(ErrorCode.POST_DELETED);
         }
 
         post.incrementViewCount(); // 엔티티에서 직접 메서드를 통해 증가 (Dirty Checking 활용)

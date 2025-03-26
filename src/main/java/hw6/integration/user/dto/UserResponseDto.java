@@ -16,7 +16,7 @@ public class UserResponseDto {
     private String profilePath;
     private LocalDateTime createdAt;
 
-    public static UserResponseDto toDomain(User user) {
+    public static UserResponseDto fromDomain(User user) {
         return UserResponseDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())

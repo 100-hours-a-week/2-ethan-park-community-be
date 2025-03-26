@@ -1,7 +1,7 @@
 package hw6.integration.user.repository;
 
-import hw6.integration.user.entity.UserEntity;
 import hw6.integration.user.domain.User;
+import hw6.integration.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -19,8 +19,8 @@ public class UserReadRepositoryImpl implements UserReadRepository {
     public List<User> findByAll() {
 
         return userJpaRepository.findAll().stream()
-                        .map(UserEntity::toDomain)
-                        .toList();
+                .map(UserEntity::toDomain)
+                .toList();
 
     }
 
@@ -36,9 +36,11 @@ public class UserReadRepositoryImpl implements UserReadRepository {
                 .map(UserEntity::toDomain);
     }
 
-
-
-
+    @Override
+    public Optional<User> findByNickname(String nickname) {
+        return userJpaRepository.findByNickname(nickname)
+                .map(UserEntity::toDomain);
+    }
 
 
 }

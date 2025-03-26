@@ -1,9 +1,8 @@
 package hw6.integration.user.service;
 
-import hw6.integration.exception.BusinessException;
-import hw6.integration.exception.ErrorCode;
 import hw6.integration.user.domain.User;
 import hw6.integration.user.repository.UserReadRepository;
+import hw6.integration.user.util.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +13,7 @@ import java.util.List;
 public class UserReadServiceImpl implements UserReadService {
 
     private final UserReadRepository userReadRepository;
+    private final UserValidator userValidator;
 
     @Override
     public List<User> getUserByAll() {
@@ -24,8 +24,7 @@ public class UserReadServiceImpl implements UserReadService {
     @Override
     public User getUserById(Long id) {
 
-        return userReadRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        return userValidator.validateUserExists(id);
 
     }
 

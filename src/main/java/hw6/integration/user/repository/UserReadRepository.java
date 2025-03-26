@@ -13,4 +13,5 @@ public interface UserReadRepository {
 
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByNickname(String nickname);
 }
