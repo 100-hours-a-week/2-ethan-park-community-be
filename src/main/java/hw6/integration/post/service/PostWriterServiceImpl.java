@@ -59,7 +59,7 @@ public class PostWriterServiceImpl implements PostWriterService {
 
     @Transactional
     @Override
-    public Post updatePost(Long postId, PostUpdateRequestDto dto, Long userId) {
+    public Post updatePost(Long postId, PostUpdateRequestDto postUpdateRequestDto, Long userId) {
 
         // 1. 사용자 유효성 검사
         User user = userValidator.validateUserExists(userId);
@@ -73,14 +73,14 @@ public class PostWriterServiceImpl implements PostWriterService {
         postValidator.validatePostEntityDeleted(postEntity);
 
         // 1. 제목/내용 업데이트 (메서드로 캡슐화)
-        postEntity.update(dto.getTitle(), dto.getContent());
+        postEntity.update(postUpdateRequestDto.getTitle(), postUpdateRequestDto.getContent());
 
         // 4. 기존 이미지 가져오기
         List<ImageEntity> currentImages = postEntity.getImages();
 
         // 5. 삭제 요청 이미지 제거
-        if (dto.getImagesToDelete() != null && !dto.getImagesToDelete().isEmpty()) {
-            List<Long> toDelete = dto.getImagesToDelete();
+        if (postUpdateRequestDto.getImagesToDelete() != null && !postUpdateRequestDto.getImagesToDelete().isEmpty()) {
+            List<Long> toDelete = postUpdateRequestDto.getImagesToDelete();
 
             currentImages.removeIf(image -> {
                 boolean shouldDelete = toDelete.contains(image.getId());
@@ -92,8 +92,8 @@ public class PostWriterServiceImpl implements PostWriterService {
         }
 
         // 6. 새 이미지 추가
-        if (dto.getNewImages() != null && !dto.getNewImages().isEmpty()) {
-            for (MultipartFile file : dto.getNewImages()) {
+        if (postUpdateRequestDto.getNewImages() != null && !postUpdateRequestDto.getNewImages().isEmpty()) {
+            for (MultipartFile file : postUpdateRequestDto.getNewImages()) {
                 String path = imageComponent.uploadPostImage(file);
                 ImageEntity newImage = ImageEntity.builder()
                         .postEntity(postEntity)
@@ -133,12 +133,12 @@ public class PostWriterServiceImpl implements PostWriterService {
 
         postEntity.setDeleted(true);
 
-        // 🔥 이미지 경로 순회하며 파일 삭제
-        //        if (post.getImages() != null) {
-        //            post.getImages().forEach(image -> {
-        //                imageComponent.deleteImage(image.getImagePath());
-        //            });
-        //        }
+        //🔥 이미지 경로 순회하며 파일 삭제
+//                if (post.getImages() != null) {
+//                    post.getImages().forEach(image -> {
+//                        imageComponent.deleteImage(image.getImagePath());
+//                    });
+//                }
 
 
     }
