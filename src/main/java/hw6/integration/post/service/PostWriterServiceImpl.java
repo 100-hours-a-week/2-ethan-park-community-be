@@ -1,11 +1,10 @@
 package hw6.integration.post.service;
 
 import hw6.integration.comment.repository.CommentWriteRepository;
-import hw6.integration.exception.BusinessException;
-import hw6.integration.exception.ErrorCode;
 import hw6.integration.image.component.ImageComponent;
 import hw6.integration.image.domain.Image;
 import hw6.integration.image.entity.ImageEntity;
+import hw6.integration.image.util.ImageValidator;
 import hw6.integration.post.domain.Post;
 import hw6.integration.post.dto.PostCreateRequestDto;
 import hw6.integration.post.dto.PostUpdateRequestDto;
@@ -31,6 +30,7 @@ public class PostWriterServiceImpl implements PostWriterService {
     private final ImageComponent imageComponent;
     private final UserValidator userValidator;
     private final PostValidator postValidator;
+    private final ImageValidator imageValidator;
 
     @Transactional
     @Override
@@ -44,9 +44,8 @@ public class PostWriterServiceImpl implements PostWriterService {
 
         List<Image> uploadImages = new ArrayList<>();
         if (postCreateRequestDto.getImages() != null && !postCreateRequestDto.getImages().isEmpty()) {
-            if (postCreateRequestDto.getImages().size() > 10) {
-                throw new BusinessException(ErrorCode.IMAGE_LIMIT_EXCEEDED);
-            }
+
+            imageValidator.validatorImageSize(postCreateRequestDto.getImages().size());
 
             for (MultipartFile file : postCreateRequestDto.getImages()) {
                 String url = imageComponent.uploadPostImage(file);
@@ -104,10 +103,9 @@ public class PostWriterServiceImpl implements PostWriterService {
             }
         }
 
+
         // 7. 이미지 개수 제한 검사
-        if (currentImages.size() > 10) {
-            throw new BusinessException(ErrorCode.IMAGE_LIMIT_EXCEEDED);
-        }
+        imageValidator.validatorImageSize(currentImages.size());
 
         // 8. JPA는 영속 객체의 필드 변경만으로 업데이트 처리
         return postEntity.toDomain();

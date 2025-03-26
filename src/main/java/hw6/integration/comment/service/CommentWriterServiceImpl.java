@@ -6,14 +6,11 @@ import hw6.integration.comment.dto.CommentUpdateRequestDto;
 import hw6.integration.comment.entity.CommentEntity;
 import hw6.integration.comment.repository.CommentReadRepository;
 import hw6.integration.comment.repository.CommentWriteRepository;
-import hw6.integration.exception.BusinessException;
-import hw6.integration.exception.ErrorCode;
+import hw6.integration.comment.util.CommentValidator;
 import hw6.integration.post.domain.Post;
 import hw6.integration.post.entity.PostEntity;
-import hw6.integration.post.repository.PostReadRepository;
 import hw6.integration.post.util.PostValidator;
 import hw6.integration.user.domain.User;
-import hw6.integration.user.repository.UserReadRepository;
 import hw6.integration.user.util.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,10 +22,9 @@ public class CommentWriterServiceImpl implements CommentWriterService {
 
     private final CommentWriteRepository commentWriteRepository;
     private final CommentReadRepository commentReadRepository;
-    private final UserReadRepository userReadRepository;
-    private final PostReadRepository postReadRepository;
     private final UserValidator userValidator;
     private final PostValidator postValidator;
+    private final CommentValidator commentValidator;
 
     @Transactional
     @Override
@@ -64,8 +60,7 @@ public class CommentWriterServiceImpl implements CommentWriterService {
 
         postValidator.validatePostDeleted(post);
 
-        CommentEntity commentEntity = commentReadRepository.findByCommentEntityId(commentId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+        CommentEntity commentEntity = commentValidator.validateCommentEntityExists(commentId);
 
         userValidator.validateUserAndCommentEntityEquals(userId, commentEntity.getUserEntity().getId());
 
@@ -86,12 +81,9 @@ public class CommentWriterServiceImpl implements CommentWriterService {
 
         postValidator.validatePostEntityDeleted(postEntity);
 
-        CommentEntity commentEntity = commentReadRepository.findByCommentEntityId(commentId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+        CommentEntity commentEntity = commentValidator.validateCommentEntityExists(commentId);
 
-        if (commentEntity.isDeleted()) {
-            throw new BusinessException(ErrorCode.COMMENT_NOT_FOUND);
-        }
+        commentValidator.validateCommentEntityDeleted(commentEntity);
 
         userValidator.validateUserAndCommentEntityEquals(userId, commentEntity.getUserEntity().getId());
 

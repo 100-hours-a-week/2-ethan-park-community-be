@@ -77,7 +77,7 @@ public class PostController {
 
         postWriterService.deletePost(userId, postId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
 }
