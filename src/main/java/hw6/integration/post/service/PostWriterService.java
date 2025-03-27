@@ -6,6 +6,8 @@ import hw6.integration.post.dto.PostUpdateRequestDto;
 
 public interface PostWriterService {
 
+    Post getPostById(Long id);
+
     Post createPost(PostCreateRequestDto postCreateRequestDto, Long id);
 
     Post updatePost(Long postId, PostUpdateRequestDto postUpdateRequestDto, Long userId);

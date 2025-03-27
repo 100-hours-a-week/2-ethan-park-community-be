@@ -8,7 +8,5 @@ public interface PostReadService {
 
     List<Post> getPostByAll();
 
-    Post getPostById(Long id);
-
     Post findById(Long id);
 }

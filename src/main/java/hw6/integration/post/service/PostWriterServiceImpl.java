@@ -32,6 +32,19 @@ public class PostWriterServiceImpl implements PostWriterService {
     private final PostValidator postValidator;
     private final ImageValidator imageValidator;
 
+    //dirty checking을 위한 메서드
+    @Transactional
+    @Override
+    public Post getPostById(Long id) {
+        PostEntity postEntity = postValidator.validatePostEntityExists(id);
+
+        postValidator.validatePostEntityDeleted(postEntity);
+
+        postEntity.incrementViewCount(); // 엔티티에서 직접 메서드를 통해 증가 (Dirty Checking 활용)
+
+        return postEntity.toDomain();
+    }
+
     @Transactional
     @Override
     public Post createPost(PostCreateRequestDto postCreateRequestDto, Long userId) {

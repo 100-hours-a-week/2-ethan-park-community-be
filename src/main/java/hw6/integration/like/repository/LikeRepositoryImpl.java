@@ -13,6 +13,7 @@ public class LikeRepositoryImpl implements LikeRepository {
 
     private final LikeJpaRepository likeJpaRepository;
 
+    @Transactional(readOnly = true)
     @Override
     public int existsActiveLike(Long userId, Long postId) {
         return likeJpaRepository.existsActiveLike(userId, postId);
@@ -26,6 +27,7 @@ public class LikeRepositoryImpl implements LikeRepository {
 
     }
 
+    @Transactional
     @Override
     public void deactivateLike(Long userId, Long postId) {
         likeJpaRepository.deactivateLike(userId, postId);

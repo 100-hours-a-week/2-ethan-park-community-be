@@ -5,6 +5,7 @@ import hw6.integration.user.repository.UserReadRepository;
 import hw6.integration.user.util.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,12 +16,14 @@ public class UserReadServiceImpl implements UserReadService {
     private final UserReadRepository userReadRepository;
     private final UserValidator userValidator;
 
+    @Transactional(readOnly = true)
     @Override
     public List<User> getUserByAll() {
 
         return userReadRepository.findByAll();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public User getUserById(Long id) {
 
