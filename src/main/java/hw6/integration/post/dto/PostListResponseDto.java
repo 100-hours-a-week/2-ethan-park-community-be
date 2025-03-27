@@ -34,9 +34,9 @@ public class PostListResponseDto {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .authorName(post.getAuthorName())
-                .comment_count(post.getComment_count())
-                .like_count(post.getLike_count())
-                .view_count(post.getView_count())
+                .comment_count(post.getCommentCount())
+                .like_count(post.getLikeCount())
+                .view_count(post.getViewCount())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .build();

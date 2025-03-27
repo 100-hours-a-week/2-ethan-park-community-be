@@ -22,9 +22,9 @@ public class PostDetailResponseDto {
 
     private List<ImageDto> images; // ✅ 있어야 함
 
-    private Integer comment_count;
-    private Integer like_count;
-    private Integer view_count;
+    private Integer commentCount;
+    private Integer likeCount;
+    private Integer viewCount;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
@@ -39,9 +39,9 @@ public class PostDetailResponseDto {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .authorName(post.getAuthorName())
-                .comment_count(post.getComment_count())
-                .like_count(post.getLike_count())
-                .view_count(post.getView_count())
+                .commentCount(post.getCommentCount())
+                .likeCount(post.getLikeCount())
+                .viewCount(post.getViewCount())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .images(post.getImages().stream().map(ImageDto::from).toList()) // ✅ 이 라인 확인

@@ -25,9 +25,9 @@ public class Post {
     private String authorName;
     private List<Image> images = new ArrayList<>();
 
-    private Integer comment_count;
-    private Integer like_count;
-    private Integer view_count;
+    private Integer commentCount;
+    private Integer likeCount;
+    private Integer viewCount;
 
     private boolean isDeleted;
 
@@ -40,9 +40,9 @@ public class Post {
                 .title(title)
                 .content(content)
                 .authorName(authorName)
-                .comment_count(0)
-                .like_count(0)
-                .view_count(0)
+                .commentCount(0)
+                .likeCount(0)
+                .viewCount(0)
                 .isDeleted(false)
                 .build();
 
@@ -55,9 +55,9 @@ public class Post {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .authorName(post.getAuthorName())
-                .comment_count(post.getComment_count())
-                .like_count(post.getLike_count())
-                .view_count(post.getView_count())
+                .commentCount(post.getCommentCount())
+                .likeCount(post.getLikeCount())
+                .viewCount(post.getViewCount())
                 .isDeleted(post.isDeleted())
                 .build();
 

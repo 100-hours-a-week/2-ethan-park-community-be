@@ -21,7 +21,7 @@ public class Like {
 
     private boolean isDeleted;
 
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     public static Like createLike(Long postId, Long userId) {
         return Like.builder()
@@ -29,7 +29,6 @@ public class Like {
                 .userId(userId)
                 .likeActvie(true)
                 .isDeleted(false)
-                .created_at(LocalDateTime.now())
                 .build();
     }
 
@@ -39,7 +38,6 @@ public class Like {
                 .userEntity(userEntity)
                 .likeActive(like.isLikeActvie())
                 .isDeleted(like.isDeleted())
-                .created_at(like.getCreated_at())
                 .build();
 
     }

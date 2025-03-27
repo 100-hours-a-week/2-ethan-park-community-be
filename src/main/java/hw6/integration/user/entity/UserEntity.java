@@ -22,19 +22,19 @@ public class UserEntity extends AuditEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column(name = "nickname", nullable = false)
     private String nickname;
 
-    @Column(nullable = false)
+    @Column(name = "profile_path", nullable = false)
     private String profilePath;
 
-    @Column(nullable = false)
+    @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
     @OneToMany(mappedBy = "userEntity")

@@ -30,38 +30,38 @@ public class PostEntity extends AuditEntity {
     @JoinColumn(name = "user_id") // FK 컬럼명
     private UserEntity userEntity;
 
-    @Column(nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     private String content;
-    @Column(nullable = false)
+    @Column(name = "author_name", nullable = false)
     private String authorName;
 
     @OneToMany(mappedBy = "postEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ImageEntity> images = new ArrayList<>();
 
-    @Column(nullable = false)
-    private int comment_count;
-    @Column(nullable = false)
-    private int like_count;
-    @Column(nullable = false)
-    private int view_count;
+    @Column(name = "comment_count", nullable = false)
+    private int commentCount;
+    @Column(name = "like_count", nullable = false)
+    private int likeCount;
+    @Column(name = "view_count", nullable = false)
+    private int viewCount;
 
-    @Column(nullable = false)
+    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
     @Builder(toBuilder = true)
     public PostEntity(Long id, UserEntity userEntity, String title, String content, String authorName, List<ImageEntity> images,
-                      Integer comment_count, Integer like_count, Integer view_count, boolean isDeleted) {
+                      Integer commentCount, Integer likeCount, Integer viewCount, boolean isDeleted) {
         this.id = id;
         this.userEntity = userEntity;
         this.title = title;
         this.content = content;
         this.authorName = authorName;
         this.images = (images != null) ? images : new ArrayList<>(); // 직접 null 방어 처리
-        this.comment_count = comment_count;
-        this.like_count = like_count;
-        this.view_count = view_count;
+        this.commentCount = commentCount;
+        this.likeCount = likeCount;
+        this.viewCount = viewCount;
         this.isDeleted = isDeleted;
     }
 
@@ -72,9 +72,9 @@ public class PostEntity extends AuditEntity {
                 .title(this.title)
                 .content(this.content)
                 .authorName(this.authorName)
-                .comment_count(this.comment_count)
-                .like_count(this.like_count)
-                .view_count(this.view_count)
+                .commentCount(this.commentCount)
+                .likeCount(this.likeCount)
+                .viewCount(this.viewCount)
                 .isDeleted(this.isDeleted)
                 .images(this.images != null
                         ? this.images.stream().map(ImageEntity::toDomain).toList()
@@ -96,15 +96,15 @@ public class PostEntity extends AuditEntity {
     }
 
     public void incrementCommentCount() {
-        this.comment_count++;
+        this.commentCount++;
     }
 
     public void decrementCommentCount() {
-        this.comment_count--;
+        this.commentCount--;
     }
 
     public void incrementViewCount() {
-        this.view_count++;
+        this.viewCount++;
     }
 
     public void setDeleted(boolean isDeleted) {

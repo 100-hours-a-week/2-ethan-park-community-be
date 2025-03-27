@@ -21,7 +21,7 @@ public class ImageEntity {
     @JoinColumn(name = "post_id")
     private PostEntity postEntity;
 
-    @Column(nullable = false)
+    @Column(name = "image_path", nullable = false)
     private String imagePath;
 
     // 나중에 유효성 검사 때 필요

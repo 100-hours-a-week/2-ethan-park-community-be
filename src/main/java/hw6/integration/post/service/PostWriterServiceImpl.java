@@ -124,7 +124,7 @@ public class PostWriterServiceImpl implements PostWriterService {
 
         postValidator.validatePostEntityDeleted(postEntity);
 
-        if (postEntity.getComment_count() > 0) {
+        if (postEntity.getCommentCount() > 0) {
 
             commentWriteRepository.deleteCommentByPostId(postId);
         }

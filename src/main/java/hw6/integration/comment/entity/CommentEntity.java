@@ -27,12 +27,12 @@ public class CommentEntity extends AuditEntity {
     @JoinColumn(name = "user_id") // FK 컬럼명
     private UserEntity userEntity;
 
-    @Column(nullable = false)
+    @Column(name = "author_name", nullable = false)
     private String authorName;
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
 

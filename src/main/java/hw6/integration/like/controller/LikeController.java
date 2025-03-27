@@ -42,7 +42,7 @@ public class LikeController {
             @PathVariable("postId") Long postId) {
 
         boolean isLiked = likeService.isLiked(userPrincipal.getId(), postId);
-        int likeCount = postReadService.findById(postId).getLike_count();
+        int likeCount = postReadService.findById(postId).getLikeCount();
 
         return ResponseEntity.ok(LikeStatusResponseDto.from(isLiked, likeCount));
     }
