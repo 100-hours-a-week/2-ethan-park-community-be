@@ -1,15 +1,14 @@
 package hw6.integration.user.entity;
 
+import hw6.integration.AuditEntity;
 import hw6.integration.post.entity.PostEntity;
 import hw6.integration.user.domain.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,37 +17,37 @@ import java.util.List;
 @Table(name = "users")
 @NoArgsConstructor
 @Getter
-public class UserEntity {
+public class UserEntity extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     private String nickname;
 
+    @Column(nullable = false)
     private String profilePath;
 
+    @Column(nullable = false)
     private Boolean isActive;
-
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "userEntity")
     private List<PostEntity> posts = new ArrayList<>();
 
     @Builder
     public UserEntity(Long id, String email, String password, String nickname, String profilePath,
-                      Boolean isActive, LocalDateTime createdAt) {
+                      Boolean isActive) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.profilePath = profilePath;
-        this.createdAt = createdAt;
         this.isActive = isActive;
     }
 
@@ -60,7 +59,8 @@ public class UserEntity {
                 .nickname(this.nickname)
                 .profilePath(this.profilePath)
                 .isActive(this.isActive)
-                .createdAt(this.createdAt)
+                .createdAt(this.getCreatedAt())
+                .updatedAt(this.getUpdatedAt())
                 .build();
     }
 

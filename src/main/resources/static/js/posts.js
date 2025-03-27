@@ -26,7 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const postContainer = document.createElement("div");
         postContainer.classList.add("post");
 
-        const createdAt = new Date(post.created_at).toLocaleDateString("ko-KR");
+        const createdAt = new Date(post.createdAt).toLocaleString("ko-KR");
+        const updatedAt = new Date(post.updatedAt).toLocaleString("ko-KR");
+
+        const isEdited = post.createdAt !== post.updatedAt;
+        const timeText = isEdited ? `${updatedAt} 수정됨` : `${createdAt} 작성`;
 
         postContainer.innerHTML = `
           <a href="/posts/${post.id}" class="post-title">${truncateTitle(post.title)}</a>
@@ -36,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
                   <span>댓글: ${formatNumber(post.comment_count)}</span>
                   <span>조회수: ${formatNumber(post.view_count)}</span>
               </div>
-              <div class="meta-right">${createdAt}</div>
+              <div class="meta-right">${timeText}</div>
           </div>
           <div class="post-author">작성자: ${post.authorName}</div>
         `;

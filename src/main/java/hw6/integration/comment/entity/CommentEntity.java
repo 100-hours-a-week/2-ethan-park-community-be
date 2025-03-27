@@ -1,5 +1,6 @@
 package hw6.integration.comment.entity;
 
+import hw6.integration.AuditEntity;
 import hw6.integration.comment.domain.Comment;
 import hw6.integration.post.entity.PostEntity;
 import hw6.integration.user.entity.UserEntity;
@@ -7,16 +8,12 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Table(name = "comments")
 @NoArgsConstructor
-public class CommentEntity {
+public class CommentEntity extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,29 +27,22 @@ public class CommentEntity {
     @JoinColumn(name = "user_id") // FK 컬럼명
     private UserEntity userEntity;
 
+    @Column(nullable = false)
     private String authorName;
+    @Column(nullable = false)
     private String content;
 
+    @Column(nullable = false)
     private boolean isDeleted;
 
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime created_at;
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updated_at;
 
     @Builder
-    public CommentEntity(PostEntity postEntity, UserEntity userEntity, String authorName, String content, boolean isDeleted,
-                         LocalDateTime created_at, LocalDateTime updated_at) {
+    public CommentEntity(PostEntity postEntity, UserEntity userEntity, String authorName, String content, boolean isDeleted) {
         this.postEntity = postEntity;
         this.userEntity = userEntity;
         this.authorName = authorName;
         this.content = content;
         this.isDeleted = isDeleted;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
     }
 
     public Comment toDomain() {
@@ -63,8 +53,8 @@ public class CommentEntity {
                 .authorName(this.authorName)
                 .content(this.content)
                 .isDeleted(this.isDeleted)
-                .created_at(this.created_at)
-                .updated_at(this.updated_at)
+                .createdAt(this.getCreatedAt())
+                .updatedAt(this.getUpdatedAt())
                 .build();
     }
 
@@ -79,5 +69,6 @@ public class CommentEntity {
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
     }
+
 
 }

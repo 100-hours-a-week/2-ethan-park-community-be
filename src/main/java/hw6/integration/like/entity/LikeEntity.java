@@ -34,12 +34,14 @@ public class LikeEntity {
     @JoinColumn(name = "user_id") // FK 컬럼명
     private UserEntity userEntity;
 
+    @Column(nullable = false)
     private boolean likeActive;
 
+    @Column(nullable = false)
     private boolean isDeleted;
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime created_at;
 
     @Builder

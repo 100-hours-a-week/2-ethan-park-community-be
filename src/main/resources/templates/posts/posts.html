@@ -31,7 +31,13 @@
                     <span th:text="'댓글: ' + ${post.comment_count}"></span>
                     <span th:text="'조회수: ' + ${post.view_count}"></span>
                 </div>
-                <div class="meta-right" th:text="${#temporals.format(post.created_at, 'yyyy-MM-dd HH:mm')}"></div>
+                <!-- 여기에 작성/수정 시간 표시 -->
+                <div class="meta-right"
+                     th:if="${post.createdAt == post.updatedAt}"
+                     th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')} + ' 작성'"></div>
+                <div class="meta-right"
+                     th:if="${post.createdAt != post.updatedAt}"
+                     th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')} + ' 수정됨'"></div>
             </div>
 
             <div class="post-author" th:text="'작성자: ' + ${post.authorName}"></div>

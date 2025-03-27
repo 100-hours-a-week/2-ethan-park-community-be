@@ -1,5 +1,6 @@
 package hw6.integration.post.entity;
 
+import hw6.integration.AuditEntity;
 import hw6.integration.image.entity.ImageEntity;
 import hw6.integration.post.domain.Post;
 import hw6.integration.user.entity.UserEntity;
@@ -8,11 +9,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,42 +19,40 @@ import java.util.List;
 @Getter
 @EntityListeners(AuditingEntityListener.class) // ✅ 추가 필요
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostEntity {
+public class PostEntity extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     // FK 설정 (Post.user → User.id)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id") // FK 컬럼명
     private UserEntity userEntity;
 
+    @Column(nullable = false)
     private String title;
+    @Column(nullable = false)
     private String content;
+    @Column(nullable = false)
     private String authorName;
 
     @OneToMany(mappedBy = "postEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ImageEntity> images = new ArrayList<>();
 
-    private Integer comment_count;
-    private Integer like_count;
-    private Integer view_count;
+    @Column(nullable = false)
+    private int comment_count;
+    @Column(nullable = false)
+    private int like_count;
+    @Column(nullable = false)
+    private int view_count;
 
+    @Column(nullable = false)
     private boolean isDeleted;
-
-    @CreatedDate
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime created_at;
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updated_at;
 
     @Builder(toBuilder = true)
     public PostEntity(Long id, UserEntity userEntity, String title, String content, String authorName, List<ImageEntity> images,
-                      Integer comment_count, Integer like_count, Integer view_count, boolean isDeleted,
-                      LocalDateTime created_at, LocalDateTime updated_at) {
+                      Integer comment_count, Integer like_count, Integer view_count, boolean isDeleted) {
         this.id = id;
         this.userEntity = userEntity;
         this.title = title;
@@ -67,8 +63,6 @@ public class PostEntity {
         this.like_count = like_count;
         this.view_count = view_count;
         this.isDeleted = isDeleted;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
     }
 
     public Post toDomain() {
@@ -82,11 +76,11 @@ public class PostEntity {
                 .like_count(this.like_count)
                 .view_count(this.view_count)
                 .isDeleted(this.isDeleted)
-                .created_at(this.created_at)
-                .updated_at(this.updated_at)
                 .images(this.images != null
                         ? this.images.stream().map(ImageEntity::toDomain).toList()
                         : List.of())
+                .createdAt(this.getCreatedAt())
+                .updatedAt(this.getUpdatedAt())
                 .build();
     }
 

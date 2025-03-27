@@ -16,6 +16,7 @@ public class Like {
     private Long postId;
     private Long userId;
 
+    // 변수 통합?
     private boolean likeActvie;
 
     private boolean isDeleted;
@@ -31,6 +32,7 @@ public class Like {
                 .created_at(LocalDateTime.now())
                 .build();
     }
+
     public static LikeEntity toEntity(Like like, PostEntity postEntity, UserEntity userEntity) {
         return LikeEntity.builder()
                 .postEntity(postEntity)

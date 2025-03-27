@@ -33,6 +33,7 @@ public class PostController {
                 .map(PostListResponseDto::fromPost)
                 .toList();
 
+
         return ResponseEntity.ok(postListResponseDtos);
     }
 

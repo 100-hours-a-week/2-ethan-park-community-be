@@ -1,5 +1,6 @@
 package hw6.integration.comment.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import hw6.integration.comment.domain.Comment;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,8 +20,10 @@ public class CommentResponseDto {
 
     private boolean isDeleted;
 
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updatedAt;
 
     public static CommentResponseDto fromComment(Comment comment) {
 
@@ -31,8 +34,8 @@ public class CommentResponseDto {
                 .authorName(comment.getAuthorName())
                 .content(comment.getContent())
                 .isDeleted(comment.isDeleted())
-                .created_at(comment.getCreated_at())
-                .updated_at(comment.getUpdated_at())
+                .createdAt(comment.getCreatedAt())
+                .updatedAt(comment.getUpdatedAt())
                 .build();
 
     }

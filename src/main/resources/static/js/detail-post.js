@@ -135,9 +135,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const li = document.createElement("li");
       li.classList.add("comment");
 
-      const createdAt = new Date(comment.created_at).toLocaleString("ko-KR");
-      const updatedAt = new Date(comment.updated_at).toLocaleString("ko-KR");
-      const isEdited = comment.created_at !== comment.updated_at;
+
+      const createdAt = new Date(comment.createdAt).toLocaleString("ko-KR");
+      const updatedAt = new Date(comment.updatedAt).toLocaleString("ko-KR");
+
+      const isEdited = comment.createdAt !== comment.updatedAt;
       const timeText = isEdited ? `${updatedAt} 수정됨` : `${createdAt} 작성`;
 
       li.innerHTML = `

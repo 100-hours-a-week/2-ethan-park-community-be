@@ -1,12 +1,11 @@
 package hw6.integration.post.dto;
 
-import hw6.integration.image.dto.ImageDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import hw6.integration.post.domain.Post;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Builder
@@ -23,10 +22,12 @@ public class PostListResponseDto {
     private Integer like_count;
     private Integer view_count;
 
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updatedAt;
 
-    public static PostListResponseDto fromPost(Post post){
+    public static PostListResponseDto fromPost(Post post) {
         return PostListResponseDto.builder()
                 .id(post.getId())
                 .userId(post.getUserId())
@@ -36,8 +37,8 @@ public class PostListResponseDto {
                 .comment_count(post.getComment_count())
                 .like_count(post.getLike_count())
                 .view_count(post.getView_count())
-                .created_at(post.getCreated_at())
-                .updated_at(post.getUpdated_at())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
                 .build();
     }
 

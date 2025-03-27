@@ -31,8 +31,8 @@ public class Post {
 
     private boolean isDeleted;
 
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public static Post createPost(Long userId, String title, String content, String authorName) {
         return Post.builder()
@@ -44,8 +44,6 @@ public class Post {
                 .like_count(0)
                 .view_count(0)
                 .isDeleted(false)
-                .created_at(LocalDateTime.now())
-                .updated_at(LocalDateTime.now())
                 .build();
 
     }
@@ -61,8 +59,6 @@ public class Post {
                 .like_count(post.getLike_count())
                 .view_count(post.getView_count())
                 .isDeleted(post.isDeleted())
-                .created_at(post.getCreated_at())
-                .updated_at(post.getUpdated_at())
                 .build();
 
         // 이미지 리스트가 존재하면 PostEntity에 추가
@@ -77,14 +73,10 @@ public class Post {
     }
 
     public void addImages(List<Image> images) {
-        if(images.size() > 10) {
+        if (images.size() > 10) {
             throw new IllegalArgumentException("이미지는 최대 10장까지 등록 가능합니다.");
         }
         this.images = images;
-    }
-
-    public void maskAuthorName() {
-        this.authorName = "알 수 없음";
     }
 
 

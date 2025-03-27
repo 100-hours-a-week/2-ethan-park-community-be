@@ -5,7 +5,6 @@ import hw6.integration.user.entity.UserEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.With;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,8 +28,10 @@ public class User {
     private Boolean isActive;
 
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     private List<Post> posts = new ArrayList<>();
+
 
     public static UserEntity toEntity(User user) {
         return UserEntity.builder()
@@ -40,7 +41,6 @@ public class User {
                 .nickname(user.getNickname())
                 .profilePath(user.getProfilePath())
                 .isActive(user.getIsActive())
-                .createdAt(user.getCreatedAt())
                 .build();
     }
 
@@ -51,7 +51,6 @@ public class User {
                 .nickname(nickname)
                 .profilePath(profilePath)
                 .isActive(true)
-                .createdAt(LocalDateTime.now())
                 .build();
     }
 

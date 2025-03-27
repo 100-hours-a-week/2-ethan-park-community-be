@@ -23,8 +23,8 @@ public class Comment {
 
     private boolean isDeleted;
 
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public static Comment createComment(Long postId, Long userId, String authorName, String content) {
         return Comment.builder()
@@ -33,8 +33,6 @@ public class Comment {
                 .authorName(authorName)
                 .content(content)
                 .isDeleted(false)
-                .created_at(LocalDateTime.now())
-                .updated_at(LocalDateTime.now())
                 .build();
     }
 
@@ -45,8 +43,6 @@ public class Comment {
                 .authorName(comment.getAuthorName())
                 .content(comment.getContent())
                 .isDeleted(comment.isDeleted())
-                .created_at(comment.getCreated_at())
-                .updated_at(comment.getUpdated_at())
                 .build();
     }
 

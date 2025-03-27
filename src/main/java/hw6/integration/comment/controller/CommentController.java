@@ -31,7 +31,7 @@ public class CommentController {
         List<CommentResponseDto> commentResponseDtos = commentReadService.getCommentByPostId(postId)
                 .stream()
                 .map(CommentResponseDto::fromComment)
-                .toList();;
+                .toList();
 
         return ResponseEntity.ok(commentResponseDtos);
     }
@@ -65,6 +65,7 @@ public class CommentController {
 
         commentWriterService.updateComment(commentUpdateRequestDto, commentId, userId, postId);
 
+        System.out.println();
         return ResponseEntity.noContent().build();
     }
 
