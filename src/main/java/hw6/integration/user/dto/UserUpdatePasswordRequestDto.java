@@ -1,10 +1,10 @@
 package hw6.integration.user.dto;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@RequiredArgsConstructor
+@Setter
 public class UserUpdatePasswordRequestDto {
 
     private String password;

@@ -54,7 +54,7 @@ public class UserController {
     @PostMapping("/auth/login")
     public ResponseEntity<TokenResponseDto> login(@ModelAttribute UserLoginRequestDto userLoginRequestDto) {
         String token = userAuthService.login(userLoginRequestDto);
-        return ResponseEntity.ok(new TokenResponseDto(token));
+        return ResponseEntity.ok(TokenResponseDto.from(token));
     }
 
     @PutMapping("/me/profile")

@@ -1,17 +1,14 @@
 package hw6.integration.post.dto;
 
 import hw6.integration.image.dto.ImageDto;
-import hw6.integration.like.domain.Like;
 import hw6.integration.post.domain.Post;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@Setter
 @Builder
 public class PostDetailResponseDto {
 
@@ -31,7 +28,7 @@ public class PostDetailResponseDto {
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
 
-    public static PostDetailResponseDto fromPost(Post post){
+    public static PostDetailResponseDto fromPost(Post post) {
         return PostDetailResponseDto.builder()
                 .id(post.getId())
                 .userId(post.getUserId())

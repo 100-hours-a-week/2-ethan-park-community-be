@@ -44,7 +44,7 @@ public class LikeController {
         boolean isLiked = likeService.isLiked(userPrincipal.getId(), postId);
         int likeCount = postReadService.findById(postId).getLike_count();
 
-        return ResponseEntity.ok(new LikeStatusResponseDto(isLiked, likeCount));
+        return ResponseEntity.ok(LikeStatusResponseDto.from(isLiked, likeCount));
     }
 
 

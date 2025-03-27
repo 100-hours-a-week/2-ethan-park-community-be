@@ -4,7 +4,10 @@ import hw6.integration.image.entity.ImageEntity;
 import hw6.integration.post.domain.Post;
 import hw6.integration.user.entity.UserEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -16,7 +19,6 @@ import java.util.List;
 @Entity
 @Table(name = "posts")
 @Getter
-@Setter
 @EntityListeners(AuditingEntityListener.class) // ✅ 추가 필요
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostEntity {
@@ -109,6 +111,14 @@ public class PostEntity {
 
     public void incrementViewCount() {
         this.view_count++;
+    }
+
+    public void setDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 
 

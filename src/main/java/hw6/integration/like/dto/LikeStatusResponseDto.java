@@ -1,18 +1,23 @@
 package hw6.integration.like.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
-@AllArgsConstructor
+@Builder
 public class LikeStatusResponseDto {
 
     @JsonProperty("isLiked")
     private boolean isLiked;
 
     private int likeCount;
+
+    public static LikeStatusResponseDto from(boolean isLiked, int likeCount) {
+        return LikeStatusResponseDto.builder()
+                .isLiked(isLiked)
+                .likeCount(likeCount)
+                .build();
+    }
 
 }
