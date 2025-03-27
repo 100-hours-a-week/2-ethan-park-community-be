@@ -1,9 +1,12 @@
 # 2-ethan-park-community-be
 
-- Java 21.0.5 ver
-- Mysql 9.2.0 ver
-- MysqlWorkbench
+A community project built with Java and MySQL.
 
+## 기술 스택
+
+- **Java:** 21.0.5
+- **Database:** MySQL 9.2.0
+- **툴:** MySQL Workbench
 
 [POST]   /api/users                          # 회원가입
 [POST]   /api/auth/login                     # 로그인
