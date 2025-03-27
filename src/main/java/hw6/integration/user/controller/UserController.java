@@ -6,6 +6,7 @@ import hw6.integration.user.dto.*;
 import hw6.integration.user.service.UserAuthService;
 import hw6.integration.user.service.UserReadService;
 import hw6.integration.user.service.UserWriterService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,7 +44,7 @@ public class UserController {
 
     @PostMapping(value = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> registerUser(
-            @ModelAttribute UserSignupRequestDto userSignupRequestDto) {
+            @Valid @ModelAttribute UserSignupRequestDto userSignupRequestDto) {
 
         System.out.println(userSignupRequestDto.getProfileImage());
         userWriterService.registerUser(userSignupRequestDto);
@@ -52,7 +53,7 @@ public class UserController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<TokenResponseDto> login(@ModelAttribute UserLoginRequestDto userLoginRequestDto) {
+    public ResponseEntity<TokenResponseDto> login(@Valid @ModelAttribute UserLoginRequestDto userLoginRequestDto) {
         String token = userAuthService.login(userLoginRequestDto);
         return ResponseEntity.ok(TokenResponseDto.from(token));
     }
@@ -61,7 +62,7 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserNicknameUpdateResponseDto> updateProfile(
             @AuthenticationPrincipal UserPrincipal userPrincipal, // 인증된 사용자 정보
-            @RequestBody UserUpdateNicknameRequestDto userUpdateNicknameRequestDto) {
+            @Valid @RequestBody UserUpdateNicknameRequestDto userUpdateNicknameRequestDto) {
 
         return ResponseEntity.ok(UserNicknameUpdateResponseDto.fromDomain(userWriterService.updateNickname(userPrincipal.getId(), userUpdateNicknameRequestDto)));
     }
@@ -71,7 +72,7 @@ public class UserController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> updatePassword(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestBody UserUpdatePasswordRequestDto userUpdatePasswordRequestDto) {
+            @Valid @RequestBody UserUpdatePasswordRequestDto userUpdatePasswordRequestDto) {
 
         userWriterService.updatePassword(userPrincipal.getId(), userUpdatePasswordRequestDto);
         return ResponseEntity.noContent().build();

@@ -7,6 +7,7 @@ import hw6.integration.post.dto.PostUpdateRequestDto;
 import hw6.integration.post.service.PostReadService;
 import hw6.integration.post.service.PostWriterService;
 import hw6.integration.user.auth.UserPrincipal;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,7 @@ public class PostController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PostListResponseDto> createPost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @ModelAttribute PostCreateRequestDto postCreateRequestDto) {
+            @Valid @ModelAttribute PostCreateRequestDto postCreateRequestDto) {
 
         Long userId = userPrincipal.getId();
 
@@ -60,7 +61,7 @@ public class PostController {
     public ResponseEntity<PostListResponseDto> updatePost(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long postId,
-            @ModelAttribute PostUpdateRequestDto postUpdateRequestDto) {
+            @Valid @ModelAttribute PostUpdateRequestDto postUpdateRequestDto) {
 
         //수정 시 이미지 데이터는 안바뀜
         //저장도 안됨

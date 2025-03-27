@@ -1,5 +1,6 @@
 package hw6.integration.user.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,7 @@ import lombok.Setter;
 @Setter
 public class UserUpdateNicknameRequestDto {
 
+    @NotBlank(message = "닉네임을 입력하세요.")
     private String nickname;
 
 }

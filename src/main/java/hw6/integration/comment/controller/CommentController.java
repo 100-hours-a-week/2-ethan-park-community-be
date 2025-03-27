@@ -7,6 +7,7 @@ import hw6.integration.comment.dto.CommentUpdateRequestDto;
 import hw6.integration.comment.service.CommentReadService;
 import hw6.integration.comment.service.CommentWriterService;
 import hw6.integration.user.auth.UserPrincipal;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,11 +41,8 @@ public class CommentController {
     @PreAuthorize("isAuthenticated")
     public ResponseEntity<CommentResponseDto> createComment(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestBody CommentCreateRequestDto commentCreateDto,
+            @Valid @RequestBody CommentCreateRequestDto commentCreateDto,
             @PathVariable("postId") Long postId) {
-
-        System.out.println("✅ 서버 받은 댓글 데이터: " + commentCreateDto.getContent()); // 🔥 로그 추가
-        System.out.println("✅ 서버 받은 postId: " + postId); // 🔥 로그 추가
 
         Long userId = userPrincipal.getId();
 
@@ -57,7 +55,7 @@ public class CommentController {
     @PreAuthorize("isAuthenticated")
     public ResponseEntity<CommentResponseDto> updateComment(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestBody CommentUpdateRequestDto commentUpdateRequestDto,
+            @Valid @RequestBody CommentUpdateRequestDto commentUpdateRequestDto,
             @PathVariable("postId") Long postId,
             @PathVariable Long commentId) {
 
