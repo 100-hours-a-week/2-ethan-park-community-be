@@ -30,5 +30,4 @@ public class PostReadServiceImpl implements PostReadService {
         return postValidator.validatePostExists(id);
     }
 
-
 }

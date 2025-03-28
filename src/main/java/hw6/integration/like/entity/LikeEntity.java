@@ -1,6 +1,5 @@
 package hw6.integration.like.entity;
 
-import hw6.integration.AuditEntity;
 import hw6.integration.like.domain.Like;
 import hw6.integration.post.entity.PostEntity;
 import hw6.integration.user.entity.UserEntity;
@@ -9,6 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -17,7 +19,7 @@ import lombok.Setter;
         uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "post_id"})
 )
 @NoArgsConstructor
-public class LikeEntity extends AuditEntity {
+public class LikeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,12 +40,17 @@ public class LikeEntity extends AuditEntity {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
+    @CreatedDate
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
     @Builder
-    public LikeEntity(PostEntity postEntity, UserEntity userEntity, boolean likeActive, boolean isDeleted) {
+    public LikeEntity(PostEntity postEntity, UserEntity userEntity, boolean likeActive, boolean isDeleted, LocalDateTime createdAt) {
         this.postEntity = postEntity;
         this.userEntity = userEntity;
         this.likeActive = likeActive;
         this.isDeleted = isDeleted;
+        this.createdAt = createdAt;
     }
 
     public Like toDomain() {
@@ -53,7 +60,7 @@ public class LikeEntity extends AuditEntity {
                 .userId(this.userEntity.getId())
                 .likeActvie(this.likeActive)
                 .isDeleted(this.isDeleted)
-                .createdAt(this.getCreatedAt())
+                .createdAt(this.createdAt)
                 .build();
     }
 

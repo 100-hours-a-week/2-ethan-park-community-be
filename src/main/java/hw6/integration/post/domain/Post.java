@@ -23,6 +23,8 @@ public class Post {
     private String title;
     private String content;
     private String authorName;
+
+    @Builder.Default
     private List<Image> images = new ArrayList<>();
 
     private Integer commentCount;

@@ -29,6 +29,7 @@ public class Like {
                 .userId(userId)
                 .likeActvie(true)
                 .isDeleted(false)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
@@ -38,6 +39,7 @@ public class Like {
                 .userEntity(userEntity)
                 .likeActive(like.isLikeActvie())
                 .isDeleted(like.isDeleted())
+                .createdAt(like.createdAt)
                 .build();
 
     }

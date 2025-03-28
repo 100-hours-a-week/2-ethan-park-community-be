@@ -41,7 +41,7 @@ public class PostController {
     @GetMapping("/{postId}")
     public ResponseEntity<PostDetailResponseDto> getPost(
             @PathVariable("postId") Long postId) {
-
+        
         return ResponseEntity.ok(PostDetailResponseDto.fromPost(postWriterService.getPostById(postId)));
     }
 

@@ -4,10 +4,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const postTitleElem = document.getElementById("post-title");
   const postContentElem = document.getElementById("post-content");
 
-  const viewCountElem = document.getElementById("view-count");
-  const likeCountElem = document.getElementById("like-count");
-  const commentCountElem = document.getElementById("comment-count");
-
+  const viewCountElem = document.getElementById("viewCount");
+  const likeCountElem = document.getElementById("likeCount");
+  const commentCountElem = document.getElementById("commentCount");
 
   const commentList = document.getElementById("comments");
   const commentInput = document.getElementById("comment-input");
@@ -55,6 +54,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const post = await res.json();
     const postAuthorId = post.userId;
 
+    console.log("✅ API에서 받은 post 데이터:", post);
+
+
     if (currentUserId === postAuthorId) {
       editBtn.style.display = "inline-block";
       deleteBtn.style.display = "inline-block";
@@ -65,8 +67,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     postTitleElem.innerText = post.title;
     postContentElem.innerText = post.content;
-    likeCountElem.innerText = formatCount(post.like_count);
-    viewCountElem.innerText = formatCount(post.view_count);
+    likeCountElem.innerText = formatCount(post.likeCount);
+    viewCountElem.innerText = formatCount(post.viewCount);
 
     // ✅ 이미지 렌더링
       imageContainer.innerHTML = ""; // 기존 이미지 제거

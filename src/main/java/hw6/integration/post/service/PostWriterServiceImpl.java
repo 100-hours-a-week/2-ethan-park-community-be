@@ -41,7 +41,7 @@ public class PostWriterServiceImpl implements PostWriterService {
         postValidator.validatePostEntityDeleted(postEntity);
 
         postEntity.incrementViewCount(); // 엔티티에서 직접 메서드를 통해 증가 (Dirty Checking 활용)
-
+        
         return postEntity.toDomain();
     }
 

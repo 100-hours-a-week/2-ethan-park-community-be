@@ -8,7 +8,38 @@ document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logout");
   const loginBtn = document.getElementById("login");
 
+  const profileImage = document.getElementById("profileImage");
   const token = localStorage.getItem("jwt");
+
+
+// 프로필 이미지 설정
+  if (token && profileImage) {
+    fetch("/api/users/me", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("사용자 정보 불러오기 실패");
+      return res.json();
+    })
+    .then(user => {
+      // user.imagePath가 있을 경우만 설정
+      if (user.imagePath) {
+        profileImage.src = user.imagePath;
+      } else {
+        profileImage.src = "/images/default-profile.png"; // 기본 이미지
+      }
+    })
+    .catch(err => {
+      console.error("프로필 이미지 로딩 오류:", err);
+      profileImage.src = "/images/default-profile.png";
+    });
+  }
+
+  // 👇 아래는 기존 코드 그대로 유지 (생략한 부분)
+
 
   if (profileToggle && dropdown) {
     profileToggle.addEventListener("click", function (event) {
