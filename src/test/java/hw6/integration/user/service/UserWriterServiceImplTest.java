@@ -6,6 +6,7 @@ import hw6.integration.post.repository.PostWriteRepository;
 import hw6.integration.user.domain.User;
 import hw6.integration.user.dto.UserSignupRequestDto;
 import hw6.integration.user.dto.UserUpdateNicknameRequestDto;
+import hw6.integration.user.dto.UserUpdatePasswordRequestDto;
 import hw6.integration.user.repository.UserWriterRepository;
 import hw6.integration.user.util.UserValidator;
 import org.junit.jupiter.api.DisplayName;
@@ -150,7 +151,46 @@ public class UserWriterServiceImplTest {
     }
 
     @Test
-    void updatePassword() {
+    @DisplayName("비밀번호 변경 테스트")
+    void updatePassword_success() {
+
+        //given
+        Long userId = 1L;
+        String oldPassword = "oldPassword";
+        String newPassword = "newPassword";
+
+        UserUpdatePasswordRequestDto userUpdatePasswordRequestDto = new UserUpdatePasswordRequestDto();
+        userUpdatePasswordRequestDto.setPassword(newPassword);
+
+        User user = User.builder()
+                .id(userId)
+                .email("user@naver.com")
+                .password(oldPassword)
+                .nickname("user")
+                .profilePath("/image_storage/photo.jpg")
+                .isActive(true)
+                .build();
+
+
+        given(userValidator.validateUserExists(userId)).willReturn(user);
+        given(passwordEncoder.encode(newPassword)).willReturn("encryptedPassword");
+        given(userWriterRepository.save(any(User.class))).willAnswer(invocation -> invocation.getArgument(0)); // 저장값 그대로 반환
+
+        //when
+        userWriterService.updatePassword(userId, userUpdatePasswordRequestDto);
+
+
+        //then
+        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+        verify(userWriterRepository).save(captor.capture());
+        User captureUser = captor.getValue();
+
+        assertEquals("encryptedPassword", captureUser.getPassword());
+
+        verify(userValidator).validateUserExists(userId);
+        verify(userValidator).validateUserActive(user);
+        verify(passwordEncoder).encode(newPassword);
+
     }
 
     @Test
