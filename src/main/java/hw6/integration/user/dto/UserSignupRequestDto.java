@@ -1,6 +1,7 @@
 package hw6.integration.user.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +19,6 @@ public class UserSignupRequestDto {
     @NotBlank(message = "닉네임을 입력하세요.")
     private String nickname;
 
-    @NotBlank(message = "프로필 사진을 입력하세요.")
+    @NotNull(message = "프로필 사진을 입력하세요.")
     private MultipartFile profileImage;
 }
