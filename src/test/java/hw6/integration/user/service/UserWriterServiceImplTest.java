@@ -135,7 +135,7 @@ public class UserWriterServiceImplTest {
 
     @Test
     @DisplayName("회원가입 테스트 - 닉네임이 중복인 경우")
-    void should_throw_exception_when_nickname_is_duplicate() {
+    void should_throw_exception_when_nickname_is_duplicate_when_register() {
 
         //given
         String duplicateNickname = "test";
@@ -164,15 +164,8 @@ public class UserWriterServiceImplTest {
     }
 
     @Test
-    @DisplayName("회원가입 테스트 - 프로필 사진이 없을 경우")
-    void should_throw_exception_when_profile_image_is_empty() {
-
-
-    }
-
-    @Test
     @DisplayName("사용자 닉네임 변경 테스트")
-    void updateNickname_success() {
+    void should_update_user_nickname_when_nickname_is_unique() {
 
         //given
         Long userId = 1L;
@@ -215,6 +208,50 @@ public class UserWriterServiceImplTest {
         verify(commentWriteRepository).updateAuthorName(userId, newNickname);
 
     }
+
+    @Test
+    @DisplayName("사용자 닉네임 변경 테스트 - 사용자 닉네임 중복될 경우")
+    void should_throw_exception_when_nickname_is_duplicate_when_update() {
+
+        //given
+        String duplicateNickname = "test";
+        Long userId = 1L;
+
+        UserUpdateNicknameRequestDto userUpdatePasswordRequestDto = new UserUpdateNicknameRequestDto();
+        userUpdatePasswordRequestDto.setNickname(duplicateNickname);
+
+        User user = User.builder()
+                .id(userId)
+                .email("user@naver.com")
+                .password("User1234@")
+                .nickname(duplicateNickname)
+                .profilePath("/image_storage/profile.png")
+                .isActive(true)
+                .build();
+
+        given(userValidator.validateUserExists(userId)).willReturn(user);
+
+        doThrow(new BusinessException(ErrorCode.NICKNAME_DUPLICATE))
+                .when(userValidator).validateUserNicknameDuplicate(userUpdatePasswordRequestDto.getNickname());
+
+
+        //when & then
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> userWriterService.updateNickname(userId, userUpdatePasswordRequestDto)
+        );
+
+        assertEquals(ErrorCode.NICKNAME_DUPLICATE, exception.getErrorCode());
+
+        verify(userValidator).validateUserExists(userId);
+        verify(userValidator).validateUserActive(user);
+        verify(userValidator).validateUserNicknameDuplicate(userUpdatePasswordRequestDto.getNickname());
+
+        verify(postWriteRepository, never()).updateAuthorName(userId, userUpdatePasswordRequestDto.getNickname());
+        verify(commentWriteRepository, never()).updateAuthorName(userId, userUpdatePasswordRequestDto.getNickname());
+        verify(userWriterRepository, never()).save(any());
+    }
+
 
     @Test
     @DisplayName("비밀번호 변경 테스트")

@@ -54,6 +54,7 @@ public class UserWriterServiceImpl implements UserWriterService {
     public User updateNickname(Long id, UserUpdateNicknameRequestDto userUpdateNicknameRequestDto) {
 
         // 1. 기존 사용자 조회
+
         User userExisting = userValidator.validateUserExists(id);
 
         userValidator.validateUserActive(userExisting);
