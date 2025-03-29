@@ -297,6 +297,35 @@ public class UserWriterServiceImplTest {
     }
 
     @Test
+    @DisplayName("비밀번호 변경 실패 - 존재하지 않는 사용자일 경우 예외 발생")
+    void should_throw_exception_when_user_is_not_exists_when_update() {
+
+        //given
+        Long userId = 1L;
+        UserUpdatePasswordRequestDto userUpdatePasswordRequestDto = new UserUpdatePasswordRequestDto();
+        userUpdatePasswordRequestDto.setPassword("newPassword");
+
+        given(userValidator.validateUserExists(userId))
+                .willThrow(new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        //when & then
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> userWriterService.updatePassword(userId, userUpdatePasswordRequestDto)
+        );
+
+        assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+        assertEquals("존재하지 않는 아이디입니다.", exception.getMessage()); // 👈 메시지도 검증 가능 시 추가
+
+        verify(userValidator).validateUserExists(userId);
+
+        verify(userValidator, never()).validateUserActive(any());
+        verify(passwordEncoder, never()).encode(any());
+        verify(userWriterRepository, never()).save(any());
+
+    }
+
+    @Test
     @DisplayName("회원 탈퇴 시 사용자 비활성화되고 관련 글/댓글 처리")
     void deleteUser_success() {
 
