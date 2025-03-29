@@ -9,7 +9,6 @@ import hw6.integration.user.domain.User;
 import hw6.integration.user.dto.UserSignupRequestDto;
 import hw6.integration.user.dto.UserUpdateNicknameRequestDto;
 import hw6.integration.user.dto.UserUpdatePasswordRequestDto;
-import hw6.integration.user.repository.UserReadRepository;
 import hw6.integration.user.repository.UserWriterRepository;
 import hw6.integration.user.util.UserValidator;
 import org.junit.jupiter.api.DisplayName;
@@ -44,8 +43,6 @@ public class UserWriterServiceImplTest {
     private PostWriteRepository postWriteRepository;
     @Mock
     private CommentWriteRepository commentWriteRepository;
-    @Mock
-    private UserReadRepository userReadRepository;
 
     @InjectMocks
     private UserWriterServiceImpl userWriterService;
@@ -125,6 +122,8 @@ public class UserWriterServiceImplTest {
         );
 
         assertEquals(ErrorCode.EMAIL_DUPLICATE, exception.getErrorCode());
+        assertEquals("이미 사용 중인 이메일입니다.", exception.getMessage());
+
 
         verify(userValidator).validateUserEmailDuplicate(duplicateEmail);
         verify(userValidator, never()).validateUserNicknameDuplicate(any());
@@ -155,6 +154,8 @@ public class UserWriterServiceImplTest {
         );
 
         assertEquals(ErrorCode.NICKNAME_DUPLICATE, exception.getErrorCode());
+        assertEquals("이미 사용 중인 닉네임입니다.", exception.getMessage());
+
 
         verify(userValidator).validateUserNicknameDuplicate(duplicateNickname);
         verify(userWriterRepository, never()).save(any());
@@ -164,7 +165,7 @@ public class UserWriterServiceImplTest {
     }
 
     @Test
-    @DisplayName("사용자 닉네임 변경 테스트")
+    @DisplayName("사용자 닉네임 변경 성공 테스트")
     void should_update_user_nickname_when_nickname_is_unique() {
 
         //given
@@ -242,6 +243,7 @@ public class UserWriterServiceImplTest {
         );
 
         assertEquals(ErrorCode.NICKNAME_DUPLICATE, exception.getErrorCode());
+        assertEquals("이미 사용 중인 닉네임입니다.", exception.getMessage());
 
         verify(userValidator).validateUserExists(userId);
         verify(userValidator).validateUserActive(user);
@@ -252,10 +254,39 @@ public class UserWriterServiceImplTest {
         verify(userWriterRepository, never()).save(any());
     }
 
+    @Test
+    @DisplayName("사용자 닉네임 변경 테스트 - 존재하지 않는 사용자일 경우 예외 발생")
+    void should_throw_exception_when_user_is_not_exists_when_update_nickname() {
+
+        //given
+        Long userId = 1L;
+        UserUpdateNicknameRequestDto userUpdateNicknameRequestDto = new UserUpdateNicknameRequestDto();
+        userUpdateNicknameRequestDto.setNickname("test");
+
+        given(userValidator.validateUserExists(userId)).willThrow(new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        //when & then
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> userWriterService.updateNickname(userId, userUpdateNicknameRequestDto)
+        );
+
+        assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+        assertEquals("존재하지 않는 아이디입니다.", exception.getMessage());
+
+        verify(userValidator).validateUserExists(userId);
+
+        verify(userValidator, never()).validateUserActive(any());
+        verify(userValidator, never()).validateUserNicknameDuplicate(any());
+        verify(postWriteRepository, never()).updateAuthorName(any(), any());
+        verify(commentWriteRepository, never()).updateAuthorName(any(), any());
+
+    }
+
 
     @Test
     @DisplayName("비밀번호 변경 테스트")
-    void updatePassword_success() {
+    void should_update_user_password_when_password_is_unique() {
 
         //given
         Long userId = 1L;
@@ -326,8 +357,8 @@ public class UserWriterServiceImplTest {
     }
 
     @Test
-    @DisplayName("회원 탈퇴 시 사용자 비활성화되고 관련 글/댓글 처리")
-    void deleteUser_success() {
+    @DisplayName("회원탈퇴 성공 - 회원 탈퇴 시 사용자 비활성화되고 관련 글/댓글 처리")
+    void should_update_user_active_when_user_delete() {
 
         //given
         Long userId = 1L;
@@ -363,4 +394,31 @@ public class UserWriterServiceImplTest {
         verify(postWriteRepository).deletePostByUserId(userId);
         verify(commentWriteRepository).deleteCommentByUserId(userId);
     }
+
+    @Test
+    @DisplayName("회원가입 탈퇴 실패 - 존재하지 않는 사용자일 경우 예외 발생")
+    void should_throw_exception_when_user_does_not_exist_during_deletion() {
+
+        //given
+        Long userId = 1L;
+
+        given(userValidator.validateUserExists(userId)).willThrow(new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        //when & then
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> userWriterService.deleteUser(userId)
+        );
+
+        assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
+        assertEquals("존재하지 않는 아이디입니다.", exception.getMessage());
+
+        verify(userValidator).validateUserExists(userId);
+
+        verify(userValidator, never()).validateUserActive(any());
+        verify(userWriterRepository, never()).save(any());
+        verify(postWriteRepository, never()).deletePostByUserId(userId);
+        verify(commentWriteRepository, never()).deleteCommentByUserId(userId);
+    }
+
 }
