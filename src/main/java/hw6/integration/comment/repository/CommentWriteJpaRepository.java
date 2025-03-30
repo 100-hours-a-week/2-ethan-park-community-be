@@ -24,7 +24,7 @@ public interface CommentWriteJpaRepository extends JpaRepository<CommentEntity, 
 
     @Modifying(clearAutomatically = true)
     @Transactional
-    @Query(value = "UPDATE comments SET is_deleted = false WHERE user_id = :userId", nativeQuery = true)
+    @Query(value = "UPDATE comments SET is_deleted = true WHERE user_id = :userId", nativeQuery = true)
     void deleteCommentByUserId(@Param("userId") Long userId);
 
 

@@ -14,4 +14,6 @@ public interface PostWriteRepository {
     void decrementLikeCount(Long id);
 
     void deletePostByUserId(Long userId);
+
+    void deletePost(Long userId);
 }

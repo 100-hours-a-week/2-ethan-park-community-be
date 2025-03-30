@@ -21,7 +21,7 @@ public interface PostWriteJpaRepository extends JpaRepository<PostEntity, Long> 
     void decrementLikeCount(@Param("postId") Long postId);
 
     @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE posts SET is_deleted = false WHERE user_id = :userId", nativeQuery = true)
+    @Query(value = "UPDATE posts SET is_deleted = true WHERE user_id = :userId", nativeQuery = true)
     void deletePostByUserId(@Param("userId") Long userId);
 
 

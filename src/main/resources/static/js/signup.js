@@ -6,21 +6,41 @@ document.addEventListener("DOMContentLoaded", () => {
   const password1Input = document.getElementById("password1");
   const password2Input = document.getElementById("password2");
   const nicknameInput = document.getElementById("nickname");
-  const profileInput = document.getElementById("signup-profile-img-input");
-  const profilePreview = document.getElementById("profile-preview");
   const submitButton = document.getElementById("signupBtn");
 
-  // 이미지 미리보기
-  profileInput.addEventListener("change", (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        profilePreview.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
+
+  const profileInput = document.getElementById("profile");
+    const profileImage = document.getElementById("profile-image");
+    const profilePlus = document.getElementById("profile-plus");
+    const profilePreview = document.getElementById("profile-preview");
+
+    if (!profileInput || !profileImage || !profilePlus || !profilePreview) {
+      console.error("필수 DOM 요소가 없습니다.");
+      return;
     }
-  });
+
+    // 이미지 선택 시 미리보기 및 + 아이콘 숨기기
+    profileInput.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          profileImage.src = e.target.result;
+          profileImage.style.display = "block";      // 이미지 보이기
+          profilePlus.style.display = "none";        // + 숨기기
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // preview 클릭 시 input 클릭 트리거
+    profilePreview.addEventListener("click", () => {
+      profileInput.value = ""; // 이 줄이 중요! 같은 이미지 다시 선택 가능하게 만듦
+
+      profileInput.click();
+    });
+
 
   // 유효성 검사 이벤트
   emailInput.addEventListener("input", () => validateEmail(emailInput));

@@ -1,7 +1,7 @@
 package hw6.integration.post.repository;
 
-import hw6.integration.post.entity.PostEntity;
 import hw6.integration.post.domain.Post;
+import hw6.integration.post.entity.PostEntity;
 import hw6.integration.user.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -46,5 +46,10 @@ public class PostWriteRepositoryImpl implements PostWriteRepository {
     public void deletePostByUserId(Long userId) {
         postWriteJpaRepository.deletePostByUserId(userId);
         postWriteJpaRepository.updateAuthorNameByUserId(userId);
+    }
+
+    @Override
+    public void deletePost(Long userId) {
+        postWriteJpaRepository.deletePostByUserId(userId);
     }
 }

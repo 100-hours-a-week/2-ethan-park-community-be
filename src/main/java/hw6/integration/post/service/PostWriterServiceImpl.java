@@ -41,7 +41,7 @@ public class PostWriterServiceImpl implements PostWriterService {
         postValidator.validatePostEntityDeleted(postEntity);
 
         postEntity.incrementViewCount(); // 엔티티에서 직접 메서드를 통해 증가 (Dirty Checking 활용)
-        
+
         return postEntity.toDomain();
     }
 
@@ -144,7 +144,7 @@ public class PostWriterServiceImpl implements PostWriterService {
 
         userValidator.validateUserAndPostEquals(userId, postEntity.getUserEntity().getId());
 
-        postEntity.setDeleted(true);
+        postWriteRepository.deletePost(userId);
 
         //🔥 이미지 경로 순회하며 파일 삭제
 //                if (post.getImages() != null) {

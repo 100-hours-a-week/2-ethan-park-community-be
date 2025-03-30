@@ -15,15 +15,19 @@
     <form class="signup-form" id="signupForm" method="post" enctype="multipart/form-data" th:action="@{/api/users}">
       <div class="profile-container">
         <div class="signup-title">
-          <label for="signup-profile-img-input" class="profile-label">
             <div class="profile-title">프로필 사진</div>
             <div class="helper-text">*helper-text</div>
-          </label>
         </div>
-        <div class="signup-profile-img">
-          <img id="profile-preview" alt="미리보기 이미지" style="width: 80px; height: 80px; border-radius: 50%;" />
-          <input type="file" id="signup-profile-img-input" name="profileImage" accept="image/*" hidden />
-          <label for="signup-profile-img-input" class="custom-file-label">+</label>
+        <div class="profile-upload">
+
+          <label class="profile-label">
+            <div id="profile-preview" class="profile-preview">
+              <div id="profile-plus" class="profile-plus">+</div>
+              <img id="profile-image" src="" alt="미리보기" style="display: none;" />
+            </div>
+          </label>
+          <input type="file" id="profile" name="profileImage" accept="image/*" style="display: none;">
+          <div class="error-message" id="profile-error"></div>
         </div>
       </div>
 
