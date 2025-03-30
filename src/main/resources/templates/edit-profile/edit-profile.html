@@ -6,7 +6,7 @@
                     js=~{::js}
                   )}">
 
-<!-- ✅ 스타일 -->
+<!-- ✅ CSS -->
 <th:block th:fragment="css">
   <link rel="stylesheet" th:href="@{/css/edit-profile.css}" />
 </th:block>
@@ -16,29 +16,32 @@
   <h1>회원정보수정</h1>
 
   <div class="container">
+    <!-- 프로필 이미지 -->
     <div id="profileImage"></div>
 
-    <!-- 이메일 표시 영역 -->
+    <!-- 이메일 표시 -->
     <div id="emailDisplay" class="email-display"></div>
 
+    <!-- 닉네임 수정 -->
     <div class="input-group">
       <label for="nickname">닉네임</label>
       <input type="text" id="nickname" placeholder="닉네임 입력" />
       <p class="error" id="errorText"></p>
     </div>
 
-    <!-- ✅ 수정 버튼에 id 부여 -->
+    <!-- 수정 / 탈퇴 버튼 -->
     <button class="btn btn-primary" id="updateProfileBtn">수정하기</button>
     <button class="btn btn-secondary" onclick="showModal()">회원 탈퇴</button>
   </div>
 
+  <!-- 수정 완료 토스트 -->
   <div class="toast" id="toast">수정 완료</div>
 
-  <!-- 모달 -->
-  <div class="overlay" id="overlay"></div>
-  <div class="modal" id="modal">
+  <!-- 회원 탈퇴 확인 모달 -->
+  <div class="overlay" id="overlay" style="display: none;"></div>
+  <div class="modal" id="modal" style="display: none;">
     <p>정말 탈퇴하시겠습니까?</p>
-    <button class="btn btn-primary" onclick="confirmDelete()">확인</button>
+    <button class="btn btn-primary" id="deleteConfirmBtn">확인</button>
     <button class="btn btn-secondary" onclick="hideModal()">취소</button>
   </div>
 </th:block>
@@ -47,6 +50,5 @@
 <th:block th:fragment="js">
   <script th:src="@{/js/edit-profile.js}"></script>
 </th:block>
-
 
 </html>

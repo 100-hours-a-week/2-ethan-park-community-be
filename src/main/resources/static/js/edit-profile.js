@@ -23,9 +23,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const container = document.getElementById("profileImage");
     if (user.profilePath) {
-      container.innerHTML = `<img id="profileImage" class="profile-img" src="${user.profilePath}" alt="프로필 이미지">`;
+      container.innerHTML = `<img class="profile-img" src="${user.profilePath}" alt="프로필 이미지">`;
     }
-
 
   } catch (err) {
     console.error("사용자 정보 오류:", err);
@@ -33,9 +32,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     location.href = "/login";
   }
 
+  // 수정 버튼 이벤트
   document.getElementById("updateProfileBtn").addEventListener("click", updateProfile);
+
+  // 회원탈퇴 확인 버튼 이벤트
+  document.getElementById("deleteConfirmBtn").addEventListener("click", confirmDelete);
 });
 
+// 닉네임 수정 함수
 async function updateProfile() {
   const newNickname = document.getElementById("nickname").value.trim();
   const errorText = document.getElementById("errorText");
@@ -72,4 +76,48 @@ async function updateProfile() {
     console.error("닉네임 수정 오류:", err);
     errorText.textContent = `*닉네임 수정 실패: ${err.message}`;
   }
+}
+
+// 회원 탈퇴 함수
+async function confirmDelete() {
+  const token = localStorage.getItem("jwt");
+
+  if (!token) {
+    alert("로그인이 필요합니다.");
+    location.href = "/login";
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/users", {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`탈퇴 실패: ${res.status} - ${text}`);
+    }
+
+    alert("회원 탈퇴가 완료되었습니다.");
+    localStorage.removeItem("jwt");
+    location.href = "/login";
+  } catch (err) {
+    console.error("회원 탈퇴 오류:", err);
+    alert("회원 탈퇴 중 오류가 발생했습니다.");
+  }
+}
+
+// 모달 열기
+function showModal() {
+  document.getElementById("overlay").style.display = "block";
+  document.getElementById("modal").style.display = "block";
+}
+
+// 모달 닫기
+function hideModal() {
+  document.getElementById("overlay").style.display = "none";
+  document.getElementById("modal").style.display = "none";
 }
