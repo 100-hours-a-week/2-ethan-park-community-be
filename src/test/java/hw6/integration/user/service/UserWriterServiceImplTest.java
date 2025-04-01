@@ -10,7 +10,8 @@ import hw6.integration.user.dto.UserSignupRequestDto;
 import hw6.integration.user.dto.UserUpdateNicknameRequestDto;
 import hw6.integration.user.dto.UserUpdatePasswordRequestDto;
 import hw6.integration.user.repository.UserWriterRepository;
-import hw6.integration.user.util.UserValidator;
+import hw6.integration.user.util.UserEqualsValidator;
+import hw6.integration.user.util.UserServiceValidator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +39,9 @@ public class UserWriterServiceImplTest {
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
-    private UserValidator userValidator;
+    private UserServiceValidator userServiceValidator;
+    @Mock
+    private UserEqualsValidator userEqualsValidator;
     @Mock
     private PostWriteRepository postWriteRepository;
     @Mock
@@ -91,8 +94,8 @@ public class UserWriterServiceImplTest {
         assertEquals("user", savedUser.getNickname());
         assertEquals("/image_storage/profile.png", savedUser.getProfilePath());
 
-        verify(userValidator).validateUserEmailDuplicate("user@naver.com");
-        verify(userValidator).validateUserNicknameDuplicate("user");
+        verify(userServiceValidator).validateUserEmailDuplicate("user@naver.com");
+        verify(userServiceValidator).validateUserNicknameDuplicate("user");
         verify(imageComponent).uploadProfileImage(profileImage);
         verify(passwordEncoder).encode("User1234@");
 
@@ -113,7 +116,7 @@ public class UserWriterServiceImplTest {
 
         // 💡 이메일 중복 검사 시 예외 발생하도록 설정
         doThrow(new BusinessException(ErrorCode.EMAIL_DUPLICATE))
-                .when(userValidator).validateUserEmailDuplicate(duplicateEmail);
+                .when(userServiceValidator).validateUserEmailDuplicate(duplicateEmail);
 
         //when & then
         BusinessException exception = assertThrows(
@@ -125,8 +128,8 @@ public class UserWriterServiceImplTest {
         assertEquals("이미 사용 중인 이메일입니다.", exception.getMessage());
 
 
-        verify(userValidator).validateUserEmailDuplicate(duplicateEmail);
-        verify(userValidator, never()).validateUserNicknameDuplicate(any());
+        verify(userServiceValidator).validateUserEmailDuplicate(duplicateEmail);
+        verify(userServiceValidator, never()).validateUserNicknameDuplicate(any());
         verify(userWriterRepository, never()).save(any());
         verify(passwordEncoder, never()).encode(any());
         verify(imageComponent, never()).uploadProfileImage(any());
@@ -145,7 +148,7 @@ public class UserWriterServiceImplTest {
         userSignupRequestDto.setPassword("password");
 
         doThrow(new BusinessException(ErrorCode.NICKNAME_DUPLICATE))
-                .when(userValidator).validateUserNicknameDuplicate(duplicateNickname);
+                .when(userServiceValidator).validateUserNicknameDuplicate(duplicateNickname);
 
         //when & then
         BusinessException exception = assertThrows(
@@ -157,7 +160,7 @@ public class UserWriterServiceImplTest {
         assertEquals("이미 사용 중인 닉네임입니다.", exception.getMessage());
 
 
-        verify(userValidator).validateUserNicknameDuplicate(duplicateNickname);
+        verify(userServiceValidator).validateUserNicknameDuplicate(duplicateNickname);
         verify(userWriterRepository, never()).save(any());
         verify(imageComponent, never()).uploadProfileImage(any());
         verify(passwordEncoder, never()).encode(any());
@@ -186,7 +189,7 @@ public class UserWriterServiceImplTest {
 
         User updatedUser = user.withNickname(newNickname);
 
-        given(userValidator.validateUserExists(userId)).willReturn(user);
+        given(userServiceValidator.validateUserExists(userId)).willReturn(user);
         given(userWriterRepository.save(any(User.class))).willReturn(updatedUser);
 
         //when
@@ -202,9 +205,9 @@ public class UserWriterServiceImplTest {
 
         assertEquals(newNickname, captureUser.getNickname());
 
-        verify(userValidator).validateUserExists(userId);
-        verify(userValidator).validateUserActive(user);
-        verify(userValidator).validateUserNicknameDuplicate(newNickname);
+        verify(userServiceValidator).validateUserExists(userId);
+        verify(userEqualsValidator).validateUserActive(user);
+        verify(userServiceValidator).validateUserNicknameDuplicate(newNickname);
         verify(postWriteRepository).updateAuthorName(userId, newNickname);
         verify(commentWriteRepository).updateAuthorName(userId, newNickname);
 
@@ -230,10 +233,10 @@ public class UserWriterServiceImplTest {
                 .isActive(true)
                 .build();
 
-        given(userValidator.validateUserExists(userId)).willReturn(user);
+        given(userServiceValidator.validateUserExists(userId)).willReturn(user);
 
         doThrow(new BusinessException(ErrorCode.NICKNAME_DUPLICATE))
-                .when(userValidator).validateUserNicknameDuplicate(userUpdatePasswordRequestDto.getNickname());
+                .when(userServiceValidator).validateUserNicknameDuplicate(userUpdatePasswordRequestDto.getNickname());
 
 
         //when & then
@@ -245,9 +248,9 @@ public class UserWriterServiceImplTest {
         assertEquals(ErrorCode.NICKNAME_DUPLICATE, exception.getErrorCode());
         assertEquals("이미 사용 중인 닉네임입니다.", exception.getMessage());
 
-        verify(userValidator).validateUserExists(userId);
-        verify(userValidator).validateUserActive(user);
-        verify(userValidator).validateUserNicknameDuplicate(userUpdatePasswordRequestDto.getNickname());
+        verify(userServiceValidator).validateUserExists(userId);
+        verify(userEqualsValidator).validateUserActive(user);
+        verify(userServiceValidator).validateUserNicknameDuplicate(userUpdatePasswordRequestDto.getNickname());
 
         verify(postWriteRepository, never()).updateAuthorName(userId, userUpdatePasswordRequestDto.getNickname());
         verify(commentWriteRepository, never()).updateAuthorName(userId, userUpdatePasswordRequestDto.getNickname());
@@ -263,7 +266,7 @@ public class UserWriterServiceImplTest {
         UserUpdateNicknameRequestDto userUpdateNicknameRequestDto = new UserUpdateNicknameRequestDto();
         userUpdateNicknameRequestDto.setNickname("test");
 
-        given(userValidator.validateUserExists(userId)).willThrow(new BusinessException(ErrorCode.USER_NOT_FOUND));
+        given(userServiceValidator.validateUserExists(userId)).willThrow(new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         //when & then
         BusinessException exception = assertThrows(
@@ -274,10 +277,10 @@ public class UserWriterServiceImplTest {
         assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
         assertEquals("존재하지 않는 아이디입니다.", exception.getMessage());
 
-        verify(userValidator).validateUserExists(userId);
+        verify(userServiceValidator).validateUserExists(userId);
 
-        verify(userValidator, never()).validateUserActive(any());
-        verify(userValidator, never()).validateUserNicknameDuplicate(any());
+        verify(userEqualsValidator, never()).validateUserActive(any());
+        verify(userServiceValidator, never()).validateUserNicknameDuplicate(any());
         verify(postWriteRepository, never()).updateAuthorName(any(), any());
         verify(commentWriteRepository, never()).updateAuthorName(any(), any());
 
@@ -306,7 +309,7 @@ public class UserWriterServiceImplTest {
                 .build();
 
 
-        given(userValidator.validateUserExists(userId)).willReturn(user);
+        given(userServiceValidator.validateUserExists(userId)).willReturn(user);
         given(passwordEncoder.encode(newPassword)).willReturn("encryptedPassword");
         given(userWriterRepository.save(any(User.class))).willAnswer(invocation -> invocation.getArgument(0)); // 저장값 그대로 반환
 
@@ -321,8 +324,8 @@ public class UserWriterServiceImplTest {
 
         assertEquals("encryptedPassword", captureUser.getPassword());
 
-        verify(userValidator).validateUserExists(userId);
-        verify(userValidator).validateUserActive(user);
+        verify(userServiceValidator).validateUserExists(userId);
+        verify(userEqualsValidator).validateUserActive(user);
         verify(passwordEncoder).encode(newPassword);
 
     }
@@ -336,7 +339,7 @@ public class UserWriterServiceImplTest {
         UserUpdatePasswordRequestDto userUpdatePasswordRequestDto = new UserUpdatePasswordRequestDto();
         userUpdatePasswordRequestDto.setPassword("newPassword");
 
-        given(userValidator.validateUserExists(userId))
+        given(userServiceValidator.validateUserExists(userId))
                 .willThrow(new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         //when & then
@@ -348,9 +351,9 @@ public class UserWriterServiceImplTest {
         assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
         assertEquals("존재하지 않는 아이디입니다.", exception.getMessage()); // 👈 메시지도 검증 가능 시 추가
 
-        verify(userValidator).validateUserExists(userId);
+        verify(userServiceValidator).validateUserExists(userId);
 
-        verify(userValidator, never()).validateUserActive(any());
+        verify(userEqualsValidator, never()).validateUserActive(any());
         verify(passwordEncoder, never()).encode(any());
         verify(userWriterRepository, never()).save(any());
 
@@ -374,8 +377,8 @@ public class UserWriterServiceImplTest {
 
         User deletedUser = user.withIsActive(false);
 
-        willDoNothing().given(userValidator).validateUserActive(user);
-        given(userValidator.validateUserExists(userId)).willReturn(user);
+        willDoNothing().given(userEqualsValidator).validateUserActive(user);
+        given(userServiceValidator.validateUserExists(userId)).willReturn(user);
         given(userWriterRepository.save(any(User.class))).willReturn(deletedUser);
 
         //when
@@ -388,8 +391,8 @@ public class UserWriterServiceImplTest {
 
         assertFalse(captureUser.getIsActive());
 
-        verify(userValidator).validateUserExists(userId);
-        verify(userValidator).validateUserActive(user);
+        verify(userServiceValidator).validateUserExists(userId);
+        verify(userEqualsValidator).validateUserActive(user);
         verify(userWriterRepository).save(any(User.class));
         verify(postWriteRepository).deletePostByUserId(userId);
         verify(commentWriteRepository).deleteCommentByUserId(userId);
@@ -402,7 +405,7 @@ public class UserWriterServiceImplTest {
         //given
         Long userId = 1L;
 
-        given(userValidator.validateUserExists(userId)).willThrow(new BusinessException(ErrorCode.USER_NOT_FOUND));
+        given(userServiceValidator.validateUserExists(userId)).willThrow(new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         //when & then
         BusinessException exception = assertThrows(
@@ -413,9 +416,9 @@ public class UserWriterServiceImplTest {
         assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
         assertEquals("존재하지 않는 아이디입니다.", exception.getMessage());
 
-        verify(userValidator).validateUserExists(userId);
+        verify(userServiceValidator).validateUserExists(userId);
 
-        verify(userValidator, never()).validateUserActive(any());
+        verify(userEqualsValidator, never()).validateUserActive(any());
         verify(userWriterRepository, never()).save(any());
         verify(postWriteRepository, never()).deletePostByUserId(userId);
         verify(commentWriteRepository, never()).deleteCommentByUserId(userId);

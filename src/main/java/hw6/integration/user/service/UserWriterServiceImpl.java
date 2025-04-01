@@ -8,7 +8,8 @@ import hw6.integration.user.dto.UserSignupRequestDto;
 import hw6.integration.user.dto.UserUpdateNicknameRequestDto;
 import hw6.integration.user.dto.UserUpdatePasswordRequestDto;
 import hw6.integration.user.repository.UserWriterRepository;
-import hw6.integration.user.util.UserValidator;
+import hw6.integration.user.util.UserEqualsValidator;
+import hw6.integration.user.util.UserServiceValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,15 +25,16 @@ public class UserWriterServiceImpl implements UserWriterService {
     private final PostWriteRepository postWriteRepository;
     private final CommentWriteRepository commentWriteRepository;
 
-    private final UserValidator userValidator;
+    private final UserServiceValidator userServiceValidator;
+    private final UserEqualsValidator userEqualsValidator;
 
     @Transactional
     @Override
     public User registerUser(UserSignupRequestDto userSignupRequestDto) {
 
-        userValidator.validateUserEmailDuplicate(userSignupRequestDto.getEmail());
+        userServiceValidator.validateUserEmailDuplicate(userSignupRequestDto.getEmail());
 
-        userValidator.validateUserNicknameDuplicate(userSignupRequestDto.getNickname());
+        userServiceValidator.validateUserNicknameDuplicate(userSignupRequestDto.getNickname());
 
         String profilePath = null;
         if (userSignupRequestDto.getProfileImage() != null && !userSignupRequestDto.getProfileImage().isEmpty()) {
@@ -55,11 +57,11 @@ public class UserWriterServiceImpl implements UserWriterService {
 
         // 1. 기존 사용자 조회
 
-        User userExisting = userValidator.validateUserExists(id);
+        User userExisting = userServiceValidator.validateUserExists(id);
 
-        userValidator.validateUserActive(userExisting);
+        userEqualsValidator.validateUserActive(userExisting);
 
-        userValidator.validateUserNicknameDuplicate(userUpdateNicknameRequestDto.getNickname());
+        userServiceValidator.validateUserNicknameDuplicate(userUpdateNicknameRequestDto.getNickname());
 
         // 2. 변경된 닉네임 반영
         User updatedUser = userExisting.withNickname(userUpdateNicknameRequestDto.getNickname());
@@ -77,9 +79,9 @@ public class UserWriterServiceImpl implements UserWriterService {
     @Override
     public void updatePassword(Long id, UserUpdatePasswordRequestDto userUpdatePasswordRequestDto) {
 
-        User userExisting = userValidator.validateUserExists(id);
+        User userExisting = userServiceValidator.validateUserExists(id);
 
-        userValidator.validateUserActive(userExisting);
+        userEqualsValidator.validateUserActive(userExisting);
 
         // 현재 비밀번호 검증 (비밀번호 변경 시 추가 인증하도록 설정 - 나중에 고도화 때 진행)
 //        if (!passwordEncoder.matches(userExisting.getPassword(), userUpdatePasswordRequestDto.getPassword())) {
@@ -95,9 +97,9 @@ public class UserWriterServiceImpl implements UserWriterService {
     @Transactional
     @Override
     public void deleteUser(Long id) {
-        User user = userValidator.validateUserExists(id);
+        User user = userServiceValidator.validateUserExists(id);
 
-        userValidator.validateUserActive(user);
+        userEqualsValidator.validateUserActive(user);
 
         User deletedUser = user.withIsActive(false);
         userWriterRepository.save(deletedUser);

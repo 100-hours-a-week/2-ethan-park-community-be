@@ -4,14 +4,14 @@ import hw6.integration.comment.domain.Comment;
 import hw6.integration.comment.dto.CommentCreateRequestDto;
 import hw6.integration.comment.dto.CommentUpdateRequestDto;
 import hw6.integration.comment.entity.CommentEntity;
-import hw6.integration.comment.repository.CommentReadRepository;
 import hw6.integration.comment.repository.CommentWriteRepository;
 import hw6.integration.comment.util.CommentValidator;
 import hw6.integration.post.domain.Post;
 import hw6.integration.post.entity.PostEntity;
 import hw6.integration.post.util.PostValidator;
 import hw6.integration.user.domain.User;
-import hw6.integration.user.util.UserValidator;
+import hw6.integration.user.util.UserEqualsValidator;
+import hw6.integration.user.util.UserServiceValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,18 +21,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentWriterServiceImpl implements CommentWriterService {
 
     private final CommentWriteRepository commentWriteRepository;
-    private final CommentReadRepository commentReadRepository;
-    private final UserValidator userValidator;
+
+    private final UserServiceValidator userServiceValidator;
+    private final UserEqualsValidator userEqualsValidator;
     private final PostValidator postValidator;
+
     private final CommentValidator commentValidator;
 
     @Transactional
     @Override
     public Comment createComment(CommentCreateRequestDto dto, Long userId, Long postId) {
 
-        User user = userValidator.validateUserExists(userId);
+        User user = userServiceValidator.validateUserExists(userId);
 
-        userValidator.validateUserActive(user);
+        userEqualsValidator.validateUserActive(user);
 
         PostEntity postEntity = postValidator.validatePostEntityExists(postId);
 
@@ -52,9 +54,9 @@ public class CommentWriterServiceImpl implements CommentWriterService {
     @Override
     public void updateComment(CommentUpdateRequestDto commentUpdateRequestDto, Long commentId, Long userId, Long postId) {
 
-        User user = userValidator.validateUserExists(userId);
+        User user = userServiceValidator.validateUserExists(userId);
 
-        userValidator.validateUserActive(user);
+        userEqualsValidator.validateUserActive(user);
 
         Post post = postValidator.validatePostExists(postId);
 
@@ -62,7 +64,7 @@ public class CommentWriterServiceImpl implements CommentWriterService {
 
         CommentEntity commentEntity = commentValidator.validateCommentEntityExists(commentId);
 
-        userValidator.validateUserAndCommentEntityEquals(userId, commentEntity.getUserEntity().getId());
+        userEqualsValidator.validateUserAndCommentEntityEquals(userId, commentEntity.getUserEntity().getId());
 
         commentEntity.setContent(commentUpdateRequestDto.getContent());
         // Dirty Checking으로 바로 적용
@@ -73,9 +75,9 @@ public class CommentWriterServiceImpl implements CommentWriterService {
     @Override
     public void deleteComment(Long commentId, Long userId, Long postId) {
 
-        User user = userValidator.validateUserExists(userId);
+        User user = userServiceValidator.validateUserExists(userId);
 
-        userValidator.validateUserActive(user);
+        userEqualsValidator.validateUserActive(user);
 
         PostEntity postEntity = postValidator.validatePostEntityExists(postId);
 
@@ -85,7 +87,7 @@ public class CommentWriterServiceImpl implements CommentWriterService {
 
         commentValidator.validateCommentEntityDeleted(commentEntity);
 
-        userValidator.validateUserAndCommentEntityEquals(userId, commentEntity.getUserEntity().getId());
+        userEqualsValidator.validateUserAndCommentEntityEquals(userId, commentEntity.getUserEntity().getId());
 
         commentEntity.setDeleted(true);
         postEntity.decrementCommentCount(); // Dirty Checking 사용

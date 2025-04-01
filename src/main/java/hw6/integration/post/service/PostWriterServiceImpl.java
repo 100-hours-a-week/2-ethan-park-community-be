@@ -12,7 +12,8 @@ import hw6.integration.post.entity.PostEntity;
 import hw6.integration.post.repository.PostWriteRepository;
 import hw6.integration.post.util.PostValidator;
 import hw6.integration.user.domain.User;
-import hw6.integration.user.util.UserValidator;
+import hw6.integration.user.util.UserEqualsValidator;
+import hw6.integration.user.util.UserServiceValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +29,8 @@ public class PostWriterServiceImpl implements PostWriterService {
     private final PostWriteRepository postWriteRepository;
     private final CommentWriteRepository commentWriteRepository;
     private final ImageComponent imageComponent;
-    private final UserValidator userValidator;
+    private final UserServiceValidator userServiceValidator;
+    private final UserEqualsValidator userEqualsValidator;
     private final PostValidator postValidator;
     private final ImageValidator imageValidator;
 
@@ -49,9 +51,9 @@ public class PostWriterServiceImpl implements PostWriterService {
     @Override
     public Post createPost(PostCreateRequestDto postCreateRequestDto, Long userId) {
 
-        User user = userValidator.validateUserExists(userId);
+        User user = userServiceValidator.validateUserExists(userId);
 
-        userValidator.validateUserActive(user);
+        userEqualsValidator.validateUserActive(user);
 
         Post post = Post.createPost(userId, postCreateRequestDto.getTitle(), postCreateRequestDto.getContent(), user.getNickname());
 
@@ -75,10 +77,10 @@ public class PostWriterServiceImpl implements PostWriterService {
     public Post updatePost(Long postId, PostUpdateRequestDto postUpdateRequestDto, Long userId) {
 
         // 1. 사용자 유효성 검사
-        User user = userValidator.validateUserExists(userId);
+        User user = userServiceValidator.validateUserExists(userId);
 
         // 사용자 active 상태인지 검사
-        userValidator.validateUserActive(user);
+        userEqualsValidator.validateUserActive(user);
 
         // 2. 기존 게시글 엔티티 가져오기
         PostEntity postEntity = postValidator.validatePostEntityExists(postId);
@@ -129,9 +131,9 @@ public class PostWriterServiceImpl implements PostWriterService {
     @Override
     public void deletePost(Long userId, Long postId) {
 
-        User user = userValidator.validateUserExists(userId);
+        User user = userServiceValidator.validateUserExists(userId);
 
-        userValidator.validateUserActive(user);
+        userEqualsValidator.validateUserActive(user);
 
         PostEntity postEntity = postValidator.validatePostEntityExists(postId);
 
@@ -142,7 +144,7 @@ public class PostWriterServiceImpl implements PostWriterService {
             commentWriteRepository.deleteCommentByPostId(postId);
         }
 
-        userValidator.validateUserAndPostEquals(userId, postEntity.getUserEntity().getId());
+        userEqualsValidator.validateUserAndPostEquals(userId, postEntity.getUserEntity().getId());
 
         postWriteRepository.deletePost(userId);
 

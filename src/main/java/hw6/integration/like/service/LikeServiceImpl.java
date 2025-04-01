@@ -6,7 +6,8 @@ import hw6.integration.post.domain.Post;
 import hw6.integration.post.repository.PostWriteRepository;
 import hw6.integration.post.util.PostValidator;
 import hw6.integration.user.domain.User;
-import hw6.integration.user.util.UserValidator;
+import hw6.integration.user.util.UserEqualsValidator;
+import hw6.integration.user.util.UserServiceValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,8 @@ public class LikeServiceImpl implements LikeService {
 
     private final LikeRepository likeRepository;
     private final PostWriteRepository postWriteRepository;
-    private final UserValidator userValidator;
+    private final UserServiceValidator userServiceValidator;
+    private final UserEqualsValidator userEqualsValidator;
     private final PostValidator postValidator;
 
     @Transactional
@@ -34,9 +36,9 @@ public class LikeServiceImpl implements LikeService {
     }
 
     private User findActiveUserById(Long userId) {
-        User user = userValidator.validateUserExists(userId);
+        User user = userServiceValidator.validateUserExists(userId);
 
-        userValidator.validateUserActive(user);
+        userEqualsValidator.validateUserActive(user);
 
         return user;
     }

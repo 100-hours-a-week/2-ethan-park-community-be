@@ -2,7 +2,7 @@ package hw6.integration.user.service;
 
 import hw6.integration.user.domain.User;
 import hw6.integration.user.repository.UserReadRepository;
-import hw6.integration.user.util.UserValidator;
+import hw6.integration.user.util.UserServiceValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +14,7 @@ import java.util.List;
 public class UserReadServiceImpl implements UserReadService {
 
     private final UserReadRepository userReadRepository;
-    private final UserValidator userValidator;
+    private final UserServiceValidator userServiceValidator;
 
     @Transactional(readOnly = true)
     @Override
@@ -27,7 +27,7 @@ public class UserReadServiceImpl implements UserReadService {
     @Override
     public User getUserById(Long id) {
 
-        return userValidator.validateUserExists(id);
+        return userServiceValidator.validateUserExists(id);
 
     }
 
