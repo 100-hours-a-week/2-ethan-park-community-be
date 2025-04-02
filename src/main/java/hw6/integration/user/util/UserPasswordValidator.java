@@ -12,7 +12,6 @@ public class UserPasswordValidator {
     private final PasswordEncoder passwordEncoder;
 
     public void validateUserPasswordSame(String newPassword, String beforePassword) {
-        System.out.println(newPassword + " !!! " + beforePassword);
         if (!passwordEncoder.matches(newPassword, beforePassword))
             throw new BusinessException(ErrorCode.INVALID_PASSWORD);
     }
