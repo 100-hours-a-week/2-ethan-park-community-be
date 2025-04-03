@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PostValidator {
+public class PostExistenceValidator {
 
     private final PostReadRepository postReadRepository;
 
@@ -26,15 +26,4 @@ public class PostValidator {
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
     }
 
-    public void validatePostEntityDeleted(PostEntity postEntity) {
-
-        if (postEntity.isDeleted())
-            throw new BusinessException(ErrorCode.POST_DELETED);
-    }
-
-    public void validatePostDeleted(Post post) {
-
-        if (post.isDeleted())
-            throw new BusinessException(ErrorCode.POST_DELETED);
-    }
 }

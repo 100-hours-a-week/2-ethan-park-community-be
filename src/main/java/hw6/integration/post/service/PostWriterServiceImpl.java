@@ -10,7 +10,8 @@ import hw6.integration.post.dto.PostCreateRequestDto;
 import hw6.integration.post.dto.PostUpdateRequestDto;
 import hw6.integration.post.entity.PostEntity;
 import hw6.integration.post.repository.PostWriteRepository;
-import hw6.integration.post.util.PostValidator;
+import hw6.integration.post.util.PostDeletionValidator;
+import hw6.integration.post.util.PostExistenceValidator;
 import hw6.integration.user.domain.User;
 import hw6.integration.user.util.UserEqualsValidator;
 import hw6.integration.user.util.UserServiceValidator;
@@ -28,19 +29,24 @@ public class PostWriterServiceImpl implements PostWriterService {
 
     private final PostWriteRepository postWriteRepository;
     private final CommentWriteRepository commentWriteRepository;
+
     private final ImageComponent imageComponent;
+
     private final UserServiceValidator userServiceValidator;
     private final UserEqualsValidator userEqualsValidator;
-    private final PostValidator postValidator;
+
+    private final PostExistenceValidator postExistenceValidator;
+    private final PostDeletionValidator postDeletionValidator;
+
     private final ImageValidator imageValidator;
 
     //dirty checking을 위한 메서드
     @Transactional
     @Override
     public Post getPostById(Long id) {
-        PostEntity postEntity = postValidator.validatePostEntityExists(id);
+        PostEntity postEntity = postExistenceValidator.validatePostEntityExists(id);
 
-        postValidator.validatePostEntityDeleted(postEntity);
+        postDeletionValidator.validatePostEntityDeleted(postEntity);
 
         postEntity.incrementViewCount(); // 엔티티에서 직접 메서드를 통해 증가 (Dirty Checking 활용)
 
@@ -83,9 +89,9 @@ public class PostWriterServiceImpl implements PostWriterService {
         userEqualsValidator.validateUserActive(user);
 
         // 2. 기존 게시글 엔티티 가져오기
-        PostEntity postEntity = postValidator.validatePostEntityExists(postId);
+        PostEntity postEntity = postExistenceValidator.validatePostEntityExists(postId);
 
-        postValidator.validatePostEntityDeleted(postEntity);
+        postDeletionValidator.validatePostEntityDeleted(postEntity);
 
         // 1. 제목/내용 업데이트 (메서드로 캡슐화)
         postEntity.update(postUpdateRequestDto.getTitle(), postUpdateRequestDto.getContent());
@@ -135,9 +141,9 @@ public class PostWriterServiceImpl implements PostWriterService {
 
         userEqualsValidator.validateUserActive(user);
 
-        PostEntity postEntity = postValidator.validatePostEntityExists(postId);
+        PostEntity postEntity = postExistenceValidator.validatePostEntityExists(postId);
 
-        postValidator.validatePostEntityDeleted(postEntity);
+        postDeletionValidator.validatePostEntityDeleted(postEntity);
 
         if (postEntity.getCommentCount() > 0) {
 

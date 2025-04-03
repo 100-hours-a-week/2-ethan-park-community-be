@@ -8,7 +8,8 @@ import hw6.integration.comment.repository.CommentWriteRepository;
 import hw6.integration.comment.util.CommentValidator;
 import hw6.integration.post.domain.Post;
 import hw6.integration.post.entity.PostEntity;
-import hw6.integration.post.util.PostValidator;
+import hw6.integration.post.util.PostDeletionValidator;
+import hw6.integration.post.util.PostExistenceValidator;
 import hw6.integration.user.domain.User;
 import hw6.integration.user.util.UserEqualsValidator;
 import hw6.integration.user.util.UserServiceValidator;
@@ -24,7 +25,9 @@ public class CommentWriterServiceImpl implements CommentWriterService {
 
     private final UserServiceValidator userServiceValidator;
     private final UserEqualsValidator userEqualsValidator;
-    private final PostValidator postValidator;
+
+    private final PostExistenceValidator postExistenceValidator;
+    private final PostDeletionValidator postDeletionValidator;
 
     private final CommentValidator commentValidator;
 
@@ -36,9 +39,9 @@ public class CommentWriterServiceImpl implements CommentWriterService {
 
         userEqualsValidator.validateUserActive(user);
 
-        PostEntity postEntity = postValidator.validatePostEntityExists(postId);
+        PostEntity postEntity = postExistenceValidator.validatePostEntityExists(postId);
 
-        postValidator.validatePostEntityDeleted(postEntity);
+        postDeletionValidator.validatePostEntityDeleted(postEntity);
 
         Comment comment = Comment.createComment(postId, userId, user.getNickname(), dto.getContent());
 
@@ -58,9 +61,9 @@ public class CommentWriterServiceImpl implements CommentWriterService {
 
         userEqualsValidator.validateUserActive(user);
 
-        Post post = postValidator.validatePostExists(postId);
+        Post post = postExistenceValidator.validatePostExists(postId);
 
-        postValidator.validatePostDeleted(post);
+        postDeletionValidator.validatePostDeleted(post);
 
         CommentEntity commentEntity = commentValidator.validateCommentEntityExists(commentId);
 
@@ -79,9 +82,9 @@ public class CommentWriterServiceImpl implements CommentWriterService {
 
         userEqualsValidator.validateUserActive(user);
 
-        PostEntity postEntity = postValidator.validatePostEntityExists(postId);
+        PostEntity postEntity = postExistenceValidator.validatePostEntityExists(postId);
 
-        postValidator.validatePostEntityDeleted(postEntity);
+        postDeletionValidator.validatePostEntityDeleted(postEntity);
 
         CommentEntity commentEntity = commentValidator.validateCommentEntityExists(commentId);
 

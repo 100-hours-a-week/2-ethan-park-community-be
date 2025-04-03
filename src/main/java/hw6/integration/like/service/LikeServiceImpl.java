@@ -4,7 +4,8 @@ import hw6.integration.like.domain.Like;
 import hw6.integration.like.repository.LikeRepository;
 import hw6.integration.post.domain.Post;
 import hw6.integration.post.repository.PostWriteRepository;
-import hw6.integration.post.util.PostValidator;
+import hw6.integration.post.util.PostDeletionValidator;
+import hw6.integration.post.util.PostExistenceValidator;
 import hw6.integration.user.domain.User;
 import hw6.integration.user.util.UserEqualsValidator;
 import hw6.integration.user.util.UserServiceValidator;
@@ -18,9 +19,12 @@ public class LikeServiceImpl implements LikeService {
 
     private final LikeRepository likeRepository;
     private final PostWriteRepository postWriteRepository;
+
     private final UserServiceValidator userServiceValidator;
     private final UserEqualsValidator userEqualsValidator;
-    private final PostValidator postValidator;
+
+    private final PostExistenceValidator postExistenceValidator;
+    private final PostDeletionValidator postDeletionValidator;
 
     @Transactional
     @Override
@@ -44,9 +48,9 @@ public class LikeServiceImpl implements LikeService {
     }
 
     private Post findActivePostById(Long postId) {
-        Post post = postValidator.validatePostExists(postId);
+        Post post = postExistenceValidator.validatePostExists(postId);
 
-        postValidator.validatePostDeleted(post);
+        postDeletionValidator.validatePostDeleted(post);
 
         return post;
     }

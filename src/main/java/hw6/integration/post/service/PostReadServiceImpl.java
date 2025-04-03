@@ -2,7 +2,7 @@ package hw6.integration.post.service;
 
 import hw6.integration.post.domain.Post;
 import hw6.integration.post.repository.PostReadRepository;
-import hw6.integration.post.util.PostValidator;
+import hw6.integration.post.util.PostExistenceValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +14,7 @@ import java.util.List;
 public class PostReadServiceImpl implements PostReadService {
 
     private final PostReadRepository postReadRepository;
-    private final PostValidator postValidator;
+    private final PostExistenceValidator postExistenceValidator;
 
     @Transactional(readOnly = true)
     @Override
@@ -27,7 +27,7 @@ public class PostReadServiceImpl implements PostReadService {
     @Transactional(readOnly = true)
     @Override
     public Post findById(Long id) {
-        return postValidator.validatePostExists(id);
+        return postExistenceValidator.validatePostExists(id);
     }
 
 }
