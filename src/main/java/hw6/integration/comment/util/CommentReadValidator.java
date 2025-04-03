@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CommentValidator {
+public class CommentReadValidator {
 
     private final CommentReadRepository commentReadRepository;
 
@@ -19,9 +19,4 @@ public class CommentValidator {
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
     }
 
-    public void validateCommentEntityDeleted(CommentEntity commentEntity) {
-
-        if (commentEntity.isDeleted())
-            throw new BusinessException(ErrorCode.COMMENT_NOT_FOUND);
-    }
 }

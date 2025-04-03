@@ -5,7 +5,8 @@ import hw6.integration.comment.dto.CommentCreateRequestDto;
 import hw6.integration.comment.dto.CommentUpdateRequestDto;
 import hw6.integration.comment.entity.CommentEntity;
 import hw6.integration.comment.repository.CommentWriteRepository;
-import hw6.integration.comment.util.CommentValidator;
+import hw6.integration.comment.util.CommentEqualsValidator;
+import hw6.integration.comment.util.CommentReadValidator;
 import hw6.integration.post.domain.Post;
 import hw6.integration.post.entity.PostEntity;
 import hw6.integration.post.util.PostDeletionValidator;
@@ -29,7 +30,8 @@ public class CommentWriterServiceImpl implements CommentWriterService {
     private final PostExistenceValidator postExistenceValidator;
     private final PostDeletionValidator postDeletionValidator;
 
-    private final CommentValidator commentValidator;
+    private final CommentReadValidator commentReadValidator;
+    private final CommentEqualsValidator commentEqualsValidator;
 
     @Transactional
     @Override
@@ -65,7 +67,7 @@ public class CommentWriterServiceImpl implements CommentWriterService {
 
         postDeletionValidator.validatePostDeleted(post);
 
-        CommentEntity commentEntity = commentValidator.validateCommentEntityExists(commentId);
+        CommentEntity commentEntity = commentReadValidator.validateCommentEntityExists(commentId);
 
         userEqualsValidator.validateUserAndCommentEntityEquals(userId, commentEntity.getUserEntity().getId());
 
@@ -86,9 +88,9 @@ public class CommentWriterServiceImpl implements CommentWriterService {
 
         postDeletionValidator.validatePostEntityDeleted(postEntity);
 
-        CommentEntity commentEntity = commentValidator.validateCommentEntityExists(commentId);
+        CommentEntity commentEntity = commentReadValidator.validateCommentEntityExists(commentId);
 
-        commentValidator.validateCommentEntityDeleted(commentEntity);
+        commentEqualsValidator.validateCommentEntityDeleted(commentEntity);
 
         userEqualsValidator.validateUserAndCommentEntityEquals(userId, commentEntity.getUserEntity().getId());
 
