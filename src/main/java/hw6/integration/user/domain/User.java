@@ -36,6 +36,10 @@ public class User {
     private List<Post> posts = new ArrayList<>();
 
     public static User createUser(String email, String password, String nickname, String profilePath) {
+
+        if (email == null || password == null || nickname == null || profilePath == null)
+            throw new IllegalArgumentException("email, password, nickname은 null일 수 없습니다.");
+
         return User.builder()
                 .email(email)
                 .password(password)
@@ -54,10 +58,6 @@ public class User {
                 .profilePath(user.getProfilePath())
                 .isActive(user.getIsActive())
                 .build();
-    }
-
-    public boolean isActiveUser() {
-        return Boolean.TRUE.equals(this.isActive);
     }
 
 }
