@@ -46,7 +46,6 @@ public class UserController {
     public ResponseEntity<Void> registerUser(
             @Valid @ModelAttribute UserSignupRequestDto userSignupRequestDto) {
 
-        System.out.println(userSignupRequestDto.getProfileImage());
         userWriterService.registerUser(userSignupRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
