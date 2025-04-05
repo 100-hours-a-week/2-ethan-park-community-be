@@ -1,5 +1,7 @@
 package hw6.integration.user.service;
 
+import hw6.integration.exception.BusinessException;
+import hw6.integration.exception.ErrorCode;
 import hw6.integration.user.domain.User;
 import hw6.integration.user.repository.UserReadRepository;
 import hw6.integration.user.util.UserServiceValidator;
@@ -12,8 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -56,7 +58,6 @@ class UserReadServiceImplTest {
     void should_return_empty_when_user_is_empty() {
 
         //given
-        Long userId = 999L;
         List<User> emptyUsers = List.of();
 
         given(userReadRepository.findByAll()).willReturn(emptyUsers);
@@ -70,5 +71,39 @@ class UserReadServiceImplTest {
 
     }
 
-    //getUserById 메서드 테스트 해야됨
+    @Test
+    @DisplayName("사용자 id를 조회했을 때 존재하면 User를 반환한다.")
+    void should_return_user_when_user_id_exists() {
+
+        //given
+        Long userId = 1L;
+        User user = User.createUser("test@naver.com", "password", "test", "/profile");
+        given(userServiceValidator.validateUserExists(userId)).willReturn(user);
+
+        //when
+        User result = userReadServiceImpl.getUserById(userId);
+
+        //then
+        assertEquals(user, result);
+        verify(userServiceValidator, times(1)).validateUserExists(userId);
+    }
+
+    @Test
+    @DisplayName("사용자 id를 조회했을 때 존재하지 않으면 예외를 반환한다.")
+    void should_throw_exception_when_user_id_is_not_exists() {
+
+        //given
+        Long userId = 999L;
+        given(userServiceValidator.validateUserExists(userId)).willThrow(new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        //when
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
+            userReadServiceImpl.getUserById(userId);
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+        verify(userServiceValidator, times(1)).validateUserExists(userId);
+    }
+
+
 }
